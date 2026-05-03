@@ -1,0 +1,7 @@
+pytesseract==0.3.13
+opencv-python==4.13.0.92
+Pillow==12.2.0
+flask==3.1.2
+mysql-connector-python==9.7.0
+numpy==2.4.4
+pandas==3.0.2
