@@ -1,23 +1,26 @@
-from fastapi import FastAPI
 import uvicorn
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from res_models import get_response_json, StatusCode
+from api import api_router
+from core import settings
 
-app = FastAPI(debug=True, title="Medicare Plus API", version="1.0.0")
+app = FastAPI(
+    debug=settings.debug,
+    title=settings.app_name,
+    version=settings.app_version,
+)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.get("/", status_code=200, tags=["Root"])
-def read_root():
-    try:
-        return get_response_json(
-            status_code=StatusCode.OK, message="Welcome to the Medicare+ API!"
-        )
-    except Exception as e:
-        return get_response_json(
-            status_code=StatusCode.INTERNAL_SERVER_ERROR,
-            message=f"An error occurred: {str(e)}",
-        )
+app.include_router(api_router)
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, port=8000)
+    uvicorn.run(app, host=settings.host, port=settings.port)
