@@ -1,26 +1,20 @@
-import uvicorn
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
-from api import api_router
-from core import settings
+from core.constants.config import app_name, app_version, debug
+from repository.routes.auth_router import AuthRouter
+from data.models.base import BASE
+
+# BASE.metadata.create_all(bind=DatabaseConnection.engine)
 
 app = FastAPI(
-    debug=settings.debug,
-    title=settings.app_name,
-    version=settings.app_version,
+    debug=debug,
+    title=app_name,
+    version=app_version,
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-app.include_router(api_router)
+AuthRouter(app).init_routes()
 
 
-if __name__ == "__main__":
-    uvicorn.run(app, host=settings.host, port=settings.port)
+# @app.get("/")
+# def AuthService():
+#     return {"message": "E-Disposal Government Application API Services"}

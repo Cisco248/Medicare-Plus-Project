@@ -1,0 +1,11 @@
+{
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[gitignore]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
