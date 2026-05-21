@@ -1,6 +1,6 @@
 import os
 
-DB_URL = "mysql+pymysql://root:root123@127.0.0.1:3306/medicare+"
+DB_URL = "mysql+pymysql://root:ADITHYA345%40abc@127.0.0.1:3306/medicare+"
 
 app_name: str = "Medicare Plus API"
 app_version: str = "1.0.0"
