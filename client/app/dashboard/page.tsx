@@ -1,129 +1,348 @@
-import Link from "next/link";
-import { getLandingContent } from "@/lib/data/landingRepository";
-import { Card } from "@/lib/components/ui/Card";
-import { Button } from "@/lib/components/ui/Button";
-import { PageShell } from "@/lib/components/shared/PageShell";
+"use client";
 
-export default function LandingView() {
-  const { hero, features, steps, stats } = getLandingContent();
+import React from "react";
+import {
+  Activity,
+  CalendarDays,
+  Clock3,
+  Users,
+  BedDouble,
+  Stethoscope,
+  Bell,
+  ClipboardList,
+  TrendingUp,
+  ShieldCheck,
+  HeartPulse,
+  ArrowRight,
+} from "lucide-react";
 
+const stats = [
+  {
+    title: "Total Patients",
+    value: "1,284",
+    icon: Users,
+  },
+  {
+    title: "Doctors Available",
+    value: "42",
+    icon: Stethoscope,
+  },
+  {
+    title: "Appointments Today",
+    value: "86",
+    icon: CalendarDays,
+  },
+  {
+    title: "Emergency Cases",
+    value: "12",
+    icon: Activity,
+  },
+];
+
+const upcomingSessions = [
+  {
+    doctor: "Dr. John Fernando",
+    department: "Cardiology",
+    time: "09:30 AM",
+    room: "Room 204",
+    status: "Scheduled",
+  },
+  {
+    doctor: "Dr. Nethmi Silva",
+    department: "Neurology",
+    time: "11:00 AM",
+    room: "Room 102",
+    status: "Ongoing",
+  },
+  {
+    doctor: "Dr. Amal Perera",
+    department: "Pediatrics",
+    time: "02:00 PM",
+    room: "Room 305",
+    status: "Scheduled",
+  },
+];
+
+const notifications = [
+  "New patient registration completed",
+  "Critical lab report received",
+  "MRI session scheduled for 3:00 PM",
+  "ICU patient requires monitoring",
+];
+
+const page = () => {
   return (
-    <>
-      <section className="relative overflow-hidden border-b border-surface-500/30">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--color-brand-900)_0%,transparent_55%)] opacity-60" />
-        <PageShell className="relative py-16 md:py-24">
-          <span className="inline-flex items-center rounded-full border border-brand-500/30 bg-brand-500/10 px-3 py-1 text-xs font-medium text-brand-300">
-            {hero.badge}
-          </span>
-          <h1 className="mt-6 max-w-3xl text-4xl font-bold tracking-tight text-white md:text-6xl">
-            {hero.title}{" "}
-            <span className="bg-linear-to-r from-brand-300 to-brand-500 bg-clip-text text-transparent">
-              {hero.highlight}
-            </span>
+    <div className="min-h-screen w-full bg-slate-100 p-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800">
+            Hospital Dashboard
           </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-zinc-400">
-            {hero.description}
+          <p className="text-slate-500 mt-1">
+            Manage hospital operations, patient sessions, and medical services.
           </p>
-          <div className="mt-10 flex flex-wrap gap-4">
-            <Link href="/auth">
-              <Button size="lg">Get started free</Button>
-            </Link>
-            <Link href="#features">
-              <Button variant="outline" size="lg">
-                Explore features
-              </Button>
-            </Link>
-          </div>
+        </div>
 
-          <div className="mt-16 grid grid-cols-3 gap-6 border-t border-surface-500/40 pt-10 sm:max-w-lg">
-            {stats.map((stat) => (
-              <div key={stat.label}>
-                <p className="text-2xl font-bold text-brand-400">
-                  {stat.value}
-                </p>
-                <p className="mt-1 text-xs text-zinc-500 sm:text-sm">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </PageShell>
-      </section>
+        <div className="flex items-center gap-3">
+          <button className="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-2xl shadow-sm hover:bg-slate-50 transition">
+            <Bell size={18} />
+            Notifications
+          </button>
 
-      <section id="features" className="py-16 md:py-20">
-        <PageShell>
-          <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold text-white md:text-4xl">
-              Everything you need
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-zinc-400">
-              Built for patients and providers — manage care without juggling
-              multiple tools.
-            </p>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-2">
-            {features.map((feature) => (
-              <Card key={feature.title} hover>
-                <span className="text-3xl" aria-hidden>
-                  {feature.icon}
-                </span>
-                <h3 className="mt-4 text-lg font-semibold text-white">
-                  {feature.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-                  {feature.description}
-                </p>
-              </Card>
-            ))}
-          </div>
-        </PageShell>
-      </section>
+          <button className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-2xl shadow hover:bg-blue-700 transition">
+            <CalendarDays size={18} />
+            Schedule Session
+          </button>
+        </div>
+      </div>
 
-      <section
-        id="how-it-works"
-        className="border-y border-surface-500/30 bg-surface-800/30 py-16 md:py-20"
-      >
-        <PageShell>
-          <h2 className="text-center text-3xl font-bold text-white md:text-4xl">
-            How it works
-          </h2>
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
-            {steps.map((item) => (
-              <div
-                key={item.step}
-                className="relative text-center md:text-left"
-              >
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-500/20 text-lg font-bold text-brand-400 md:mx-0">
-                  {item.step}
+      {/* Statistics */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+        {stats.map((item, index) => {
+          const Icon = item.icon;
+
+          return (
+            <div
+              key={index}
+              className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-slate-500 text-sm">{item.title}</p>
+                  <h2 className="text-3xl font-bold text-slate-800 mt-2">
+                    {item.value}
+                  </h2>
                 </div>
-                <h3 className="mt-4 text-lg font-semibold text-white">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-sm text-zinc-400">{item.description}</p>
-              </div>
-            ))}
-          </div>
-        </PageShell>
-      </section>
 
-      <section id="about" className="py-16 md:py-20">
-        <PageShell>
-          <Card className="flex flex-col items-center gap-6 text-center md:flex-row md:text-left">
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-white md:text-3xl">
-                Ready to take control of your health?
-              </h2>
-              <p className="mt-3 text-zinc-400">
-                Join Medicare+ and experience a modern, secure way to manage
-                healthcare records and appointments.
-              </p>
+                <div className="h-14 w-14 rounded-2xl bg-blue-100 flex items-center justify-center">
+                  <Icon className="text-blue-600" size={28} />
+                </div>
+              </div>
             </div>
-            <Link href="/auth" className="shrink-0">
-              <Button size="lg">Create account</Button>
-            </Link>
-          </Card>
-        </PageShell>
-      </section>
-    </>
+          );
+        })}
+      </div>
+
+      {/* Main Layout */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {/* Left Side */}
+        <div className="xl:col-span-2 space-y-6">
+          {/* Session Management */}
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h2 className="text-xl font-bold text-slate-800">
+                  Doctor Sessions
+                </h2>
+                <p className="text-slate-500 text-sm mt-1">
+                  Start and manage scheduled sessions.
+                </p>
+              </div>
+
+              <button className="text-blue-600 flex items-center gap-1 font-medium hover:underline">
+                View All
+                <ArrowRight size={16} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {upcomingSessions.map((session, index) => (
+                <div
+                  key={index}
+                  className="border border-slate-200 rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
+                >
+                  <div>
+                    <h3 className="font-semibold text-slate-800">
+                      {session.doctor}
+                    </h3>
+
+                    <div className="flex flex-wrap gap-3 mt-2 text-sm text-slate-500">
+                      <span className="flex items-center gap-1">
+                        <Stethoscope size={14} />
+                        {session.department}
+                      </span>
+
+                      <span className="flex items-center gap-1">
+                        <Clock3 size={14} />
+                        {session.time}
+                      </span>
+
+                      <span className="flex items-center gap-1">
+                        <BedDouble size={14} />
+                        {session.room}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        session.status === "Ongoing"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
+                      {session.status}
+                    </span>
+
+                    <button className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition">
+                      Start Session
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Monitoring & Reports */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Health Monitoring */}
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-12 w-12 rounded-2xl bg-red-100 flex items-center justify-center">
+                  <HeartPulse className="text-red-500" />
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-slate-800">
+                    Patient Monitoring
+                  </h3>
+                  <p className="text-sm text-slate-500">
+                    Real-time patient vitals & alerts
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="p-3 rounded-2xl bg-slate-50">
+                  <p className="text-sm text-slate-500">Heart Rate Alerts</p>
+                  <h2 className="text-2xl font-bold text-slate-800">18</h2>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-slate-50">
+                  <p className="text-sm text-slate-500">Critical Patients</p>
+                  <h2 className="text-2xl font-bold text-slate-800">5</h2>
+                </div>
+              </div>
+            </div>
+
+            {/* Reports */}
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-12 w-12 rounded-2xl bg-green-100 flex items-center justify-center">
+                  <TrendingUp className="text-green-600" />
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-slate-800">Hospital Reports</h3>
+                  <p className="text-sm text-slate-500">
+                    AI generated analytics and reports
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="p-3 rounded-2xl bg-slate-50 flex items-center justify-between">
+                  <span className="text-slate-700">Monthly Patients</span>
+                  <span className="font-semibold">+12%</span>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-slate-50 flex items-center justify-between">
+                  <span className="text-slate-700">Emergency Rate</span>
+                  <span className="font-semibold">3.4%</span>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-slate-50 flex items-center justify-between">
+                  <span className="text-slate-700">Bed Occupancy</span>
+                  <span className="font-semibold">78%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Sidebar */}
+        <div className="space-y-6">
+          {/* Notifications */}
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="h-12 w-12 rounded-2xl bg-yellow-100 flex items-center justify-center">
+                <Bell className="text-yellow-600" />
+              </div>
+
+              <div>
+                <h3 className="font-bold text-slate-800">Notifications</h3>
+                <p className="text-sm text-slate-500">
+                  Important hospital alerts
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {notifications.map((item, index) => (
+                <div
+                  key={index}
+                  className="p-3 rounded-2xl bg-slate-50 text-sm text-slate-700"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Security & Records */}
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="h-12 w-12 rounded-2xl bg-blue-100 flex items-center justify-center">
+                <ShieldCheck className="text-blue-600" />
+              </div>
+
+              <div>
+                <h3 className="font-bold text-slate-800">Medical Records</h3>
+                <p className="text-sm text-slate-500">
+                  Secure patient information
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-600">Active Records</span>
+                <span className="font-semibold text-slate-800">3,248</span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-slate-600">AI Reports Generated</span>
+                <span className="font-semibold text-slate-800">512</span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-slate-600">Pending Approvals</span>
+                <span className="font-semibold text-slate-800">14</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-6 text-white shadow-lg">
+            <ClipboardList size={40} />
+
+            <h2 className="text-2xl font-bold mt-4">Start Scheduled Session</h2>
+
+            <p className="mt-2 text-blue-100 text-sm">
+              Move directly into the doctor consultation session once the
+              scheduled time is reached.
+            </p>
+
+            <button className="mt-5 bg-white text-blue-700 px-5 py-3 rounded-2xl font-semibold hover:bg-slate-100 transition">
+              Open Session Panel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
-}
+};
+
+export default page;

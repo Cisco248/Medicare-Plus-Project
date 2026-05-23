@@ -5,13 +5,13 @@ interface Props {}
 
 const LoginPage = () => {
   return (
-    <div className="grid grid-cols-[1.5fr_600px] h-dvh w-full justify-center items-center">
+    <div className="grid grid-cols-[1.5fr_600px] w-full h-dvh justify-center items-center">
       <div className="flex justify-center items-center h-full w-full">
         <Image
-          className="h-full w-full opacity-40 object-cover"
+          className="h-dvh w-full opacity-40 object-cover"
           src={"/images/auth_bg.png"}
           width={1000}
-          height={1000}
+          height={900}
           alt="bg"
         />
       </div>
