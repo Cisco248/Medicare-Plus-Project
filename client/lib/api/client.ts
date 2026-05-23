@@ -7,6 +7,16 @@ type RequestOptions = {
   headers?: HeadersInit;
 };
 
+export class ApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 export async function apiClient<T = ApiResponse>(
   path: string,
   options: RequestOptions = {},
@@ -23,7 +33,14 @@ export async function apiClient<T = ApiResponse>(
   });
 
   if (!response.ok) {
-    throw new Error(`API request failed: ${response.status}`);
+    let detail = `Request failed (${response.status})`;
+    try {
+      const errorBody = (await response.json()) as { detail?: string };
+      if (typeof errorBody.detail === "string" && errorBody.detail.length > 0) {
+        detail = errorBody.detail;
+      }
+    } catch {}
+    throw new ApiError(detail, response.status);
   }
 
   return response.json() as Promise<T>;

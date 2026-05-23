@@ -124,3 +124,24 @@ dist
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+# Python
+.venv/
+venv/
+*.pyc
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/**/.ipynb_checkpoints/
+
+# ML artifacts (kept outside git: large + project-local)
+server/models/
+notebooks/data/
+notebooks/checkpoints/
+notebooks/logs/
+*.pt
+*.bin
+*.safetensors
+*.onnx
+trocr-prescription.zip

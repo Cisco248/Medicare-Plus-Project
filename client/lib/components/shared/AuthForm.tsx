@@ -1,40 +1,90 @@
 "use client";
 
-import { useState, type SubmitEvent } from "react";
+import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Input } from "@/lib/components/ui/Input";
 import { Button } from "@/lib/components/ui/Button";
 import { Card } from "@/lib/components/ui/Card";
 import {
   hasAuthFormErrors,
   validateAuthForm,
+  validateSignUpFields,
   type AuthFormErrors,
 } from "@/lib/utils/authValidation";
+import { authRepository } from "@/app/auth/data/authRepository";
+import { ApiError } from "@/lib/api/client";
 
 type AuthMode = "signin" | "signup";
 
 export function AuthForm() {
+  const router = useRouter();
   const [mode, setMode] = useState<AuthMode>("signin");
+  const [fname, setFname] = useState("");
+  const [lname, setLname] = useState("");
+  const [mobnum, setMobnum] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<AuthFormErrors>({});
-  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  function handleSubmit(e: SubmitEvent) {
+  function resetForms() {
+    setErrors({});
+    setServerError(null);
+    setSuccess(null);
+  }
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitted(false);
+    resetForms();
 
-    const validationErrors = validateAuthForm(email, password);
-    if (mode === "signup" && password !== confirmPassword) {
-      validationErrors.password = "Passwords do not match.";
+    const baseErrors = validateAuthForm(email, password);
+    const allErrors: AuthFormErrors =
+      mode === "signup"
+        ? {
+            ...baseErrors,
+            ...validateSignUpFields(
+              { fname, lname, mobnum, confirmPassword },
+              password,
+            ),
+          }
+        : baseErrors;
+
+    setErrors(allErrors);
+    if (hasAuthFormErrors(allErrors)) return;
+
+    setSubmitting(true);
+    try {
+      if (mode === "signup") {
+        await authRepository.register({
+          fname: fname.trim(),
+          lname: lname.trim(),
+          email: email.trim(),
+          mobnum: mobnum.trim(),
+          password,
+          conpassword: confirmPassword,
+        });
+        await authRepository.login({ email: email.trim(), password });
+        setSuccess("Account created — redirecting to your dashboard...");
+      } else {
+        await authRepository.login({ email: email.trim(), password });
+        setSuccess("Signed in — redirecting...");
+      }
+      router.push("/dashboard");
+    } catch (err) {
+      const message =
+        err instanceof ApiError
+          ? err.message
+          : err instanceof Error
+            ? err.message
+            : "Something went wrong. Please try again.";
+      setServerError(message);
+    } finally {
+      setSubmitting(false);
     }
-
-    setErrors(validationErrors);
-    if (hasAuthFormErrors(validationErrors)) return;
-
-    setSubmitted(true);
-    // TODO: call authRepository.login() / authRepository.register()
   }
 
   return (
@@ -46,8 +96,7 @@ export function AuthForm() {
             type="button"
             onClick={() => {
               setMode(tab);
-              setErrors({});
-              setSubmitted(false);
+              resetForms();
             }}
             className={[
               "flex-1 rounded-md py-2 text-sm font-medium transition-colors",
@@ -62,6 +111,29 @@ export function AuthForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
+        {mode === "signup" && (
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="First name"
+              type="text"
+              placeholder="Jane"
+              value={fname}
+              onChange={(e) => setFname(e.target.value)}
+              error={errors.fname}
+              autoComplete="given-name"
+            />
+            <Input
+              label="Last name"
+              type="text"
+              placeholder="Doe"
+              value={lname}
+              onChange={(e) => setLname(e.target.value)}
+              error={errors.lname}
+              autoComplete="family-name"
+            />
+          </div>
+        )}
+
         <Input
           label="Email address"
           type="email"
@@ -71,6 +143,19 @@ export function AuthForm() {
           error={errors.email}
           autoComplete="email"
         />
+
+        {mode === "signup" && (
+          <Input
+            label="Mobile number"
+            type="tel"
+            placeholder="0771234567"
+            value={mobnum}
+            onChange={(e) => setMobnum(e.target.value)}
+            error={errors.mobnum}
+            autoComplete="tel"
+          />
+        )}
+
         <Input
           label="Password"
           type="password"
@@ -87,6 +172,7 @@ export function AuthForm() {
             placeholder="••••••••"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            error={errors.confirmPassword}
             autoComplete="new-password"
           />
         )}
@@ -102,14 +188,24 @@ export function AuthForm() {
           </div>
         )}
 
-        <Button type="submit" fullWidth size="lg">
-          {mode === "signin" ? "Sign in" : "Create account"}
+        <Button type="submit" fullWidth size="lg" disabled={submitting}>
+          {submitting
+            ? mode === "signin"
+              ? "Signing in..."
+              : "Creating account..."
+            : mode === "signin"
+              ? "Sign in"
+              : "Create account"}
         </Button>
 
-        {submitted && (
+        {serverError && (
+          <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-center text-sm text-red-300">
+            {serverError}
+          </p>
+        )}
+        {success && (
           <p className="rounded-lg border border-brand-500/30 bg-brand-500/10 px-4 py-3 text-center text-sm text-[#3A5DEB]">
-            Form valid — connect to{" "}
-            <code className="text-brand-200">authRepository</code> next.
+            {success}
           </p>
         )}
       </form>
