@@ -6,12 +6,16 @@ type PageShellProps = {
   className?: string;
 };
 
-export function PageShell({ children, narrow = false, className = "" }: PageShellProps) {
+export function PageShell({
+  children,
+  narrow = false,
+  className = "",
+}: PageShellProps) {
   return (
     <div
       className={[
-        "mx-auto w-full flex-1 px-6 py-10",
-        narrow ? "max-w-lg" : "max-w-6xl",
+        "m-0 p-0 w-full h-dvh",
+        narrow ? "sm:w-sm" : "xl:w-full",
         className,
       ]
         .filter(Boolean)

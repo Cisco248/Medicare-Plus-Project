@@ -3,12 +3,12 @@ import Image from "next/image";
 
 const LoginPage = () => {
   return (
-    <div className="grid grid-cols-2 h-full w-full justify-center items-center">
+    <div className="grid grid-cols-[1.5fr_600px] w-full h-dvh justify-center items-center">
       <div className="flex justify-center items-center h-full w-full">
         <Image
-          className="h-full w-full opacity-40"
+          className="h-dvh w-full opacity-40 object-cover"
           src={"/images/auth_bg.png"}
-          width={900}
+          width={1000}
           height={900}
           alt="bg"
         />
