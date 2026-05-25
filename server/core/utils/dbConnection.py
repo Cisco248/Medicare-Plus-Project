@@ -22,7 +22,10 @@ class DatabaseConnection:
             self.SessionLocal = sessionmaker(
                 autocommit=False, autoflush=False, bind=self.engine
             )
-            base.metadata.create_all(bind=self.engine)
+            base.metadata.create_all(
+                bind=self.engine,
+                exist=True,
+            )
 
             return ResponseMessage(
                 status=_ResponseStatus.SUCCESS,

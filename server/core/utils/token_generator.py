@@ -1,3 +1,4 @@
+from fastapi import Header
 import jwt
 from datetime import datetime, timedelta
 
@@ -14,3 +15,6 @@ class TokenGenerator:
         }
 
         return jwt.encode(payload, self.secret_key, self.algorithm)
+
+    def verify_token(self, x_auth_token=Header()):
+        return jwt.decode(x_auth_token, self.secret_key, self.algorithm)

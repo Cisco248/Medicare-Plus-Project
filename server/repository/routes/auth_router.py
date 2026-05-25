@@ -1,12 +1,11 @@
 import uuid
-
 from sqlalchemy.orm import Session
 from core.constants.config import DB_URL, JWT_SECRET_KEY
-from data.models.userModel import UserModel
+from data.models.user_data_model import UserModel
 from core.utils.encrypt_generator import EncryptionUtility
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Header
 from core.utils.dbConnection import DatabaseConnection
-from data.schemas.userScheme import UserCreate, UserLogin
+from data.schemas.user_data_schema import UserCreate, UserLogin
 from repository.middlewares.authMiddleware import auth_middleware
 from core.utils.token_generator import TokenGenerator
 
@@ -50,6 +49,10 @@ def SignIn(schema: UserLogin, db: Session = Depends(db.get_db)):
         raise HTTPException(status_code=400, detail="Password Incorrect!")
 
     token = TokenGenerator(secret_key=JWT_SECRET_KEY).create_token(data={"id": data.id})
+    # mware = auth_middleware(middleware)
+
+    # if token != mware.get("token"):
+    #     raise PermissionError("Login Error")
 
     return {
         "token": token,
@@ -63,8 +66,8 @@ def SignIn(schema: UserLogin, db: Session = Depends(db.get_db)):
     }
 
 
-@router.get("/get-data", status_code=200)
-def GetData(db: Session = Depends(db.get_db), user_dict=Depends(auth_middleware)):
+@router.get("/profile", status_code=200)
+def Profile(db: Session = Depends(db.get_db), user_dict=Depends(auth_middleware)):
     user = db.query(UserModel).filter(UserModel.id == user_dict["uid"]).first()
 
     if not user:
