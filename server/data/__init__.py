@@ -1,3 +1,3 @@
 from .models import *
-from .res_models import *
+from .connection import *
 from .schemas import *

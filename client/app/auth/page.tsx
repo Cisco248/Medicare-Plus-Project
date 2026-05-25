@@ -1,17 +1,15 @@
 import { AuthForm } from "@/lib/components/shared/AuthForm";
 import Image from "next/image";
 
-interface Props {}
-
 const LoginPage = () => {
   return (
-    <div className="grid grid-cols-[1.5fr_600px] h-dvh w-full justify-center items-center">
+    <div className="grid grid-cols-2 h-full w-full justify-center items-center">
       <div className="flex justify-center items-center h-full w-full">
         <Image
-          className="h-full w-full opacity-40 object-cover"
+          className="h-full w-full opacity-40"
           src={"/images/auth_bg.png"}
-          width={1000}
-          height={1000}
+          width={900}
+          height={900}
           alt="bg"
         />
       </div>

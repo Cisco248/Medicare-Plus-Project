@@ -9,7 +9,7 @@ export default function LandingView() {
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-surface-500/30">
+      <section className="flex flex-col relative overflow-hidden border-b border-surface-500/30">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--color-brand-900)_0%,transparent_55%)] opacity-60" />
         <PageShell className="relative py-16 md:py-24">
           <span className="inline-flex items-center rounded-full border border-brand-500/30 bg-brand-500/10 px-3 py-1 text-xs font-medium text-brand-300">

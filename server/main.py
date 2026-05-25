@@ -1,21 +1,22 @@
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import create_engine
+from core.utils.dbConnection import DatabaseConnection
 
-from core.constants.config import app_name, app_version, debug, cors_origins, DB_URL
-from repository.routes.auth_router import AuthRouter
-from data.entity.auth.client import ClientAuthEntity  # noqa: F401  (register model)
-from data.entity.auth.admin import AuthEntity as AdminAuthEntity  # noqa: F401
-from data.models.base import BASE
-
-_engine = create_engine(DB_URL, echo=False)
-BASE.metadata.create_all(bind=_engine)
-
-app = FastAPI(
-    debug=debug,
-    title=app_name,
-    version=app_version,
+from core.constants.config import (
+    app_name,
+    app_version,
+    debug,
+    cors_origins,
+    host,
+    port,
+    DB_URL,
 )
+from data.models.base import BASE
+from repository.routes import initial_router
+from repository.routes import auth_router
+
+app = FastAPI(debug=debug, title=app_name, version=app_version)
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,15 +26,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+db = DatabaseConnection(DB_URL)
+db.init_db(BASE)
 
-@app.get("/health")
-def health():
-    return {"status": "ok", "app": app_name, "version": app_version}
-
-
-AuthRouter(app).init_routes()
+app.include_router(router=initial_router.router)
+app.include_router(router=auth_router.router, prefix="/api")
 
 
-# @app.get("/")
-# def AuthService():
-#     return {"message": "E-Disposal Government Application API Services"}
+if __name__ == "__main__":
+    uvicorn.run("main:app", host=host, port=port, reload=True)
