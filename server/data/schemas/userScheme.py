@@ -7,7 +7,6 @@ class UserCreate(BaseModel):
     email: str
     mobnum: str
     password: str
-    conpassword: str
 
 
 class UserLogin(BaseModel):

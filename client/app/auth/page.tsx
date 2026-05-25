@@ -1,8 +1,6 @@
 import { AuthForm } from "@/lib/components/shared/AuthForm";
 import Image from "next/image";
 
-interface Props {}
-
 const LoginPage = () => {
   return (
     <div className="grid grid-cols-[1.5fr_600px] w-full h-dvh justify-center items-center">

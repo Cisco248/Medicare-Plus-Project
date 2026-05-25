@@ -1,0 +1,4 @@
+[core]
+    autostage = true
+['remote "origin"']
+    url = https://dagshub.com/Cisco248/Medicare-Plus-Project.dvc
