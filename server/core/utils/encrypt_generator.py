@@ -9,5 +9,5 @@ class EncryptionUtility:
         return bcrypt.hashpw(plain_text.encode(), bcrypt.gensalt()).decode()
 
     @staticmethod
-    def verify_password(plain_text: str, encrpted_text: bytes):
-        return bcrypt.checkpw(plain_text.encode(), encrpted_text)
+    def verify_password(plain_text: str, encrpted_text: str):
+        return bcrypt.checkpw(plain_text.encode(), encrpted_text.encode())
