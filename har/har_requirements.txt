@@ -1,0 +1,15 @@
+# HAR Activity Detection Model Requirements
+
+# Data Processing
+pandas
+numpy
+
+# Machine Learning — Random Forest
+scikit-learn
+
+# Deep Learning — CNN-LSTM
+tensorflow
+
+# Visualization
+matplotlib
+seaborn
