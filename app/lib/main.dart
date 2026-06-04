@@ -1,6 +1,7 @@
 import 'package:app/core/themes/themes.dart';
 import 'package:app/presentation/auth/page/login.dart';
 import 'package:app/presentation/dashboard/page/dashboard.dart';
+import 'package:app/presentation/layout/page/layout.dart';
 import 'package:app/presentation/settings/page/setting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,7 +18,7 @@ class MedicarePlus extends StatelessWidget {
     return MaterialApp(
       theme: ZintraTheme.light(),
       darkTheme: ZintraTheme.dark(),
-      home: GetStartedPage(),
+      home: AppLayout(),
       routes: {
         "/auth": (context) => LoginPage(),
         "/dashboard": (context) => Dashboard(),
