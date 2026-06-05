@@ -6,7 +6,8 @@ class SearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      
+      padding: EdgeInsets.symmetric(horizontal: 32),
+      height: 50,
       child: Row(),
     );
   }
