@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="main.dart " type="FlutterRunConfigurationType" factoryName="Flutter" editBeforeRun="true" focusToolWindowBeforeRun="true">
+    <option name="additionalArgs" value="flutter run -v --hot" />
+    <option name="filePath" value="$PROJECT_DIR$/app/lib/main.dart" />
+    <method v="2" />
+  </configuration>
+</component>
