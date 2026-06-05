@@ -1,28 +1,34 @@
 import 'package:app/data/entity/activity_entity.dart';
 
 class SensorDataModel extends SensorData {
-  SensorDataModel({super.x, super.y, super.z});
+  SensorDataModel({
+    required super.timestamp,
+    required super.x,
+    required super.y,
+    required super.z,
+  });
 
-  Map<String, double> toMap() => {
-    "x": x ?? 0 as double,
-    "y": y ?? 0 as double,
-    "z": z ?? 0 as double,
+  Map<String, dynamic> toMap() => {
+    'timestamp': timestamp.toIso8601String(),
+    "x": x,
+    "y": y,
+    "z": z,
   };
 
-  List<double?> toList() => [
-    x ?? 0 as double,
-    y ?? 0 as double,
-    z ?? 0 as double,
-  ];
+  List<dynamic> toList() => [timestamp.toIso8601String(), x, y, z];
 
-  static SensorDataModel fromMap(Map<String, double?> data) =>
-      SensorDataModel(x: data['x'] ?? 0, y: data['y'] ?? 0, z: data['z'] ?? 0);
+  static SensorDataModel fromMap(Map<String, dynamic> data) => SensorDataModel(
+    timestamp: data['timestamp'],
+    x: data['x'],
+    y: data['y'],
+    z: data['z'],
+  );
 
-  static SensorDataModel fromList(List<double?> data) =>
-      SensorDataModel(x: data[0] ?? 0, y: data[1] ?? 0, z: data[2] ?? 0);
+  static SensorDataModel fromList(List<dynamic> data) =>
+      SensorDataModel(timestamp: data[0], x: data[1], y: data[2], z: data[3]);
 
   @override
   String toString() {
-    return "SensorDataModel(accXValue: $x, accYValue: $y, accZValue: $z)";
+    return "SensorDataModel(Timestamp: $timestamp, X: $x, Y: $y, Z: $z)";
   }
 }

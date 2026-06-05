@@ -1,17 +1,13 @@
-class ActivityEntity {
-  double? accXValue;
-  double? accYValue;
-  double? accZValue;
-  double? gyroXValue;
-  double? gyroYValue;
-  double? gyroZValue;
+class SensorData {
+  final DateTime timestamp;
+  final double x;
+  final double y;
+  final double z;
 
-  ActivityEntity({
-    this.accXValue,
-    this.accYValue,
-    this.accZValue,
-    this.gyroXValue,
-    this.gyroYValue,
-    this.gyroZValue,
+  SensorData({
+    required this.timestamp,
+    required this.x,
+    required this.y,
+    required this.z,
   });
 }

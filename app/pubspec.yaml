@@ -11,7 +11,7 @@ dependencies:
     sdk: flutter
   font_awesome_flutter: ^11.0.0
   mysql1: ^0.20.0
-  flutter_riverpod: "^3.2.1"
+  flutter_riverpod: ^3.2.1
   dart_jsonwebtoken: ^3.4.1
   bcrypt: ^1.2.0
   cryptography: ^2.9.0

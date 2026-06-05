@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:app/data/models/activity_model.dart';
+import 'package:app/data/models/sensor_model.dart';
 import 'package:app/data/repository/activity_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
@@ -7,14 +7,11 @@ import 'package:http/http.dart';
 class ActivityService {
   static final repo = ActivityRepository();
 
-  static Future<void> setData(Map<String, double> data) async {
+  static Future setData(SensorDataModel data) async {
     try {
-      if (data.isEmpty) throw ClientException('Data is Empty');
-
-      final response = await repo.addData(ActivityModel.fromMap(data));
-      if (kDebugMode) print(response);
+      return await repo.addData(data);
     } catch (e) {
-      HttpException('Connection Error: $e');
+      return HttpException('Service Error: $e');
     }
   }
 

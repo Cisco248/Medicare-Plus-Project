@@ -3,6 +3,8 @@ import 'package:app/core/components/card.dart';
 import 'package:app/core/components/divider.dart';
 import 'package:app/core/themes/primitives/fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../provider/activity_provider.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
@@ -18,6 +20,7 @@ class Dashboard extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           PatientCard(cs: cs),
+          // SensorData(),
           RemainderCard(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16),
@@ -146,6 +149,28 @@ class DoctorRecomendation extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class SensorData extends StatelessWidget {
+  const SensorData({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (context, ref, child) {
+        final sensor = ref.watch(accelerometerProvider);
+        return sensor.when(
+          data: (event) => Text(
+            'X: ${event.x.toStringAsFixed(3)}\n'
+            'Y: ${event.y.toStringAsFixed(3)}\n'
+            'Z: ${event.z.toStringAsFixed(3)}',
+          ),
+          loading: () => const CircularProgressIndicator(),
+          error: (e, _) => Text('Error: $e'),
+        );
+      },
     );
   }
 }
