@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:app/data/models/sensor_model.dart';
 import 'package:app/data/repository/activity_repository.dart';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart';
 
 class ActivityService {
   static final repo = ActivityRepository();

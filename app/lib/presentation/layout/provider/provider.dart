@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 class NavigationNotifier extends Notifier<int> {
   @override
@@ -12,3 +13,5 @@ class NavigationNotifier extends Notifier<int> {
 final navigationProvider = NotifierProvider<NavigationNotifier, int>(
   NavigationNotifier.new,
 );
+
+final chatPopupProvider = StateProvider<bool>((ref) => false);
