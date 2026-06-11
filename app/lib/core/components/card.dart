@@ -29,27 +29,24 @@ class ZintraCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final cs = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg =
-        backgroundColor ??
-        (isDark
-            ? ZintraColorPrimitives.neutral800
-            : ZintraColors.surfaceDefault);
+    final cs = Theme.of(context).colorScheme;
     final radius = borderRadius ?? ZintraRadius.lg;
 
     return Material(
-      color: bg,
+      color: backgroundColor ?? cs.surface,
       borderRadius: radius,
       child: InkWell(
         onTap: onTap,
         borderRadius: radius,
         child: Container(
+          alignment: AlignmentGeometry.center,
+          transformAlignment: AlignmentGeometry.center,
+          // width: double.maxFinite,
           padding: padding ?? const EdgeInsets.all(ZintraSpacing.cardPadding),
           decoration: BoxDecoration(
             borderRadius: radius,
             border: Border.all(color: ZintraColors.borderDefault),
-            boxShadow: elevated ? ZintraShadowTokens.cardMd : null,
+            boxShadow: elevated ? ZintraShadowTokens.cardSm : null,
           ),
           child: child,
         ),
@@ -58,13 +55,13 @@ class ZintraCard extends StatelessWidget {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// ZINTRA SHADOW TOKENS (BoxShadow lists for convenience)
-// ══════════════════════════════════════════════════════════════════════════════
-
 abstract class ZintraShadowTokens {
   static const List<BoxShadow> cardSm = [
-    BoxShadow(color: Color(0x14000000), blurRadius: 8, offset: Offset(0, 2)),
+    BoxShadow(
+      color: ZintraColorPrimitives.neutral100,
+      blurRadius: 8,
+      offset: Offset(0, 2),
+    ),
   ];
   static const List<BoxShadow> cardMd = [
     BoxShadow(color: Color(0x1A000000), blurRadius: 16, offset: Offset(0, 4)),

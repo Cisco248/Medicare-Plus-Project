@@ -1,21 +1,24 @@
-import uuid
 from sqlalchemy.orm import Session
 from data.models.har_data_model import HARDataModel
 from fastapi import APIRouter, HTTPException, Depends
 from data.schemas.har_data_schema import HARDataScheme
 from core.utils.dbConnection import get_db
+from core.utils.uuid import short_uuid
 
 router = APIRouter()
 
 
 @router.post("/insert-data", status_code=200)
 def AddData(schema: HARDataScheme, db: Session = Depends(get_db)):
-    data = db.query(HARDataModel).all()
-    if data:
-        raise HTTPException(status_code=400, detail="Image Already Added!")
+    if schema.x is None or schema.y is None or schema.z is None:
+        raise HTTPException(status_code=400, detail="Invalid sensor data")
 
     response = HARDataModel(
-        id=str(uuid.uuid4()),
+        id=str(short_uuid()),
+        timestamp=schema.timestamp,
+        x=schema.x,
+        y=schema.y,
+        z=schema.z,
     )
 
     db.add(response)

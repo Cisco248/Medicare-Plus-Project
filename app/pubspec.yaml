@@ -11,12 +11,17 @@ dependencies:
     sdk: flutter
   font_awesome_flutter: ^11.0.0
   mysql1: ^0.20.0
-  flutter_riverpod: "^3.2.1"
+  flutter_riverpod: ^3.2.1
   dart_jsonwebtoken: ^3.4.1
   bcrypt: ^1.2.0
   cryptography: ^2.9.0
   http: ^1.6.0
   flutter_secure_storage: ^10.3.1
+  google_fonts: ^8.1.0
+  google_sign_in: ^7.2.0
+  flutter_svg: ^2.3.0
+  shared_preferences: ^2.5.5
+  sensors_plus: ^7.0.0
 
 dev_dependencies:
   flutter_test:
@@ -27,3 +32,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets: 
+    - assets/images/panadol.png
+    

@@ -1,0 +1,12 @@
+langchain
+langchain-core
+pandas
+langchain_chroma
+langchain_community 
+langchain_text_splitters 
+langchain_classic 
+langchain_experimental 
+langchain_openai 
+langchain_huggingface 
+rank_bm25 
+pypdf 

@@ -1,5 +1,4 @@
 # ML OCR Preprocessing Requirments
-kaggle 
 pandas 
 scikit-learn 
 matplotlib
