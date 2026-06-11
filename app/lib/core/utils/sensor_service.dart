@@ -1,6 +1,4 @@
-import 'dart:math';
 import 'package:app/data/models/sensor_model.dart';
-import 'package:flutter/foundation.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
 class SensorService {
