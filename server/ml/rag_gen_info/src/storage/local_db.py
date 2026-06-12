@@ -7,6 +7,7 @@ from langchain_core.documents import Document
 from constants import Settings
 
 logger = logging.getLogger(__name__)
+settings = Settings()
 
 
 class LocalDB:
@@ -19,13 +20,13 @@ class LocalDB:
         self.documents = documents
         self.embeded_text = embeded_text
         self.client = Chroma(
-            persist_directory=Settings.VECTOR_DB_DIR,
+            persist_directory=settings.VECTOR_DB_DIR,
             embedding_function=self.embeded_text,
-            collection_name=Settings.COLLECTION_NAME,
+            collection_name=settings.COLLECTION_NAME,
         )
 
     def init_db(self) -> None:
-        if os.path.exists(Settings.VECTOR_DB_DIR):
+        if os.path.exists(settings.VECTOR_DB_DIR):
             logger.info(f"[VECTOR DB]: DB Exists!")
             self.client.add_documents(documents=self.documents)
         else:
@@ -33,8 +34,8 @@ class LocalDB:
             self.client.from_documents(
                 documents=self.documents,
                 embedding=self.embeded_text,
-                persist_directory=Settings.VECTOR_DB_DIR,
-                collection_name=Settings.COLLECTION_NAME,
+                persist_directory=settings.VECTOR_DB_DIR,
+                collection_name=settings.COLLECTION_NAME,
             )
         logger.info(f"[VECTOR DB]: {len(self.documents)} Chunks Stored.")
 

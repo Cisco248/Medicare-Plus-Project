@@ -9,6 +9,8 @@ from storage import VectorStoreManager
 from retrieval import HybridRetriever
 from generation import RAGChainManager
 
+settings = Settings()
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -24,8 +26,8 @@ def setup_rag_system(file_path: str):
 
     chunker = DocumentChunker(
         is_semantic=False,
-        chunk_size=Settings.CHUNK_SIZE,
-        chunk_overlap=Settings.CHUNK_OVERLAP,
+        chunk_size=settings.CHUNK_SIZE,
+        chunk_overlap=settings.CHUNK_OVERLAP,
     )
     chunks = chunker.chunk(documents, embeddor)
 
@@ -33,7 +35,7 @@ def setup_rag_system(file_path: str):
     vector_store = db_manager.manager(chunks)
 
     retriever = HybridRetriever.from_documents(
-        vector_store=vector_store, documents=chunks, k=Settings.RETRIEVER_K
+        vector_store=vector_store, documents=chunks, k=settings.RETRIEVER_K
     )
 
     chain_manager = RAGChainManager(retriever=retriever)
@@ -43,8 +45,9 @@ def setup_rag_system(file_path: str):
 
 
 app = FastAPI()
-
-rag_chain = setup_rag_system("C:/Users/lahir/Desktop/rag/data/sample_medical_rag.pdf")
+rag_chain = setup_rag_system(
+    "C:/Users/lahir/Desktop/Projects/Medicare-Plus-Project/server/ml/rag_gen_info/data/sample_medical_rag.pdf"
+)
 
 
 class QuestionRequest(BaseModel):
@@ -54,4 +57,4 @@ class QuestionRequest(BaseModel):
 @app.post("/ask")
 def ask_question(req: QuestionRequest):
     response = rag_chain.invoke(req.question)
-    return {"answer": response.content}
+    return {"answer": response}

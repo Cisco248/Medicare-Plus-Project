@@ -3,11 +3,13 @@ from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 from constants import Settings
 
+settings = Settings()
+
 
 class DocumentEmbeddor:
     def __init__(self) -> None:
         self.embedding_model = HuggingFaceEmbeddings(
-            model_name=Settings.EMBEDDING_MODEL_NAME,
+            model_name=settings.EMBEDDING_MODEL_NAME,
             encode_kwargs={"normalize_embeddings": False},
             model_kwargs={"device": "cpu"},
         )

@@ -1,0 +1,29 @@
+loaded_clf     = joblib.load(f"{save_dir}/risk_classifier.pkl")
+loaded_imputer = joblib.load(f"{save_dir}/imputer.pkl")
+feature_names  = joblib.load(f"{save_dir}/feature_names.pkl")
+risk_labels    = joblib.load(f"{save_dir}/risk_labels.pkl")
+
+
+# Step 1 - impute
+sample_imputed = pd.DataFrame(loaded_imputer.transform(sample), columns=feature_names)
+
+# Step 2 - predict risk class and probabilities
+pred_code  = loaded_clf.predict(sample_imputed)[0]
+pred_proba = loaded_clf.predict_proba(sample_imputed)[0]
+
+print(f"Predicted risk class: {risk_labels[pred_code]}")
+print("\nClass probabilities:")
+for label, p in zip(risk_labels, pred_proba):
+    print(f"  {label:<10}: {p*100:5.1f}%")
+
+
+
+# Sample patient
+sample = pd.DataFrame([{
+    "age":               23,   # young
+    "bmi":               30.1,
+    "hba1c_pct":         5.2,  # normal (4.0 - 5.6%)
+    "cholesterol_mgdl":  210,
+    "diabetes_ordinal":  0,    # no diabetes (matches normal HbA1c)
+    "sex_male":          1,
+}])
