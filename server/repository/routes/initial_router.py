@@ -1,19 +1,21 @@
 from fastapi import APIRouter
-from data.connection.response_json import RootResponse, StatusCode
+from core import DBConnection, ResponseMessage
 
-from core.utils.dbConnection import engine, SessionLocal
-
-router = APIRouter()
+init_router = APIRouter()
 
 
-@router.get("/health")
+@init_router.get(
+    "/health", tags=["Health"], status_code=200, response_model=ResponseMessage
+)
 def health():
-    return {
-        "engine": engine is not None,
-        "session": SessionLocal is not None,
-    }
+    return ResponseMessage(
+        body={
+            "engine": DBConnection.ENGINE is not None,
+            "session": DBConnection.SESSION_LOACAL is not None,
+        }
+    )
 
 
-@router.get("/", status_code=200)
-async def root():
-    return await RootResponse(StatusCode.OK, "Service is running").res
+@init_router.get("/", status_code=200, response_model=ResponseMessage)
+def root():
+    return ResponseMessage(body="Service is running")

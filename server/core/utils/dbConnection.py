@@ -1,23 +1,32 @@
+from dataclasses import dataclass
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from data.models.base import BASE
+from core.configs.server_configuration import ServerSettings
+from core.constants.values.exception import DBConnnectionException
 
-engine = create_engine(
-    "mysql+pymysql://root:root123@127.0.0.1:3306/medicare_plus",
-    echo=False,
-    pool_pre_ping=True,
-)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+setting = ServerSettings()
 
-BASE.metadata.create_all(bind=engine, checkfirst=True)
+
+@dataclass
+class DBConnection:
+    ENGINE = create_engine(
+        setting.DB_URL,
+        echo=setting.ECO,
+        pool_pre_ping=setting.Pool_Pre_Ping,
+    )
+    SESSION_LOACAL = sessionmaker(autocommit=False, autoflush=False, bind=ENGINE)
+    BASE.metadata.create_all(bind=ENGINE, checkfirst=True)
 
 
 def get_db():
-    db = SessionLocal()
-    if db is None:
-        raise Exception("Database not initialized.")
+    db = DBConnection()
+    db_conn = db.SESSION_LOACAL()
+    if db_conn is None:
+        raise ConnectionError(DBConnnectionException.NOT_FOUND)
     try:
-        yield db
+        yield db_conn
     finally:
-        db.close()
-        engine.dispose()
+        db_conn.close()
+        db.ENGINE.dispose()
