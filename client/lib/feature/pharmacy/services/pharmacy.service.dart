@@ -7,7 +7,17 @@ class PharmacyService {
   Future<List<MedicineModel>> fetchMedicines() async {
     try {
       final res = await _repository.fetchMedicines();
-      return res.map((e) => MedicineModel.fromJson(e)).toList();
+      return res
+          .map(
+            (e) => MedicineModel(
+              medicineName: e.medicineName,
+              category: MedicineCategory.values[e.category.index],
+              dosage: e.dosage,
+              price: e.price,
+              imgPath: e.imgPath,
+            ),
+          )
+          .toList();
     } catch (e) {
       throw Exception('Failed to fetch medicines: $e');
     }

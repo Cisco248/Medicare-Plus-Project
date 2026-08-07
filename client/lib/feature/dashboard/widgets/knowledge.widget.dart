@@ -34,20 +34,20 @@ class AppWidget extends ConsumerWidget {
         children: [
           Row(
             children: [
+              Text(
+                "For the patient's health",
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: colorScheme.primary,
+                ),
+              ),
+              SizedBox(width: 8),
               FaIcon(
                 FontAwesomeIcons.circleQuestion,
                 size: 14,
                 color: colorScheme.primary,
-              ),
-              SizedBox(width: 8),
-              Text(
-                "For the patient's health",
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: colorScheme.primary,
-                ),
               ),
             ],
           ),
@@ -58,9 +58,9 @@ class AppWidget extends ConsumerWidget {
               text,
               textAlign: TextAlign.justify,
               style: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Inter',
                 fontSize: 12,
-                fontWeight: FontWeight.w300,
+                fontWeight: FontWeight.w400,
                 color: colorScheme.onPrimary,
               ),
             ),

@@ -3,7 +3,6 @@ from .schemas import (
     UserCreate,
     UserLogin,
     HARDataScheme,
-    DiabetesScehema,
     HeartScehema,
     HypertensionScehema,
 )
@@ -15,7 +14,6 @@ __all__ = [
     "UserCreate",
     "UserLogin",
     "HARDataScheme",
-    "DiabetesScehema",
     "HeartScehema",
     "HypertensionScehema",
 ]

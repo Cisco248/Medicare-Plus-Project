@@ -1,11 +1,20 @@
+import 'package:client/feature/e_doc/viewmodel/e_doc.viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class GenerateWidget extends StatelessWidget {
+class GenerateWidget extends ConsumerStatefulWidget {
   const GenerateWidget({super.key});
 
   @override
+  ConsumerState<GenerateWidget> createState() => _GenerateWidgetState();
+}
+
+class _GenerateWidgetState extends ConsumerState<GenerateWidget> {
+  @override
   Widget build(BuildContext context) {
+    final provider = ref.watch(eDocViewModelProvider);
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -15,6 +24,7 @@ class GenerateWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -38,13 +48,13 @@ class GenerateWidget extends StatelessWidget {
           ),
           SizedBox(height: 16),
           Text(
-            'lorem ipsum' * 10,
+            provider.body!['data'].toString(),
             textAlign: TextAlign.justify,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onPrimary.withAlpha(190),
               fontStyle: FontStyle.italic,
               fontSize: 12,
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w500,
               fontFamily: 'Poppins',
               fontVariations: [FontVariation.opticalSize(14)],
             ),

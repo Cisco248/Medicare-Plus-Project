@@ -1,4 +1,5 @@
 import 'package:client/core/utils/notification.utils.dart';
+import 'package:client/feature/e_doc/constant/button.style.dart';
 import 'package:flutter/material.dart';
 
 class DiabetesFormWidget extends StatelessWidget {
@@ -18,6 +19,9 @@ class DiabetesFormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final boxWidth = MediaQuery.sizeOf(context).width;
+    final double boxHeight = 40;
+
     return Container(
       padding: EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
@@ -30,8 +34,8 @@ class DiabetesFormWidget extends StatelessWidget {
         child: Column(
           children: [
             SizedBox(
-              height: 36,
-              width: MediaQuery.sizeOf(context).width,
+              height: boxHeight,
+              width: boxWidth,
               child: TextFormField(
                 style: TextStyle(fontSize: 12),
                 controller: param_1,
@@ -47,8 +51,8 @@ class DiabetesFormWidget extends StatelessWidget {
             ),
             SizedBox(height: 8),
             SizedBox(
-              height: 36,
-              width: MediaQuery.sizeOf(context).width,
+              height: boxHeight,
+              width: boxWidth,
               child: TextFormField(
                 style: TextStyle(fontSize: 12),
                 controller: param_2,
@@ -64,8 +68,8 @@ class DiabetesFormWidget extends StatelessWidget {
             ),
             SizedBox(height: 8),
             SizedBox(
-              height: 36,
-              width: MediaQuery.sizeOf(context).width,
+              height: boxHeight,
+              width: boxWidth,
               child: TextFormField(
                 style: TextStyle(fontSize: 12),
                 controller: param_3,
@@ -81,8 +85,8 @@ class DiabetesFormWidget extends StatelessWidget {
             ),
             SizedBox(height: 8),
             SizedBox(
-              height: 36,
-              width: MediaQuery.sizeOf(context).width,
+              height: boxHeight,
+              width: boxWidth,
               child: TextFormField(
                 style: TextStyle(fontSize: 12),
                 controller: param_4,
@@ -99,23 +103,11 @@ class DiabetesFormWidget extends StatelessWidget {
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => sendData(context),
-              style: ButtonStyle(
-                fixedSize: WidgetStatePropertyAll(
-                  Size(MediaQuery.sizeOf(context).width, 40),
-                ),
-                backgroundColor: WidgetStatePropertyAll(
-                  Theme.of(context).colorScheme.primary,
-                ),
-                padding: WidgetStatePropertyAll(
-                  EdgeInsetsGeometry.symmetric(horizontal: 0, vertical: 0),
-                ),
-              ),
+              style: eDocCardButtonStyle(context, boxWidth, boxHeight),
               child: Text(
                 'Submit',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  fontSize: 12,
-                ),
+                textAlign: TextAlign.center,
+                style: eDocCardTextStyle(context),
               ),
             ),
           ],

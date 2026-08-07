@@ -1,6 +1,6 @@
 import 'package:client/core/utils/notification.utils.dart';
+import 'package:client/feature/e_doc/constant/button.style.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BloodPressureFormWidget extends StatelessWidget {
   BloodPressureFormWidget({super.key});
@@ -19,6 +19,9 @@ class BloodPressureFormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
@@ -30,44 +33,94 @@ class BloodPressureFormWidget extends StatelessWidget {
         key: _formKey,
         child: Column(
           children: [
-            TextFormField(
-              controller: param_1,
-              decoration: InputDecoration(labelText: 'BP Param one'),
+            SizedBox(
+              width: width,
+              height: 40,
+              child: TextFormField(
+                controller: param_1,
+                style: TextStyle(fontSize: 12),
+                decoration: InputDecoration(
+                  labelText: 'Parameter One',
+                  labelStyle: TextStyle(
+                    fontSize: 14,
+                    color: colorScheme.onSurface.withAlpha(100),
+                  ),
+                  hintText: 'E.g: 0',
+                  hintStyle: TextStyle(
+                    fontSize: 12,
+                    color: colorScheme.onSurface.withAlpha(100),
+                  ),
+                ),
+              ),
             ),
             SizedBox(height: 8),
-            TextFormField(
-              controller: param_2,
-              decoration: InputDecoration(labelText: 'Param Two'),
+            SizedBox(
+              width: width,
+              height: 40,
+              child: TextFormField(
+                controller: param_2,
+                style: TextStyle(fontSize: 12),
+                decoration: InputDecoration(
+                  labelText: 'Parameter Two',
+                  labelStyle: TextStyle(
+                    fontSize: 14,
+                    color: colorScheme.onSurface.withAlpha(100),
+                  ),
+                  hintText: 'E.g: 0',
+                  hintStyle: TextStyle(
+                    fontSize: 12,
+                    color: colorScheme.onSurface.withAlpha(100),
+                  ),
+                ),
+              ),
             ),
             SizedBox(height: 8),
-            TextFormField(
-              controller: param_3,
-              decoration: InputDecoration(labelText: 'Param Three'),
+            SizedBox(
+              width: width,
+              height: 40,
+              child: TextFormField(
+                controller: param_3,
+                style: TextStyle(fontSize: 12),
+                decoration: InputDecoration(
+                  labelText: 'Parameter Three',
+                  labelStyle: TextStyle(
+                    fontSize: 14,
+                    color: colorScheme.onSurface.withAlpha(100),
+                  ),
+                  hintText: 'E.g: 0',
+                  hintStyle: TextStyle(
+                    fontSize: 12,
+                    color: colorScheme.onSurface.withAlpha(100),
+                  ),
+                ),
+              ),
             ),
             SizedBox(height: 8),
-            TextFormField(
-              controller: param_4,
-              decoration: InputDecoration(labelText: 'Param Four'),
+            SizedBox(
+              width: width,
+              height: 40,
+              child: TextFormField(
+                controller: param_4,
+                style: TextStyle(fontSize: 12),
+                decoration: InputDecoration(
+                  labelText: 'Parameter Four',
+                  labelStyle: TextStyle(
+                    fontSize: 14,
+                    color: colorScheme.onSurface.withAlpha(100),
+                  ),
+                  hintText: 'E.g: 0',
+                  hintStyle: TextStyle(
+                    fontSize: 12,
+                    color: colorScheme.onSurface.withAlpha(100),
+                  ),
+                ),
+              ),
             ),
             SizedBox(height: 32),
-            ElevatedButton.icon(
+            ElevatedButton(
               onPressed: () => sendData(context),
-              style: ButtonStyle(
-                fixedSize: WidgetStatePropertyAll(
-                  Size(MediaQuery.sizeOf(context).width, 40),
-                ),
-                backgroundColor: WidgetStatePropertyAll(
-                  Theme.of(context).colorScheme.onPrimary,
-                ),
-              ),
-              label: Text(
-                'Submit',
-                style: TextStyle(color: Theme.of(context).colorScheme.primary),
-              ),
-              icon: FaIcon(
-                FontAwesomeIcons.arrowRight,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+              style: eDocCardButtonStyle(context, width, 40),
+              child: Text('Submit', style: eDocCardTextStyle(context)),
             ),
           ],
         ),

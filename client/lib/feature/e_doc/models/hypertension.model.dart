@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part "hypertension_model.freezed.dart";
+part "hypertension.model.freezed.dart";
 
 enum DiabetesOrdinal { normal, preDiabetes, diabetes }
 

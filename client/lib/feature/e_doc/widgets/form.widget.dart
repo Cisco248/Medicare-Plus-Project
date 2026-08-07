@@ -29,19 +29,30 @@ class _MeditationFormWidgetState extends ConsumerState<MeditationFormWidget> {
 
     return Column(
       children: [
-        DropdownButton(
-          menuWidth: MediaQuery.of(context).size.width,
-          value: formState,
-          icon: const Icon(Icons.arrow_downward),
-          elevation: 16,
-          style: TextStyle(color: theme.onSurface),
-          onChanged: (String? value) {
-            setState(() => dropdownValue = value!);
-            ref.read(formStateProvider.notifier).changeStatus(value!);
-          },
-          items: list.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(value: value, child: Text(value));
-          }).toList(),
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: 50,
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: theme.surfaceContainer,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          alignment: Alignment.center,
+          child: DropdownButton(
+            menuWidth: MediaQuery.of(context).size.width,
+            value: formState,
+            icon: const Icon(Icons.arrow_downward),
+            iconSize: 16,
+            elevation: 16,
+            style: TextStyle(color: theme.onSurface),
+            onChanged: (String? value) {
+              setState(() => dropdownValue = value!);
+              ref.read(formStateProvider.notifier).changeStatus(value!);
+            },
+            items: list.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(value: value, child: Text(value));
+            }).toList(),
+          ),
         ),
 
         SizedBox(height: 16),

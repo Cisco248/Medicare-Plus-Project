@@ -1,3 +1,4 @@
+import 'package:client/data/models/medicine_model.dart';
 import 'package:dio/dio.dart';
 
 class PharmaRepository {
@@ -10,10 +11,25 @@ class PharmaRepository {
     ),
   );
 
-  Future<List> fetchMedicines() async {
+  Future<List<MedicineModel>> fetchMedicines() async {
     try {
-      final response = await _client.get('/products');
-      return response.data;
+      // final response = await _client.get('/products');
+      return [
+        MedicineModel(
+          medicineName: 'Panadol Local',
+          category: MedicineCategory.tablet,
+          dosage: 10,
+          price: 200.0,
+          imgPath: 'assets/images/panadol.png',
+        ),
+        MedicineModel(
+          medicineName: 'Panadol Local',
+          category: MedicineCategory.tablet,
+          dosage: 10,
+          price: 200.0,
+          imgPath: 'assets/images/panadol.png',
+        ),
+      ];
     } on DioException catch (e) {
       final message =
           'Status: ${e.response?.statusCode}, Message: ${e.message}';

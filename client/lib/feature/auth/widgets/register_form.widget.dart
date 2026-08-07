@@ -32,9 +32,10 @@ class SignUpForm extends ConsumerWidget {
         final userData = UserModel(
           name: name,
           email: email,
-          mobile: mobile,
+          mobnum: mobile,
           password: password,
         );
+        debugPrint(userData.toString());
         ref.read(authenticationProvider.notifier).register(userData);
       } catch (e) {
         NotificationUtils.error(context, 'Error: $e');
