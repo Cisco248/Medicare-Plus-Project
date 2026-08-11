@@ -1,5 +1,5 @@
 import 'package:client/feature/pharmacy/models/medicine.model.dart';
-import 'package:client/feature/pharmacy/viewmodels/pharmacy.notifier.dart';
+import 'package:client/feature/pharmacy/notifiers/pharmacy.notifier.dart';
 import 'package:client/feature/pharmacy/widgets/card.dart';
 import 'package:client/feature/pharmacy/widgets/search.widget.dart';
 import 'package:flutter/material.dart';

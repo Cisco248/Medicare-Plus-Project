@@ -1,10 +1,9 @@
+import 'package:client/feature/e_doc/notifiers/form.notifier.dart';
 import 'package:client/feature/e_doc/widgets/blood_pres.widget.dart';
 import 'package:client/feature/e_doc/widgets/diabetes_form.widget.dart';
 import 'package:client/feature/e_doc/widgets/hypertension_form.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../viewmodel/form.viewmodel.dart';
 
 class MeditationFormWidget extends ConsumerStatefulWidget {
   const MeditationFormWidget({super.key});

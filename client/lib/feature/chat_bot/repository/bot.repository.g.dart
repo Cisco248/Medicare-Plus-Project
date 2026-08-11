@@ -55,4 +55,4 @@ final class BotRepositoryImpServiceProvider
 }
 
 String _$botRepositoryImpServiceHash() =>
-    r'b05ba95eb30a4c5271182b11b81906f39c041b73';
+    r'983edba79846e828832a0624fb434177bb7d0179';

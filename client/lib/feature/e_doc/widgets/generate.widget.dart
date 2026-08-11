@@ -1,4 +1,4 @@
-import 'package:client/feature/e_doc/viewmodel/e_doc.viewmodel.dart';
+import 'package:client/feature/e_doc/notifiers/chat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -13,7 +13,7 @@ class GenerateWidget extends ConsumerStatefulWidget {
 class _GenerateWidgetState extends ConsumerState<GenerateWidget> {
   @override
   Widget build(BuildContext context) {
-    final provider = ref.watch(eDocViewModelProvider);
+    final provider = ref.watch(chatBotNotifyProvider);
 
     return Container(
       width: double.infinity,
@@ -48,7 +48,7 @@ class _GenerateWidgetState extends ConsumerState<GenerateWidget> {
           ),
           SizedBox(height: 16),
           Text(
-            provider.body!['data'].toString(),
+            provider.body!['prediction'].toString(),
             textAlign: TextAlign.justify,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onPrimary.withAlpha(190),

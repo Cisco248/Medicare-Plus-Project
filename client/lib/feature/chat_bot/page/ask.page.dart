@@ -1,6 +1,6 @@
 import 'package:client/core/widgets/divider.widget.dart';
-import 'package:client/feature/chat_bot/models/message_model.dart';
-import 'package:client/feature/chat_bot/providers/chat.notifier.dart';
+import 'package:client/feature/chat_bot/models/message.model.dart';
+import 'package:client/feature/chat_bot/notifiers/chat.notifier.dart';
 import 'package:client/feature/chat_bot/widgets/display.widget.dart';
 import 'package:client/feature/chat_bot/widgets/message.widget.dart';
 import 'package:client/feature/chat_bot/widgets/search.widget.dart';
@@ -53,7 +53,7 @@ class _AskPageState extends ConsumerState<AskPage> {
               itemBuilder: (context, index) {
                 final message = state.messages[index];
                 final isUser = message.type == MessageType.user;
-                return MessageWidget(variant: isUser, message: message);
+                return MessageWidget(variant: isUser, chat: message);
               },
             ),
           ),

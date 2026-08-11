@@ -1,0 +1,30 @@
+name: flutter_health_connect
+description: >
+  Production-ready Flutter plugin for Android Health Connect.
+  Read, write, aggregate, and sync health data via the official
+  androidx.health.connect SDK. Android only.
+version: 1.0.0
+homepage: https://github.com/fluttercommunity/flutter_health_connect
+repository: https://github.com/fluttercommunity/flutter_health_connect
+issue_tracker: https://github.com/fluttercommunity/flutter_health_connect/issues
+
+environment:
+  sdk: ^3.12.2
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.1.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: dev.fluttercommunity.flutter_health_connect
+        pluginClass: FlutterHealthConnectPlugin

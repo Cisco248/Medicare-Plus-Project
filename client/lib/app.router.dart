@@ -1,13 +1,12 @@
 import 'package:client/core/components/loading.component.dart';
 import 'package:client/core/components/splash.component.dart';
+import 'package:client/feature/auth/models/auth.model.dart';
+import 'package:client/feature/auth/notifiers/authentication.notifier.dart';
+import 'package:client/feature/auth/pages/auth.page.dart';
 import 'package:client/layout/page/layout.page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-import 'feature/auth/models/auth.model.dart';
-import 'feature/auth/pages/auth.page.dart';
-import 'feature/auth/viewmodels/authentication.notifier.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authNotifier = ref.watch(authChangeNotifierProvider);

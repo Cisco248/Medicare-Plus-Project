@@ -1,15 +1,11 @@
-import 'package:client/feature/chat_bot/models/message_model.dart';
+import 'package:client/feature/chat_bot/models/message.model.dart';
 import 'package:flutter/material.dart';
 
 class MessageWidget extends StatelessWidget {
   final bool variant;
-  final MessageModel message;
+  final ChatMessageModel chat;
 
-  const MessageWidget({
-    super.key,
-    required this.variant,
-    required this.message,
-  });
+  const MessageWidget({super.key, required this.variant, required this.chat});
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +26,8 @@ class MessageWidget extends StatelessWidget {
             Expanded(
               child: Text(
                 variant
-                    ? "Question: ${message.message}"
-                    : 'Answer: ${message.message}',
+                    ? "Question: ${chat.message ?? ''}"
+                    : 'Answer: ${chat.message ?? ''}',
                 softWrap: true,
                 overflow: TextOverflow.visible,
                 style: TextStyle(

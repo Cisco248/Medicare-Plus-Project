@@ -4,11 +4,12 @@ from pydantic import BaseModel
 
 class HypertensionScehema(BaseModel):
     age: int
-    bmi: float
-    hba1c_pct: float
+    height: float
+    weight: float
+    hba1c: float
     cholesterol_mgdl: float
-    diabetes_ordinal: float
-    sex_male: int
+    diabetes_ordinal: str
+    gender: str
 
 
 class HeartScehema(BaseModel):

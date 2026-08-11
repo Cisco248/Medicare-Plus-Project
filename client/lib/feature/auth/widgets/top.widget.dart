@@ -1,5 +1,5 @@
 import 'package:client/feature/auth/models/form.model.dart';
-import 'package:client/feature/auth/viewmodels/form_mode.notifier.dart';
+import 'package:client/feature/auth/notifiers/form_mode.notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

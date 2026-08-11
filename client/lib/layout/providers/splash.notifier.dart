@@ -1,5 +1,5 @@
 import 'package:client/feature/auth/models/auth.model.dart';
-import 'package:client/feature/auth/viewmodels/authentication.notifier.dart';
+import 'package:client/feature/auth/notifiers/authentication.notifier.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'splash.notifier.g.dart';

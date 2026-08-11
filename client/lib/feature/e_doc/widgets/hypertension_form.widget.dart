@@ -1,7 +1,7 @@
 import 'package:client/core/utils/notification.utils.dart';
 import 'package:client/feature/e_doc/constant/button.style.dart';
 import 'package:client/feature/e_doc/models/hypertension.model.dart';
-import 'package:client/feature/e_doc/viewmodel/e_doc.viewmodel.dart';
+import 'package:client/feature/e_doc/notifiers/chat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,7 +17,9 @@ class _HypertensionFormWidgetState
     extends ConsumerState<HypertensionFormWidget> {
   late final _formKey = GlobalKey<FormState>();
   final TextEditingController _age = TextEditingController();
+  final TextEditingController _height = TextEditingController();
   final TextEditingController _weight = TextEditingController();
+  final TextEditingController _hemoglobin = TextEditingController();
   final TextEditingController _cholesterol = TextEditingController();
   final TextEditingController _diabetesOrdinal = TextEditingController();
 
@@ -32,14 +34,23 @@ class _HypertensionFormWidgetState
         NotificationUtils.error(context, 'Fields are Empty!');
       }
 
+      DiabetesOrdinal diabetesValue(String? value) => switch (value) {
+        "normal" => DiabetesOrdinal.normal,
+        "preDiabetes" => DiabetesOrdinal.preDiabetes,
+        "diabetes" => DiabetesOrdinal.diabetes,
+        _ => DiabetesOrdinal.normal,
+      };
+
       final userData = HypertensionModel(
         age: int.parse(_age.text),
         weight: double.parse(_weight.text),
+        height: double.parse(_height.text),
+        hba1c: double.parse(_hemoglobin.text),
         cholesterolUnit: double.parse(_cholesterol.text),
-        diabetesOrdinal: DiabetesOrdinal.normal,
-        gender: Gender.male,
+        diabetesOrdinal: diabetesValue(_diabetesOrdinal.text),
+        gender: selectGender! == "Male" ? Gender.male : Gender.female,
       );
-      ref.watch(eDocViewModelProvider.notifier).sendData(userData);
+      ref.watch(chatBotNotifyProvider.notifier).sendData(userData);
     }
 
     final width = MediaQuery.sizeOf(context).width;
@@ -81,6 +92,27 @@ class _HypertensionFormWidgetState
               height: 40,
               width: width,
               child: TextFormField(
+                controller: _height,
+                style: TextStyle(fontSize: 12),
+                decoration: InputDecoration(
+                  labelText: 'Height',
+                  labelStyle: TextStyle(
+                    fontSize: 14,
+                    color: colorScheme.onSurface.withAlpha(100),
+                  ),
+                  hintText: 'E.g: 150cm',
+                  hintStyle: TextStyle(
+                    fontSize: 12,
+                    color: colorScheme.onSurface.withAlpha(100),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 8),
+            SizedBox(
+              height: 40,
+              width: width,
+              child: TextFormField(
                 controller: _weight,
                 style: TextStyle(fontSize: 12),
                 decoration: InputDecoration(
@@ -90,6 +122,27 @@ class _HypertensionFormWidgetState
                     color: colorScheme.onSurface.withAlpha(100),
                   ),
                   hintText: 'E.g: 30.6',
+                  hintStyle: TextStyle(
+                    fontSize: 12,
+                    color: colorScheme.onSurface.withAlpha(100),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 8),
+            SizedBox(
+              height: 40,
+              width: width,
+              child: TextFormField(
+                controller: _hemoglobin,
+                style: TextStyle(fontSize: 12),
+                decoration: InputDecoration(
+                  labelText: 'Hemoglobin Count',
+                  labelStyle: TextStyle(
+                    fontSize: 14,
+                    color: colorScheme.onSurface.withAlpha(100),
+                  ),
+                  hintText: 'E.g: 4.5',
                   hintStyle: TextStyle(
                     fontSize: 12,
                     color: colorScheme.onSurface.withAlpha(100),

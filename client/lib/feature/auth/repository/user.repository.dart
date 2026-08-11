@@ -4,20 +4,8 @@ import 'package:flutter/cupertino.dart';
 
 class UserRepository {
   final Dio _client;
-  final bool device;
 
-  UserRepository({Dio? client})
-    : _client =
-          client ??
-          Dio(
-            BaseOptions(
-              baseUrl: 'http://10.0.2.2:8080/api',
-              connectTimeout: const Duration(seconds: 10),
-              receiveTimeout: const Duration(seconds: 10),
-              headers: {'Content-Type': 'application/json'},
-            ),
-          ),
-      device = false;
+  UserRepository({required this._client});
 
   Future<String> getOne(String email, String password) async {
     try {

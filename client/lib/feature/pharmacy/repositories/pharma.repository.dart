@@ -2,14 +2,9 @@ import 'package:client/data/models/medicine_model.dart';
 import 'package:dio/dio.dart';
 
 class PharmaRepository {
-  final Dio _client = Dio(
-    BaseOptions(
-      baseUrl: 'http://192.168.2.49:8080/api',
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-      headers: {'Content-Type': 'application/json'},
-    ),
-  );
+  final Dio _client;
+
+  PharmaRepository({required this._client});
 
   Future<List<MedicineModel>> fetchMedicines() async {
     try {

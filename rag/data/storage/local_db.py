@@ -13,7 +13,7 @@ settings = RAGSettings()
 class LocalDatabase:
     @staticmethod
     def init(documents: List[Document]) -> None:
-        client = ChromaClient.build()
+        client = ChromaClient().build()
 
         if not os.path.exists(settings.VECTOR_DB_DIR):
             os.makedirs(settings.VECTOR_DB_DIR, exist_ok=True)
@@ -33,5 +33,5 @@ class LocalDatabase:
 
     @staticmethod
     def get() -> Chroma:
-        client = ChromaClient.build()
+        client = ChromaClient().build()
         return client

@@ -21,3 +21,4 @@ class VectorStoreManager:
         except Exception as e:
             logger.error(f"VECTOR STORE MANAGER: {e}")
             raise
+ 

@@ -1,33 +1,37 @@
-import 'dart:convert';
-import 'package:http/http.dart';
+import 'package:client/core/utils/dio.client.dart';
+import 'package:client/feature/chat_bot/models/response.model.dart';
+import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'bot.repository.g.dart';
 
 @riverpod
 BotRepositoryImpService botRepositoryImpService(Ref ref) =>
-    BotRepositoryImpService();
+    BotRepositoryImpService(client: physicalDevice(8000));
 
 abstract class BotRepository {
-  Future<String> sendInfo(String? info);
+  Future<ChatResponseModel> sendInfo(String info);
 }
 
 class BotRepositoryImpService extends BotRepository {
-  final client = Client();
-  BotRepositoryImpService();
+  final Dio _client;
+
+  BotRepositoryImpService({required this._client});
 
   @override
-  Future<String> sendInfo(String? value) async {
-    if (value == null) 'Value Not Found!';
+  Future<ChatResponseModel> sendInfo(String value) async {
+    if (value.isEmpty) throw Exception('Value Not Found!');
     try {
-      final response = await client.post(
-        Uri.http('192.168.2.49:8000', '/api/ask'),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({'question': value}),
+      final response = await _client.post('/ask', data: {'question': value});
+      print(response);
+      return ChatResponseModel(
+        message: response.data.toString(),
+        createdDate: DateTime.now(),
       );
-      return jsonDecode(utf8.decode(response.bodyBytes));
-    } catch (e) {
-      return Exception('Error: $e').toString();
+    } on DioException catch (e) {
+      final message =
+          'Status: ${e.response!.statusCode}, Message: ${e.message}';
+      throw Exception(message);
     }
   }
 }

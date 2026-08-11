@@ -1,4 +1,9 @@
-from .middlewares import AuthenticationMiddleware, ArtifactLoader
+from .middlewares import (
+    AuthenticationMiddleware,
+    ArtifactLoader,
+    HypertensionMiddleware,
+    RagClientMiddleware,
+)
 from .routes import auth_router, har_router, init_router, base_model_router
 
 __all__ = [
@@ -8,4 +13,6 @@ __all__ = [
     "har_router",
     "init_router",
     "base_model_router",
+    "HypertensionMiddleware",
+    "RagClientMiddleware",
 ]

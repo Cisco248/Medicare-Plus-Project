@@ -1,6 +1,6 @@
 from .ingestion import DocumentLoader, DocumentTextSplitters, DocumentEmbeddor
 from .model import Request, Response
-from .storage import VectorStoreManager
+from .storage import VectorStoreManager, ChromaClient
 
 __all__ = [
     "DocumentEmbeddor",
@@ -9,4 +9,5 @@ __all__ = [
     "Request",
     "Response",
     "VectorStoreManager",
+    "ChromaClient",
 ]

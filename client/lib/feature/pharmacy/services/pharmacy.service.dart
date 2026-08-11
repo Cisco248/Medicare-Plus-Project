@@ -1,8 +1,9 @@
+import 'package:client/core/utils/dio.client.dart';
 import 'package:client/feature/pharmacy/models/medicine.model.dart';
 import 'package:client/feature/pharmacy/repositories/pharma.repository.dart';
 
 class PharmacyService {
-  final _repository = PharmaRepository();
+  final _repository = PharmaRepository(client: physicalDevice(8080));
 
   Future<List<MedicineModel>> fetchMedicines() async {
     try {

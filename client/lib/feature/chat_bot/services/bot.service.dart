@@ -1,3 +1,4 @@
+import 'package:client/feature/chat_bot/models/response.model.dart';
 import 'package:client/feature/chat_bot/repository/bot.repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -14,11 +15,17 @@ class BotService {
   BotRepositoryImpService get _repository =>
       ref.read(botRepositoryImpServiceProvider);
 
-  Future<String> infoService(String info) async {
+  Future<ChatResponseModel> sendMessage(String value) async {
     try {
-      return await _repository.sendInfo(info);
+      if (value.isEmpty) {
+        throw Exception("Enter Your Questions");
+      }
+
+      final res = await _repository.sendInfo(value);
+      print(res.message);
+      return res;
     } catch (e) {
-      return "Error: $e";
+      throw Exception(e);
     }
   }
 }

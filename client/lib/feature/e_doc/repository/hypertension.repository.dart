@@ -5,17 +5,7 @@ import 'package:dio/dio.dart';
 class HypertensionRepository {
   final Dio _client;
 
-  HypertensionRepository({Dio? client})
-    : _client =
-          client ??
-          Dio(
-            BaseOptions(
-              baseUrl: 'http://10.0.2.2:8080/api-base',
-              connectTimeout: const Duration(seconds: 10),
-              receiveTimeout: const Duration(seconds: 10),
-              headers: {'Content-Type': 'application/json'},
-            ),
-          );
+  HypertensionRepository({required this._client});
 
   Future<ResponseModel> sendData(HypertensionModel data) async {
     final response = await _client.post('/hypertension', data: data);

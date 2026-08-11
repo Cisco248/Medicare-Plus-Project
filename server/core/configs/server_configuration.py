@@ -18,6 +18,10 @@ class ServerSettings(BaseSettings):
     HOST: str = os.getenv("HOST", "0.0.0.0")
     PORT: int = int(os.getenv("PORT", "8080"))
     CORS_ORIGIN: list[str] = os.getenv("CORS_ORIGINS", "http://localhost:3000").split()
+
+    # Rag URL
+    RAG_URL: str = "http://rag-server:8000"
+
     # JWT Tokens
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "your-secret-key")
 

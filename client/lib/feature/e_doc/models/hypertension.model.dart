@@ -11,6 +11,8 @@ sealed class HypertensionModel with _$HypertensionModel {
   const factory HypertensionModel({
     required int age,
     required double weight,
+    required double height,
+    required double hba1c,
     required double cholesterolUnit,
     required DiabetesOrdinal diabetesOrdinal,
     required Gender gender,

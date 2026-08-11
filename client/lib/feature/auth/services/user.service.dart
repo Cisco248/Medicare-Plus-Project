@@ -1,8 +1,9 @@
+import 'package:client/core/utils/dio.client.dart';
 import 'package:client/feature/auth/models/user_model.dart';
 import 'package:client/feature/auth/repository/user.repository.dart';
 
 class UserService {
-  final _repo = UserRepository();
+  final _repo = UserRepository(client: physicalDevice(8080));
 
   Future<String> loginService(String email, String password) async {
     try {
