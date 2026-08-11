@@ -105,3 +105,5 @@ app.*.map.json
 /android/app/release
 
 llm/
+artifacts/
+*.pkl

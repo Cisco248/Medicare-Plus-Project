@@ -1,38 +1,17 @@
-# Medicare+ App (Next.js)
+# client
 
-## Folder structure
+A new Flutter project.
 
-```
-app/
-├── app/                      # App Router (routes)
-│   ├── layout.tsx
-│   ├── page.tsx              # redirects to /landing
-│   ├── auth/
-│   │   ├── page.tsx          # route: /auth
-│   │   ├── presentation/     # UI components
-│   │   ├── data/             # repositories (API calls)
-│   │   └── utils/            # validation, helpers
-│   └── landing/
-│       ├── page.tsx          # route: /landing
-│       ├── presentation/
-│       ├── data/
-│       └── utils/
-├── lib/                      # shared app logic
-│   ├── api/client.ts
-│   ├── config.ts
-│   └── types/api.ts
-└── shared/                   # shared UI
-    └── components/
-```
+## Getting Started
 
-## Getting started
+This project is a starting point for a Flutter application.
 
-```bash
-npm install
-cp .env.example .env.local
-npm run dev
-```
+A few resources to get you started if this is your first Flutter project:
 
-Open [http://localhost:3000](http://localhost:3000) — home redirects to `/landing`.
+- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
+- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
 
-Ensure the FastAPI server is running at `NEXT_PUBLIC_API_URL` (default `http://localhost:8000`).
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.

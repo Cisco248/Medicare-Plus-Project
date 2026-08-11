@@ -1,20 +1,29 @@
-from fastapi import Header
 import jwt
+from fastapi import Header
 from datetime import datetime, timedelta
 
 
 class TokenGenerator:
-    def __init__(self, secret_key: str, algorithm: str = "HS256"):
-        self.secret_key = secret_key
-        self.algorithm = algorithm
+    def __init__(self):
+        self.x_auth_token = Header()
 
-    def create_token(self, data: dict, expire: timedelta = timedelta(hours=2)) -> str:
+    def create_token(
+        self,
+        secret_key: str,
+        data: dict,
+        algorithm: str = "HS256",
+        expire: timedelta = timedelta(hours=2),
+    ) -> str:
         payload = {
             "id": data.get("id"),
             "exp": datetime.utcnow() + expire,
         }
+        return jwt.encode(payload, secret_key, algorithm)
 
-        return jwt.encode(payload, self.secret_key, self.algorithm)
-
-    def verify_token(self, x_auth_token=Header()):
-        return jwt.decode(x_auth_token, self.secret_key, self.algorithm)
+    def verify_token(self, secret_key: str, algorithm: str = "HS256"):
+        return jwt.decode(
+            self.x_auth_token,
+            secret_key,
+            algorithm,
+            verify=True,
+        )
