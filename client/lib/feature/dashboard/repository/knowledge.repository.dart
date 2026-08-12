@@ -1,4 +1,6 @@
-import 'package:client/core/utils/exception.utils.dart';
+import 'package:client/core/exceptions/basic.exception.dart';
+import 'package:client/core/exceptions/response.exception.dart';
+import 'package:client/feature/dashboard/models/activity.model.dart';
 import 'package:dio/dio.dart';
 
 class KnowledgeRepository {
@@ -6,19 +8,26 @@ class KnowledgeRepository {
 
   KnowledgeRepository({required this._client});
 
-  Future<void> sendData(Map<String, Object?> data) async {
+  Future<void> sendData(ActivityModel data) async {
     try {
-      final response = await _client.post('/knowledge', data: data);
+      final response = await _client.post(
+        '/knowledge',
+        data: ActivityModel(
+          steps: data.steps,
+          walking: data.walking,
+          running: data.running,
+          climbing: data.climbing,
+          sleeping: data.sleeping,
+        ).toJson(),
+      );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        throw BaseException(
-          requestOptions: RequestOptions(),
-          message: response.statusMessage,
-          error: response.statusMessage,
-          statusCode: response.statusCode,
+        throw NetworkException(
+          details: response.statusMessage,
+          code: response.statusCode,
         );
       }
     } catch (e) {
-      throw BaseException(requestOptions: RequestOptions(), error: e);
+      throw ServerException(details: e);
     }
   }
 
@@ -26,7 +35,7 @@ class KnowledgeRepository {
     try {
       return '';
     } catch (e) {
-      throw BaseException(requestOptions: RequestOptions(), error: e);
+      throw ServerException(details: e);
     }
   }
 }

@@ -3,13 +3,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class AppWidget extends ConsumerWidget {
+class KnowledgeWidget extends ConsumerStatefulWidget {
   final String text;
 
-  const AppWidget(this.text, {super.key});
+  const KnowledgeWidget(this.text, {super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<KnowledgeWidget> createState() => _KnowledgeWidgetState();
+}
+
+class _KnowledgeWidgetState extends ConsumerState<KnowledgeWidget> {
+  String data = "";
+
+  @override
+  void initState() {
+    setState(() {
+      data = widget.text;
+    });
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -55,7 +70,7 @@ class AppWidget extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text(
-              text,
+              data,
               textAlign: TextAlign.justify,
               style: TextStyle(
                 fontFamily: 'Inter',

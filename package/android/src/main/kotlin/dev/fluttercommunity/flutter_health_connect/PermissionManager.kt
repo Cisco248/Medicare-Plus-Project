@@ -21,10 +21,12 @@ internal class PermissionManager(
         this.activity = activity
     }
 
-    fun detachActivity() {
+    fun detachActivity(retainPending: Boolean = false) {
         activity = null
-        pendingResult?.invoke(Result.failure(IllegalStateException("Activity detached")))
-        pendingResult = null
+        if (!retainPending) {
+            pendingResult?.invoke(Result.failure(IllegalStateException("Activity detached")))
+            pendingResult = null
+        }
     }
 
     suspend fun getGrantedPermissions(): Set<String> =

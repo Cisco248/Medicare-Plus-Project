@@ -3,6 +3,7 @@ from typing import List
 from fastapi import HTTPException, Header
 from core import TokenGenerator, ServerSettings, AuthString, EncryptionUtility
 from data import UserCreate, UserLogin, UserModel
+from repository.models.auth_response import AuthResponse
 
 setting = ServerSettings()
 
@@ -37,23 +38,30 @@ class AuthenticationMiddleware:
 
     @staticmethod
     def login_middleware(
-        response: UserModel | None,
+        result: UserModel | None,
         schema: UserLogin,
         token: TokenGenerator = TokenGenerator(),
-    ):
+    ) -> AuthResponse:
         try:
             if not schema.email or not schema.password:
                 raise HTTPException(401, AuthString.FIELD_EMPTY.value)
-            if not response:
+            if not result:
                 raise HTTPException(401, AuthString.USER_NOT_FOUND.value)
             if not EncryptionUtility.verify_password(
-                schema.password, str(response.password)
+                schema.password, str(result.password)
             ):
                 raise HTTPException(404, AuthString.PASSWORD_INCORRECT.value)
             gen_token = token.create_token(
-                setting.JWT_SECRET_KEY, data={"id": response.id}
+                setting.JWT_SECRET_KEY, data={"id": result.id}
             )
-            return gen_token
+            return AuthResponse(
+                token=gen_token,
+                id=result.id,
+                name=result.name,
+                email=result.email,
+                mobnum=result.mobnum,
+                password=result.password,
+            )
 
         except Exception as e:
             raise HTTPException(

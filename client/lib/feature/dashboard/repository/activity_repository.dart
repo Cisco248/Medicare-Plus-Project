@@ -1,5 +1,6 @@
-import 'package:client/core/utils/exception.utils.dart';
-import 'package:dio/dio.dart';
+import 'dart:core';
+import 'package:client/core/exceptions/basic.exception.dart';
+import 'package:client/core/exceptions/response.exception.dart';
 import 'package:flutter_health_connect/app.dart';
 
 class ActivityRepository {
@@ -14,6 +15,7 @@ class ActivityRepository {
     DateTime.now().day,
     0,
   );
+
   final DateTime _endTime = DateTime(
     DateTime.now().year,
     DateTime.now().month,
@@ -27,7 +29,7 @@ class ActivityRepository {
       await _sdk.initialize();
       await _sdk.checkPermissions(permissions);
     } catch (e) {
-      throw BaseException(requestOptions: RequestOptions(), error: e);
+      throw NotFoundException(details: e);
     }
   }
 
@@ -39,15 +41,14 @@ class ActivityRepository {
         endTime: _endTime,
       );
       if (res.isEmpty) {
-        throw BaseException(
-          requestOptions: RequestOptions(),
-          error: res.toString(),
-          message: "Record not found",
+        throw NotFoundException(
+          message: 'Your record is empty, Try again later!',
+          details: res,
         );
       }
       return res;
     } catch (e) {
-      throw BaseException(requestOptions: RequestOptions(), error: e);
+      throw UnknownException(details: e);
     }
   }
 
@@ -61,37 +62,29 @@ class ActivityRepository {
         endTime: _endTime,
       );
       if (res.isEmpty) {
-        throw BaseException(
-          requestOptions: RequestOptions(),
-          error: res.toString(),
-          message: "Record not found",
+        throw NotFoundException(
+          message: 'Your record is empty, Try again later!',
+          details: res,
         );
       }
       return res;
     } catch (e) {
-      throw BaseException(requestOptions: RequestOptions(), error: e);
+      throw UnknownException(details: e);
     }
   }
 
-  Future<List<BloodPressureRecord>> bloodPressure(
-    List<Permission> permissions,
-  ) async {
+  Future<DailySummary> dailySummary() async {
     try {
-      await initialized(permissions);
-      final res = await _sdk.readBloodPressure(
-        startTime: _startTime,
-        endTime: _endTime,
+      final res = await _sdk.getDailyHealthSummary(
+        date: DateTime(
+          DateTime.now().year,
+          DateTime.now().month,
+          DateTime.now().day,
+        ),
       );
-      if (res.isEmpty) {
-        throw BaseException(
-          requestOptions: RequestOptions(),
-          error: res.toString(),
-          message: "Record not found",
-        );
-      }
       return res;
     } catch (e) {
-      throw BaseException(requestOptions: RequestOptions(), error: e);
+      throw UnknownException(details: e);
     }
   }
 }

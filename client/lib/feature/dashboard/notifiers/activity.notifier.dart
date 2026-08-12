@@ -17,10 +17,6 @@ List<Permission> _burnCaloryPermission = [
   ),
 ];
 
-List<Permission> _bloodPressurePermission = [
-  Permission(recordType: RecordType.bloodPressure, access: AccessType.read),
-];
-
 @riverpod
 class StepsActivityNotifier extends _$StepsActivityNotifier {
   @override
@@ -42,22 +38,11 @@ class BurnCaloriesActivityNotifier extends _$BurnCaloriesActivityNotifier {
   }
 }
 
-class BloodPressureModel {
-  final double systolic;
-  final double diastolic;
-
-  const BloodPressureModel({required this.systolic, required this.diastolic});
-}
-
 @riverpod
-class BloodPressureActivityNotifier extends _$BloodPressureActivityNotifier {
+class DailyActivityNotifier extends _$DailyActivityNotifier {
   @override
-  Future<BloodPressureModel?> build() async {
-    final records = await _repo.bloodPressure(_bloodPressurePermission);
-    if (records.isEmpty) return null;
-    return BloodPressureModel(
-      systolic: records.last.systolicMmHg,
-      diastolic: records.last.diastolicMmHg,
-    );
+  Future<DailySummary> build() async {
+    final records = await _repo.dailySummary();
+    return records;
   }
 }

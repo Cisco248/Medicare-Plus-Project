@@ -99,50 +99,44 @@ abstract class _$BurnCaloriesActivityNotifier extends $AsyncNotifier<double> {
   }
 }
 
-@ProviderFor(BloodPressureActivityNotifier)
-final bloodPressureActivityProvider = BloodPressureActivityNotifierProvider._();
+@ProviderFor(DailyActivityNotifier)
+final dailyActivityProvider = DailyActivityNotifierProvider._();
 
-final class BloodPressureActivityNotifierProvider
-    extends
-        $AsyncNotifierProvider<
-          BloodPressureActivityNotifier,
-          BloodPressureModel?
-        > {
-  BloodPressureActivityNotifierProvider._()
+final class DailyActivityNotifierProvider
+    extends $AsyncNotifierProvider<DailyActivityNotifier, DailySummary> {
+  DailyActivityNotifierProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'bloodPressureActivityProvider',
+        name: r'dailyActivityProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$bloodPressureActivityNotifierHash();
+  String debugGetCreateSourceHash() => _$dailyActivityNotifierHash();
 
   @$internal
   @override
-  BloodPressureActivityNotifier create() => BloodPressureActivityNotifier();
+  DailyActivityNotifier create() => DailyActivityNotifier();
 }
 
-String _$bloodPressureActivityNotifierHash() =>
-    r'6cc93285217f942835bdf612dbc4e21a7abde284';
+String _$dailyActivityNotifierHash() =>
+    r'5fa17ddbc6e5780a6833779003c3ac6e58b2d7f8';
 
-abstract class _$BloodPressureActivityNotifier
-    extends $AsyncNotifier<BloodPressureModel?> {
-  FutureOr<BloodPressureModel?> build();
+abstract class _$DailyActivityNotifier extends $AsyncNotifier<DailySummary> {
+  FutureOr<DailySummary> build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref =
-        this.ref as $Ref<AsyncValue<BloodPressureModel?>, BloodPressureModel?>;
+    final ref = this.ref as $Ref<AsyncValue<DailySummary>, DailySummary>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<BloodPressureModel?>, BloodPressureModel?>,
-              AsyncValue<BloodPressureModel?>,
+              AnyNotifier<AsyncValue<DailySummary>, DailySummary>,
+              AsyncValue<DailySummary>,
               Object?,
               Object?
             >;

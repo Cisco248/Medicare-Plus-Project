@@ -5,6 +5,7 @@ from .middlewares import (
     RagClientMiddleware,
 )
 from .routes import auth_router, har_router, init_router, base_model_router
+from .models import AuthResponse
 
 __all__ = [
     "AuthenticationMiddleware",
@@ -15,4 +16,5 @@ __all__ = [
     "base_model_router",
     "HypertensionMiddleware",
     "RagClientMiddleware",
+    "AuthResponse",
 ]

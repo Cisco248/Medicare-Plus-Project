@@ -1,4 +1,3 @@
-version: "3"
 name: "medicare-plus"
 
 services:
@@ -53,7 +52,7 @@ services:
       - ./server/.env
 
     volumes:
-      - ./server-data:/app/data
+      - server-data:/app/data
 
     networks:
       - app-network
@@ -161,4 +160,3 @@ volumes:
   server-data:
   ollama-data:
   chroma-data:
-    driver: local

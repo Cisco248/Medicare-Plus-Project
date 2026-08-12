@@ -26,9 +26,7 @@ abstract class HealthConnectPlatform extends PlatformInterface {
   HealthConnectPlatform() : super(token: _token);
 
   static final Object _token = Object();
-
   static HealthConnectPlatform _instance = MethodChannelHealthConnect();
-
   static HealthConnectPlatform get instance => _instance;
 
   static set instance(HealthConnectPlatform instance) {

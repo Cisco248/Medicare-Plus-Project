@@ -148,7 +148,7 @@ class FlutterHealthConnectPlugin :
             "aggregate" -> {
                 launch(result) {
                     val response =
-                        aggregationManager.aggregate(
+                        aggregationManager.result(
                             metric = call.argument<String>("metric")!!,
                             startTimeMillis = call.argument<Number>("startTimeMillis")!!.toLong(),
                             endTimeMillis = call.argument<Number>("endTimeMillis")!!.toLong(),
@@ -239,7 +239,7 @@ class FlutterHealthConnectPlugin :
 
     override fun onDetachedFromActivityForConfigChanges() {
         activityBinding?.removeActivityResultListener(permissionManager)
-        permissionManager.detachActivity()
+        permissionManager.detachActivity(retainPending = true)
         activity = null
         activityBinding = null
     }

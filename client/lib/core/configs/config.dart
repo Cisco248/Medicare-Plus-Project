@@ -13,3 +13,5 @@ final settings = ConnectionSettings(
 
 final String isSetupKey = 'setup_key';
 final String userTokenKey = 'user_token';
+final String userEmailKey = 'user_email';
+final String userPasswordKey = 'user_password';

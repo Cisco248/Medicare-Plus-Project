@@ -1,10 +1,10 @@
+import 'package:client/core/configs/config.dart';
 import 'package:client/feature/auth/models/auth.model.dart';
-import 'package:client/feature/auth/models/user_model.dart';
+import 'package:client/feature/auth/models/auth.scheme.model.dart';
 import 'package:client/feature/auth/notifiers/form_mode.notifier.dart';
 import 'package:client/feature/auth/services/setup_key.service.dart';
 import 'package:client/feature/auth/services/token.service.dart';
 import 'package:client/feature/auth/services/user.service.dart';
-import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'authentication.notifier.g.dart';
@@ -19,19 +19,24 @@ class AuthenticationNotifier extends _$AuthenticationNotifier {
   Future<AuthStatus> build() async {
     final isSetupOk = await _setupKey.getKey();
     if (!isSetupOk) {
-      if (kDebugMode) {
-        print(isSetupOk);
-      }
       return const AuthStatus(state: AuthMode.setup);
     }
-    final tokenKey = await _tokenKey.getTokenKey();
-    if (kDebugMode) {
-      print(tokenKey);
-    }
+    final tokenKey = await _tokenKey.getTokenKey(userTokenKey);
     if (tokenKey == null || tokenKey.isEmpty) {
       return const AuthStatus(state: AuthMode.unauthenticated, token: null);
     }
-    return AuthStatus(state: AuthMode.authenticated, token: tokenKey);
+
+    final email = await _tokenKey.getTokenKey(userEmailKey);
+    final password = await _tokenKey.getTokenKey(userPasswordKey);
+    if (email == null || password == null) {
+      return AuthStatus(state: AuthMode.unauthenticated);
+    }
+    final data = await _service.loginService(email, password);
+    return AuthStatus(
+      state: AuthMode.authenticated,
+      token: tokenKey,
+      data: data.data,
+    );
   }
 
   Future<AuthStatus> splash() async {
@@ -48,15 +53,18 @@ class AuthenticationNotifier extends _$AuthenticationNotifier {
   Future<void> login(String email, String password, bool isRemember) async {
     state = const AsyncValue.loading();
     try {
-      final token = await _service.loginService(email, password);
+      final result = await _service.loginService(email, password);
       state = await AsyncValue.guard(() async {
-        if (token.isEmpty || token == '') {
-          return AuthStatus(state: AuthMode.unauthenticated, token: null);
-        }
         if (isRemember == true) {
-          return AuthStatus(state: AuthMode.authenticated, token: token);
+          await _tokenKey.setTokenKey(userTokenKey, result.token);
+          await _tokenKey.setTokenKey(userEmailKey, email);
+          await _tokenKey.setTokenKey(userPasswordKey, password);
+          return AuthStatus(
+            state: AuthMode.authenticated,
+            token: result.token,
+            data: result.data,
+          );
         }
-        await _tokenKey.setTokenKey(token);
         return AuthStatus(state: AuthMode.authenticated, token: null);
       });
     } catch (_) {
@@ -67,10 +75,17 @@ class AuthenticationNotifier extends _$AuthenticationNotifier {
   Future<void> register(UserModel data) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await _service.registerService(data);
-      await _setupKey.setKey();
-      ref.read(formStateProvider.notifier).toggle();
-      return const AuthStatus(state: AuthMode.unauthenticated, token: null);
+      try {
+        final result = await _service.registerService(data);
+        if (result) {
+          await _setupKey.setKey();
+          ref.read(formStateProvider.notifier).toggle();
+          return const AuthStatus(state: AuthMode.unauthenticated);
+        }
+        return const AuthStatus(state: AuthMode.setup);
+      } catch (_) {
+        return const AuthStatus(state: AuthMode.unauthenticated);
+      }
     });
   }
 
@@ -78,7 +93,7 @@ class AuthenticationNotifier extends _$AuthenticationNotifier {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await _tokenKey.removeToken();
-      return const AuthStatus(state: AuthMode.unauthenticated);
+      return const AuthStatus(state: AuthMode.unauthenticated, token: '');
     });
   }
 }

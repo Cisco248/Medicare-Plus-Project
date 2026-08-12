@@ -1,7 +1,5 @@
 import 'package:client/core/exceptions/base.exception.dart';
 
-
-
 final class UnauthorizedException extends AppException {
   const UnauthorizedException({
     super.message = 'Your session has expired.',
@@ -26,7 +24,6 @@ final class NotFoundException extends AppException {
   });
 }
 
-
 final class AlreadyExistsException extends AppException {
   const AlreadyExistsException({
     super.message = 'The resource already exists.',
@@ -50,4 +47,3 @@ final class ServerException extends AppException {
     super.details,
   });
 }
-

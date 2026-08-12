@@ -6,6 +6,6 @@ part 'knowledge.notifier.g.dart';
 class KnowledgeNotifier extends _$KnowledgeNotifier {
   @override
   String build() {
-    return "";
+    return "Wait for the Generated Summary";
   }
 }
