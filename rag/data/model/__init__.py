@@ -1,4 +1,14 @@
-from .request import Request
-from .response import Response
+from .request import (
+    HealthActivities,
+    HealthSummaryRequest,
+    Request,
+)
+from .response import HealthSummaryResponse, Response
 
-__all__ = ["Request", "Response"]
+__all__ = [
+    "HealthActivities",
+    "HealthSummaryRequest",
+    "HealthSummaryResponse",
+    "Request",
+    "Response",
+]

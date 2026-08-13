@@ -2,7 +2,6 @@
 // ZINTRA STATUS BANNER  (success | warning | error | info)
 // ══════════════════════════════════════════════════════════════════════════════
 
-
 import 'package:client/core/themes/primitives/fonts.dart';
 import 'package:client/core/themes/primitives/spacing.dart';
 import 'package:client/core/themes/tokens/colors.dart';

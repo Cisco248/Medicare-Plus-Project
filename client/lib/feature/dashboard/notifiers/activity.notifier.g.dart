@@ -34,7 +34,7 @@ final class StepsActivityNotifierProvider
 }
 
 String _$stepsActivityNotifierHash() =>
-    r'd9d9f578c9d21977e408ccac4c80ae0af40823da';
+    r'2945570826a05e43f23c93158e762bfab156aced';
 
 abstract class _$StepsActivityNotifier extends $AsyncNotifier<int> {
   FutureOr<int> build();
@@ -79,7 +79,7 @@ final class BurnCaloriesActivityNotifierProvider
 }
 
 String _$burnCaloriesActivityNotifierHash() =>
-    r'742315e20c871baeb213c17b435ecf8038d6596d';
+    r'3752d7e4a060c17871266437110b0ab6edc3c6be';
 
 abstract class _$BurnCaloriesActivityNotifier extends $AsyncNotifier<double> {
   FutureOr<double> build();
@@ -124,7 +124,7 @@ final class DailyActivityNotifierProvider
 }
 
 String _$dailyActivityNotifierHash() =>
-    r'5fa17ddbc6e5780a6833779003c3ac6e58b2d7f8';
+    r'7c769e1a112c4e168dce72dec301b53779244eb9';
 
 abstract class _$DailyActivityNotifier extends $AsyncNotifier<DailySummary> {
   FutureOr<DailySummary> build();
@@ -137,6 +137,92 @@ abstract class _$DailyActivityNotifier extends $AsyncNotifier<DailySummary> {
             as $ClassProviderElement<
               AnyNotifier<AsyncValue<DailySummary>, DailySummary>,
               AsyncValue<DailySummary>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
+/// Coordinates the Knowledge (health-summary) flow:
+///
+/// Health Connect → normalize → [ActivityModel] → summary request →
+/// RAG API → AI summary → [KnowledgeState] consumed by `KnowledgeWidget`.
+///
+/// Kept alive so a generated summary is cached across widget rebuilds and
+/// navigation; it is only regenerated on explicit request or when the
+/// underlying health data changes.
+
+@ProviderFor(ActivityNotifier)
+final activityProvider = ActivityNotifierProvider._();
+
+/// Coordinates the Knowledge (health-summary) flow:
+///
+/// Health Connect → normalize → [ActivityModel] → summary request →
+/// RAG API → AI summary → [KnowledgeState] consumed by `KnowledgeWidget`.
+///
+/// Kept alive so a generated summary is cached across widget rebuilds and
+/// navigation; it is only regenerated on explicit request or when the
+/// underlying health data changes.
+final class ActivityNotifierProvider
+    extends $NotifierProvider<ActivityNotifier, KnowledgeState> {
+  /// Coordinates the Knowledge (health-summary) flow:
+  ///
+  /// Health Connect → normalize → [ActivityModel] → summary request →
+  /// RAG API → AI summary → [KnowledgeState] consumed by `KnowledgeWidget`.
+  ///
+  /// Kept alive so a generated summary is cached across widget rebuilds and
+  /// navigation; it is only regenerated on explicit request or when the
+  /// underlying health data changes.
+  ActivityNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'activityProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$activityNotifierHash();
+
+  @$internal
+  @override
+  ActivityNotifier create() => ActivityNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(KnowledgeState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<KnowledgeState>(value),
+    );
+  }
+}
+
+String _$activityNotifierHash() => r'2c325c67f126e0bf75a41616b1a535ea8b6762bd';
+
+/// Coordinates the Knowledge (health-summary) flow:
+///
+/// Health Connect → normalize → [ActivityModel] → summary request →
+/// RAG API → AI summary → [KnowledgeState] consumed by `KnowledgeWidget`.
+///
+/// Kept alive so a generated summary is cached across widget rebuilds and
+/// navigation; it is only regenerated on explicit request or when the
+/// underlying health data changes.
+
+abstract class _$ActivityNotifier extends $Notifier<KnowledgeState> {
+  KnowledgeState build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<KnowledgeState, KnowledgeState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<KnowledgeState, KnowledgeState>,
+              KnowledgeState,
               Object?,
               Object?
             >;

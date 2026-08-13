@@ -3,18 +3,21 @@ import 'package:client/core/exceptions/response.exception.dart';
 import 'package:dio/dio.dart';
 
 abstract class AppException implements Exception {
-  const AppException({
-    required this._message,
-    this._code,
-    this._details,
-  });
+  const AppException({required this._message, this._code, this._details});
 
   final String _message;
   final int? _code;
   final dynamic _details;
 
+  /// User-presentable description of the failure (no raw stack traces).
+  String get message => _message;
+
+  int? get code => _code;
+
+  dynamic get details => _details;
+
   factory AppException.fromCode(Response response) {
-     switch (response.statusCode) {
+    switch (response.statusCode) {
       case 400:
         return ValidationException(
           message: response.statusMessage ?? "Invalid request",
@@ -55,7 +58,8 @@ abstract class AppException implements Exception {
 
       case 500:
         return ServerException(
-          message: response.statusMessage ?? 'Server error. Please try again later.',
+          message:
+              response.statusMessage ?? 'Server error. Please try again later.',
           details: response.data,
         );
 

@@ -18,7 +18,11 @@ class AppbarWidget extends ConsumerWidget implements PreferredSizeWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Icon(Icons.health_and_safety_rounded, size: 24, color: theme.primary),
+            Icon(
+              Icons.health_and_safety_rounded,
+              size: 24,
+              color: theme.primary,
+            ),
             const SizedBox(width: 8),
             Text(
               "MediCare Plus",
@@ -43,7 +47,7 @@ class AppbarWidget extends ConsumerWidget implements PreferredSizeWidget {
               ref.watch(themeProvider).isDark
                   ? FontAwesomeIcons.sun
                   : FontAwesomeIcons.moon,
-          
+
               color: ZintraColorPrimitives.primary500,
             ),
             style: ButtonStyle(

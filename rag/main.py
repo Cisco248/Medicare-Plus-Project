@@ -2,7 +2,7 @@ import logging
 import logging.config
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
-from core import LOGGER, RAGSettings, router, health_router, e_doc_router
+from core import LOGGER, RAGSettings, router, health_router, e_doc_router, knowledge_router
 from domain import setup_rag_system
 
 logging.config.dictConfig(LOGGER)
@@ -30,4 +30,5 @@ def get_rag(request: Request):
 
 app.include_router(router, prefix="/api")
 app.include_router(e_doc_router, prefix="/api")
+app.include_router(knowledge_router, prefix="/api")
 app.include_router(health_router)

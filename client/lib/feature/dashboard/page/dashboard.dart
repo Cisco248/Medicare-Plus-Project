@@ -1,5 +1,4 @@
 import 'package:client/feature/dashboard/notifiers/activity.notifier.dart';
-import 'package:client/feature/dashboard/notifiers/knowledge.notifier.dart';
 import 'package:client/feature/dashboard/widgets/activity.widget.dart';
 import 'package:client/feature/dashboard/widgets/knowledge.widget.dart';
 import 'package:client/feature/dashboard/widgets/patient.widget.dart';
@@ -30,8 +29,6 @@ class _DashboardState extends ConsumerState<Dashboard> {
 
     final steps = ref.watch(stepsActivityProvider);
     final summary = ref.watch(dailyActivityProvider);
-    final knowledge = ref.watch(knowledgeProvider);
-    print(knowledge);
 
     return SingleChildScrollView(
       controller: _scrollController,
@@ -118,7 +115,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
               ),
             ),
             const SizedBox(height: 16),
-            KnowledgeWidget(knowledge),
+            const KnowledgeWidget(),
             const SizedBox(height: 32),
           ],
         ),
