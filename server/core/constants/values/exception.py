@@ -14,3 +14,13 @@ class AuthString(Enum):
     PASSWORD_INCORRECT = "Password Incorrect!"
     MIDDLEWARE_ERROR = "ERROR: "
     USER_NOT_FOUND = "User not found!"
+
+
+class DocumentString(Enum):
+    NOT_FOUND = "Document not found!"
+    INVALID_FILE_TYPE = "Unsupported file type! Allowed types: pdf, jpg, jpeg, png."
+    FILE_TOO_LARGE = "File is too large! Maximum size is 10 MB."
+    FILE_EMPTY = "Uploaded file is empty!"
+    FILE_MISSING = "Stored file could not be found!"
+    INVALID_STATUS = "Invalid document status!"
+    FIELD_EMPTY = "Title and document type are required!"

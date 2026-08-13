@@ -201,7 +201,7 @@ final class ActivityNotifierProvider
   }
 }
 
-String _$activityNotifierHash() => r'2c325c67f126e0bf75a41616b1a535ea8b6762bd';
+String _$activityNotifierHash() => r'5e976a343c638e9a1afdae84f1105f06364a395e';
 
 /// Coordinates the Knowledge (health-summary) flow:
 ///

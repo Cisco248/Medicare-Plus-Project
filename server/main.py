@@ -7,6 +7,7 @@ from repository import (
     auth_router,
     har_router,
     base_model_router,
+    document_router,
 )
 from data import BASE
 from core import DBConnection
@@ -28,6 +29,7 @@ app.add_middleware(
 
 app.include_router(router=init_router)
 app.include_router(router=auth_router, prefix="/api")
+app.include_router(router=document_router, prefix="/api")
 app.include_router(router=har_router, prefix="/api-har")
 app.include_router(router=base_model_router, prefix="/api-base")
 

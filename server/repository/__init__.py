@@ -3,9 +3,16 @@ from .middlewares import (
     ArtifactLoader,
     HypertensionMiddleware,
     RagClientMiddleware,
+    DocumentMiddleware,
 )
-from .routes import auth_router, har_router, init_router, base_model_router
-from .models import AuthResponse
+from .routes import (
+    auth_router,
+    har_router,
+    init_router,
+    base_model_router,
+    document_router,
+)
+from .models import AuthResponse, DocumentResponse
 
 __all__ = [
     "AuthenticationMiddleware",
@@ -14,7 +21,9 @@ __all__ = [
     "har_router",
     "init_router",
     "base_model_router",
+    "document_router",
     "HypertensionMiddleware",
     "RagClientMiddleware",
     "AuthResponse",
+    "DocumentResponse",
 ]

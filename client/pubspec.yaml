@@ -31,6 +31,8 @@ dependencies:
 
   flutter_health_connect:
     path: ../package
+  file_picker: ^3.0.4
+  path_provider: ^2.1.6
 
 
 dev_dependencies:

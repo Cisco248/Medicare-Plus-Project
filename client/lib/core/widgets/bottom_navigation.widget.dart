@@ -12,6 +12,8 @@ class BottomNavigation extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final navBarStatus = ref.watch(navigationProvider);
     return BottomNavigationBar(
+      // Required with 5+ items; the default "shifting" type hides labels.
+      type: BottomNavigationBarType.fixed,
       backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       currentIndex: selectedIndex,
       selectedItemColor: Theme.of(context).colorScheme.primary,
@@ -71,6 +73,16 @@ class BottomNavigation extends ConsumerWidget {
             size: 20,
           ),
           label: 'Pharmacy',
+        ),
+        BottomNavigationBarItem(
+          icon: FaIcon(
+            FontAwesomeIcons.fileMedical,
+            color: navBarStatus == 4
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.onSurface.withAlpha(50),
+            size: 20,
+          ),
+          label: 'Reports',
         ),
       ],
     );

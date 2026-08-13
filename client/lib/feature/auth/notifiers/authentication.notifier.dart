@@ -65,7 +65,13 @@ class AuthenticationNotifier extends _$AuthenticationNotifier {
             data: result.data,
           );
         }
-        return AuthStatus(state: AuthMode.authenticated, token: null);
+        // Keep the session token in memory (not persisted) so authenticated
+        // API calls work even when "remember me" is off.
+        return AuthStatus(
+          state: AuthMode.authenticated,
+          token: result.token,
+          data: result.data,
+        );
       });
     } catch (_) {
       state = AsyncValue.data(AuthStatus(state: AuthMode.unauthenticated));
