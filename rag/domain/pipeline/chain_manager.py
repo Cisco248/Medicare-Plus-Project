@@ -1,5 +1,5 @@
 import logging
-from langchain_ollama import OllamaLLM
+from langchain_openai import OpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
@@ -29,6 +29,6 @@ class RAGChainManager:
             Make sure to answer in a concise manner,
             and if you don't know the answer, just say "I Dont't Know."
               """)
-            | OllamaLLM(model=settings.LLM_MODEL_NAME, base_url=settings.LLM_BASE_URL)
+            | OpenAI(model=settings.LLM_MODEL_NAME, api_key=settings.OPENAI_API_KEY)
             | StrOutputParser()
         )

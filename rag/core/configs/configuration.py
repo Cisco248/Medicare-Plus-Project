@@ -15,10 +15,10 @@ class RAGSettings(BaseSettings):
     # Embedded Model Params
     EMBEDDING_PATH: Path = ARTIFAT_PATH / "embedding"
     EMBEDDING_MODEL_BASE_URL: str = "http://llm-model:11434/"
-    EMBEDDING_MODEL_NAME: str = "paraphrase-multilingual"
+    EMBEDDING_MODEL_NAME: str = "text-embedding-3-small"
     # LLM Params
     LLM_BASE_URL: str = "http://llm-model:11434/"
-    LLM_MODEL_NAME: str = "qwen3:0.6b"
+    LLM_MODEL_NAME: str = "chatgpt-4o-mini"
     # Vector DB Param
     CHROMA_API: str = os.getenv("CHROMA_API_KEY", "")
     CHROMA_PORT: int = 3000
