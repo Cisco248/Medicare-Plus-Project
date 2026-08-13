@@ -6,7 +6,7 @@ langchain_community
 langchain_text_splitters 
 langchain_classic 
 langchain_experimental 
-langchain_ollama
+langchain_openai
 rank_bm25 
 pypdf 
 sentence-transformers
