@@ -2,11 +2,7 @@ name: "medicare-plus"
 
 services:
   rag-system:
-    container_name: rag-system
-
-    depends_on: 
-      llm-model:
-        condition: service_started
+    container_name: rag-systemd
 
     build:
       context: ./rag
@@ -66,30 +62,30 @@ services:
 
     restart: unless-stopped
 
-  llm-model:
-      container_name: llm-model
+  # llm-model:
+  #     container_name: llm-model
 
-      image: ollama/ollama:latest
+  #     image: ollama/ollama:latest
 
-      ports:
-        - "11434:11434"
+  #     ports:
+  #       - "11434:11434"
 
-      volumes:
-        - ollama-data:/root/.ollama
+  #     volumes:
+  #       - ollama-data:/root/.ollama
 
-      networks:
-        - app-network
+  #     networks:
+  #       - app-network
       
-      entrypoint: >
-        sh -c "
-          ollama serve &
-          sleep 5 &&
-          ollama pull qwen3:0.6b &&
-          ollama pull paraphrase-multilingual &&
-          wait
-        "
+  #     entrypoint: >
+  #       sh -c "
+  #         ollama serve &
+  #         sleep 5 &&
+  #         ollama pull qwen3:0.6b &&
+  #         ollama pull paraphrase-multilingual &&
+  #         wait
+  #       "
 
-      restart: unless-stopped
+  #     restart: unless-stopped
 
   # Build the MySQL Database for Back-End Server
   mysql-server:
