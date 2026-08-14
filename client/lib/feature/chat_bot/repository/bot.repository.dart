@@ -23,7 +23,6 @@ class BotRepositoryImpService extends BotRepository {
     if (value.isEmpty) throw Exception('Value Not Found!');
     try {
       final response = await _client.post('/ask', data: {'question': value});
-      print(response);
       return ChatResponseModel(
         message: response.data.toString(),
         createdDate: DateTime.now(),

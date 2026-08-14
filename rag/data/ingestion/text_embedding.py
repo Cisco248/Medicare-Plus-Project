@@ -2,6 +2,7 @@ import logging
 from typing import List
 from langchain_openai import OpenAIEmbeddings
 from langchain_core.documents import Document
+from pydantic import SecretStr
 from core import RAGSettings
 
 logger = logging.getLogger(__name__)
@@ -15,7 +16,7 @@ class DocumentEmbeddor:
         #     settings.EMBEDDING_PATH.mkdir(parents=True, exist_ok=True)
         model = OpenAIEmbeddings(
             model=settings.EMBEDDING_MODEL_NAME,
-            api_key=settings.OPENAI_API_KEY,
+            api_key=SecretStr(settings.OPENAI_API_KEY),
         )
         # joblib.dump(model, f"{settings.EMBEDDING_PATH}/embedding_model.pkl")
         # model: HuggingFaceEmbeddings = joblib.load(

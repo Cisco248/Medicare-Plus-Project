@@ -1,0 +1,4 @@
+- [x] Update `gradle.properties` to enable `newDsl` and `builtInKotlin`
+- [x] Update `settings.gradle.kts` to remove redundant Kotlin plugin
+- [/] Run `flutter clean`
+- [ ] Verify build

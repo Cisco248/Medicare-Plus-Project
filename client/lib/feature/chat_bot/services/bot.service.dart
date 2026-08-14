@@ -22,7 +22,6 @@ class BotService {
       }
 
       final res = await _repository.sendInfo(value);
-      print(res.message);
       return res;
     } catch (e) {
       throw Exception(e);
