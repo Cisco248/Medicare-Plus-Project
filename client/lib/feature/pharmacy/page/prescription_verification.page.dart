@@ -56,7 +56,7 @@ class PrescriptionVerificationPage extends ConsumerWidget {
             ],
             OutlinedButton(
               onPressed: () async {
-                final result = await FilePicker.platform.pickFiles(
+                final result = await FilePicker.pickFiles(
                   type: FileType.custom,
                   allowedExtensions: const ['pdf', 'jpg', 'jpeg', 'png'],
                 );

@@ -41,7 +41,7 @@ final class ChatBotNotifyProvider
   }
 }
 
-String _$eDocViewModelHash() => r'3f80cf38a73c210f1b0a20a0fe74dd3b4492ff0e';
+String _$chatBotNotifyHash() => r'3f80cf38a73c210f1b0a20a0fe74dd3b4492ff0e';
 
 abstract class _$ChatBotNotify extends $Notifier<ResponseModel> {
   ResponseModel build();
