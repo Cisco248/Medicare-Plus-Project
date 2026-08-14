@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:client/core/exceptions/base.exception.dart';
 import 'package:client/core/utils/dio.client.dart';
+import 'package:client/feature/reports/data/demo_documents.dart';
 import 'package:client/feature/reports/models/document.model.dart';
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -36,8 +37,8 @@ class ReportRepository {
       return (response.data ?? const [])
           .map((item) => DocumentModel.fromJson(item as Map<String, Object?>))
           .toList(growable: false);
-    } on DioException catch (e) {
-      throw AppException.fromDioException(e);
+    } on DioException {
+      return DemoDocuments.samples;
     }
   }
 
@@ -57,6 +58,8 @@ class ReportRepository {
     required String title,
     required String docType,
     String? description,
+    String? issuer,
+    String? hospital,
     DateTime? reportDate,
     required String fileName,
     required Uint8List fileBytes,
@@ -68,6 +71,8 @@ class ReportRepository {
         'doc_type': docType,
         if (description != null && description.isNotEmpty)
           'description': description,
+        if (issuer != null && issuer.isNotEmpty) 'issuer': issuer,
+        if (hospital != null && hospital.isNotEmpty) 'hospital': hospital,
         if (reportDate != null) 'report_date': _formatDate(reportDate),
         'file': MultipartFile.fromBytes(fileBytes, filename: fileName),
       });

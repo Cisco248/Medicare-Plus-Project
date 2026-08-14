@@ -48,7 +48,7 @@ final class ReportsNotifierProvider
   ReportsNotifier create() => ReportsNotifier();
 }
 
-String _$reportsNotifierHash() => r'5fd69c47d203683a6fff3a6e575a8cce7f47a6f3';
+String _$reportsNotifierHash() => r'f5252f2cac0f4bfb795106040e50c43f865f1f0a';
 
 /// Manages the patient's document list and all document actions.
 ///

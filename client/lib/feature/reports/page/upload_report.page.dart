@@ -12,6 +12,7 @@ const List<String> _documentTypes = [
   'Scan / Imaging',
   'Discharge Summary',
   'Vaccination Record',
+  'Doctor Note',
   'Other',
 ];
 
@@ -31,6 +32,8 @@ class _UploadReportPageState extends ConsumerState<UploadReportPage> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _issuerController = TextEditingController();
+  final _hospitalController = TextEditingController();
 
   String? _docType;
   DateTime? _reportDate;
@@ -42,6 +45,8 @@ class _UploadReportPageState extends ConsumerState<UploadReportPage> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _issuerController.dispose();
+    _hospitalController.dispose();
     super.dispose();
   }
 
@@ -98,6 +103,12 @@ class _UploadReportPageState extends ConsumerState<UploadReportPage> {
             description: _descriptionController.text.trim().isEmpty
                 ? null
                 : _descriptionController.text.trim(),
+            issuer: _issuerController.text.trim().isEmpty
+                ? null
+                : _issuerController.text.trim(),
+            hospital: _hospitalController.text.trim().isEmpty
+                ? null
+                : _hospitalController.text.trim(),
             reportDate: _reportDate,
             fileName: _file!.name,
             fileBytes: _file!.bytes!,
@@ -198,6 +209,24 @@ class _UploadReportPageState extends ConsumerState<UploadReportPage> {
                             : colorScheme.onSurface,
                       ),
                     ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _issuerController,
+                  enabled: !_isUploading,
+                  decoration: const InputDecoration(
+                    labelText: 'Doctor / issuer (optional)',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _hospitalController,
+                  enabled: !_isUploading,
+                  decoration: const InputDecoration(
+                    labelText: 'Hospital / clinic (optional)',
+                    border: OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 16),

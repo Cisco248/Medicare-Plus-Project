@@ -16,6 +16,8 @@ class DocumentModel(BASE):
     file_path = Column(String(255), nullable=False)
     file_type = Column(String(10), nullable=False)
     description = Column(Text, nullable=True)
+    issuer = Column(String(100), nullable=True)
+    hospital = Column(String(100), nullable=True)
     report_date = Column(Date, nullable=True)
     status = Column(String(20), nullable=False, default="uploaded")
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)

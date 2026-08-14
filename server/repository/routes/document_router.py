@@ -37,6 +37,8 @@ async def upload_document(
     title: str = Form(...),
     doc_type: str = Form(...),
     description: Optional[str] = Form(None),
+    issuer: Optional[str] = Form(None),
+    hospital: Optional[str] = Form(None),
     report_date: Optional[date] = Form(None),
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
@@ -57,6 +59,8 @@ async def upload_document(
         file_path=file_path,
         file_type=extension,
         description=description,
+        issuer=issuer.strip() if issuer else None,
+        hospital=hospital.strip() if hospital else None,
         report_date=report_date,
         status="uploaded",
     )
@@ -141,6 +145,10 @@ def update_document(
         document.doc_type = model.doc_type.strip()
     if model.description is not None:
         document.description = model.description
+    if model.issuer is not None:
+        document.issuer = model.issuer.strip() or None
+    if model.hospital is not None:
+        document.hospital = model.hospital.strip() or None
     if model.report_date is not None:
         document.report_date = model.report_date
     db.commit()

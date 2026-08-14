@@ -42,6 +42,8 @@ abstract class DocumentModel with _$DocumentModel {
     required String fileName,
     required String fileType,
     String? description,
+    String? issuer,
+    String? hospital,
     DateTime? reportDate,
     required String status,
     DateTime? createdAt,
@@ -55,4 +57,6 @@ abstract class DocumentModel with _$DocumentModel {
 
   bool get isImage =>
       fileType == 'jpg' || fileType == 'jpeg' || fileType == 'png';
+
+  bool get isDemo => userId == 'demo';
 }

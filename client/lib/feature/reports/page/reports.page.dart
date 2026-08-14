@@ -1,4 +1,6 @@
 import 'package:client/core/exceptions/base.exception.dart';
+import 'package:client/feature/e_doc/notifiers/document_query.notifier.dart';
+import 'package:client/feature/e_doc/widgets/document_filters.widget.dart';
 import 'package:client/feature/reports/notifiers/reports.notifier.dart';
 import 'package:client/feature/reports/page/upload_report.page.dart';
 import 'package:client/feature/reports/widgets/report_card.dart';
@@ -14,6 +16,7 @@ class ReportsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final reports = ref.watch(reportsProvider);
+    final query = ref.watch(documentQueryProvider);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
@@ -42,18 +45,53 @@ class ReportsPage extends ConsumerWidget {
           const SizedBox(height: 8),
           Expanded(
             child: reports.when(
-              data: (documents) => documents.isEmpty
-                  ? _EmptyState(onUpload: () => _openUploadPage(context))
-                  : RefreshIndicator(
-                      onRefresh: () =>
-                          ref.read(reportsProvider.notifier).refresh(),
-                      child: ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        itemCount: documents.length,
-                        itemBuilder: (context, index) =>
-                            ReportCard(document: documents[index]),
+              data: (documents) {
+                final visible = query.apply(documents);
+                if (documents.isEmpty) {
+                  return _EmptyState(onUpload: () => _openUploadPage(context));
+                }
+                return Column(
+                  children: [
+                    DocumentFilters(documents: documents),
+                    if (documents.any((document) => document.isDemo))
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          'Showing demo documents because the document service is unavailable.',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 11,
+                            color: colorScheme.onSurface.withAlpha(150),
+                          ),
+                        ),
                       ),
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: visible.isEmpty
+                          ? Center(
+                              child: Text(
+                                'No documents match these filters.',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 12,
+                                  color: colorScheme.onSurface.withAlpha(150),
+                                ),
+                              ),
+                            )
+                          : RefreshIndicator(
+                              onRefresh: () =>
+                                  ref.read(reportsProvider.notifier).refresh(),
+                              child: ListView.builder(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                itemCount: visible.length,
+                                itemBuilder: (context, index) =>
+                                    ReportCard(document: visible[index]),
+                              ),
+                            ),
                     ),
+                  ],
+                );
+              },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, _) => _ErrorState(
                 message: error is AppException

@@ -2,6 +2,7 @@ import os
 import uuid
 
 from fastapi import HTTPException, UploadFile
+from sqlalchemy import text
 
 from core import DocumentString, ServerSettings
 
@@ -20,6 +21,21 @@ MEDIA_TYPES = {
 
 
 class DocumentMiddleware:
+    @staticmethod
+    def ensure_optional_columns(engine) -> None:
+        """Adds issuer/hospital columns on existing databases created before those fields."""
+        statements = (
+            "ALTER TABLE document ADD COLUMN issuer VARCHAR(100) NULL",
+            "ALTER TABLE document ADD COLUMN hospital VARCHAR(100) NULL",
+        )
+        with engine.connect() as connection:
+            for statement in statements:
+                try:
+                    connection.execute(text(statement))
+                    connection.commit()
+                except Exception:
+                    connection.rollback()
+
     @staticmethod
     def validate_extension(file: UploadFile) -> str:
         name = file.filename or ""

@@ -1,4 +1,5 @@
 import 'package:client/core/exceptions/base.exception.dart';
+import 'package:client/feature/e_doc/page/document_viewer.page.dart';
 import 'package:client/feature/reports/models/document.model.dart';
 import 'package:client/feature/reports/notifiers/reports.notifier.dart';
 import 'package:client/feature/reports/widgets/report_card.dart';
@@ -130,6 +131,18 @@ class _ReportDetailsPageState extends ConsumerState<ReportDetailsPage> {
                   children: [
                     _InfoRow(label: 'Type', value: document.docType),
                     _InfoRow(
+                      label: 'Doctor / issuer',
+                      value: document.issuer?.isNotEmpty == true
+                          ? document.issuer!
+                          : '-',
+                    ),
+                    _InfoRow(
+                      label: 'Hospital / clinic',
+                      value: document.hospital?.isNotEmpty == true
+                          ? document.hospital!
+                          : '-',
+                    ),
+                    _InfoRow(
                       label: 'Uploaded',
                       value: document.createdAt == null
                           ? '-'
@@ -176,6 +189,19 @@ class _ReportDetailsPageState extends ConsumerState<ReportDetailsPage> {
                 ),
               ],
               const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => DocumentViewerPage(document: document),
+                    ),
+                  ),
+                  icon: const FaIcon(FontAwesomeIcons.eye, size: 14),
+                  label: const Text('Open document'),
+                ),
+              ),
+              const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(

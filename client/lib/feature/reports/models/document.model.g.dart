@@ -15,6 +15,8 @@ _DocumentModel _$DocumentModelFromJson(Map<String, dynamic> json) =>
       fileName: json['file_name'] as String,
       fileType: json['file_type'] as String,
       description: json['description'] as String?,
+      issuer: json['issuer'] as String?,
+      hospital: json['hospital'] as String?,
       reportDate: json['report_date'] == null
           ? null
           : DateTime.parse(json['report_date'] as String),
@@ -36,6 +38,8 @@ Map<String, dynamic> _$DocumentModelToJson(_DocumentModel instance) =>
       'file_name': instance.fileName,
       'file_type': instance.fileType,
       'description': instance.description,
+      'issuer': instance.issuer,
+      'hospital': instance.hospital,
       'report_date': instance.reportDate?.toIso8601String(),
       'status': instance.status,
       'created_at': instance.createdAt?.toIso8601String(),

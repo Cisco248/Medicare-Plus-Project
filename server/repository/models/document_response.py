@@ -12,6 +12,8 @@ class DocumentResponse(BaseModel):
     file_name: str
     file_type: str
     description: Optional[str] = None
+    issuer: Optional[str] = None
+    hospital: Optional[str] = None
     report_date: Optional[date] = None
     status: str
     created_at: datetime

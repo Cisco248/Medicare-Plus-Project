@@ -1,5 +1,6 @@
 import 'package:client/core/widgets/appbar.widget.dart';
 import 'package:client/core/widgets/bottom_navigation.widget.dart';
+import 'package:client/core/widgets/drawer.widget.dart';
 import 'package:client/feature/chat_bot/page/ask.page.dart';
 import 'package:client/feature/dashboard/page/dashboard.dart';
 import 'package:client/feature/e_doc/page/e_doc.page.dart';
@@ -25,6 +26,7 @@ class _AppLayoutState extends ConsumerState<AppLayout> {
 
     return Scaffold(
       appBar: AppbarWidget(),
+      drawer: const AppDrawer(),
       body: SafeArea(
         child: SizedBox(
           height: MediaQuery.of(context).size.height,

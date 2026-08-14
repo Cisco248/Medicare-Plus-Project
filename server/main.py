@@ -11,8 +11,10 @@ from repository import (
 )
 from data import BASE
 from core import DBConnection
+from repository.middlewares.document_middleware import DocumentMiddleware
 
 BASE.metadata.create_all(bind=DBConnection.ENGINE, checkfirst=True)
+DocumentMiddleware.ensure_optional_columns(DBConnection.ENGINE)
 setting = ServerSettings()
 
 

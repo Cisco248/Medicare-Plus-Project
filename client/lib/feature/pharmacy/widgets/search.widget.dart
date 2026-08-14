@@ -1,57 +1,40 @@
+import 'package:client/feature/pharmacy/notifiers/pharmacy.notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SearchWidget extends StatefulWidget {
-  const SearchWidget({super.key});
+class SearchWidget extends ConsumerStatefulWidget {
+  const SearchWidget({super.key, this.onSubmitted});
+
+  final VoidCallback? onSubmitted;
 
   @override
-  State<SearchWidget> createState() => _SearchWidgetState();
+  ConsumerState<SearchWidget> createState() => _SearchWidgetState();
 }
 
-class _SearchWidgetState extends State<SearchWidget> {
-  TextEditingController searchController = TextEditingController();
-  bool onText = false;
+class _SearchWidgetState extends ConsumerState<SearchWidget> {
+  final TextEditingController _controller = TextEditingController();
 
   @override
-  void initState() {
-    searchController.clear();
-    super.initState();
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       height: 40,
-      child: Stack(
-        children: [
-          TextField(
-            controller: searchController,
-            decoration: InputDecoration(
-              hintText: 'Search for medicine',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 0,
-            bottom: 0,
-            right: 0,
-            child: SizedBox(
-              width: 40,
-              height: 40,
-              child: TextButton(
-                onPressed: () {},
-                style: ButtonStyle(
-                  padding: WidgetStatePropertyAll(
-                    EdgeInsetsGeometry.symmetric(horizontal: 0, vertical: 0),
-                  ),
-                ),
-                child: Icon(Icons.search),
-              ),
-            ),
-          ),
-        ],
+      child: TextField(
+        controller: _controller,
+        onChanged: ref.read(pharmacyQueryProvider.notifier).setSearch,
+        onSubmitted: (_) => widget.onSubmitted?.call(),
+        decoration: InputDecoration(
+          hintText: 'Search medicines and products',
+          prefixIcon: const Icon(Icons.search, size: 18),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          isDense: true,
+        ),
       ),
     );
   }
