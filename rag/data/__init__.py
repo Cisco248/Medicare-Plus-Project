@@ -1,10 +1,10 @@
-<<<<<<< Updated upstream
 from .ingestion import DocumentLoader, DocumentTextSplitters, DocumentEmbeddor
 from .model import (
     HealthActivities,
     HealthSummaryRequest,
     HealthSummaryResponse,
     Request,
+    SimilaritySearchRequest,
     Response,
 )
 from .storage import VectorStoreManager, ChromaClient
@@ -17,22 +17,8 @@ __all__ = [
     "HealthSummaryRequest",
     "HealthSummaryResponse",
     "Request",
+    "SimilaritySearchRequest",
     "Response",
     "VectorStoreManager",
     "ChromaClient",
 ]
-=======
-from .ingestion import DocumentLoader, DocumentTextSplitters, DocumentEmbeddor
-from .model import Request, Response
-from .storage import VectorStoreManager, ChromaClient
-
-__all__ = [
-    "DocumentEmbeddor",
-    "DocumentLoader",
-    "DocumentTextSplitters",
-    "Request",
-    "Response",
-    "VectorStoreManager",
-    "ChromaClient",
-]
->>>>>>> Stashed changes

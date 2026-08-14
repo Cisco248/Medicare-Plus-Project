@@ -153,7 +153,7 @@ def _split_recommendations(text: str) -> tuple[str, list[str]]:
         summary = text[:index].strip()
         recommendations = [
             line.strip().lstrip("-*\u2022 ").strip()
-            for line in text[index + len(heading):].splitlines()
+            for line in text[index + len(heading) :].splitlines()
             if line.strip().lstrip("-*\u2022 ").strip()
         ]
         return summary or text.strip(), recommendations
@@ -171,7 +171,7 @@ async def generate_health_summary(
 ) -> HealthSummaryResponse:
     rag = getattr(request.app.state, "rag", None)
     if rag is None:
-        rag = setup_rag_system(f"{settings.FILE_LOCATION}/sample.pdf")
+        rag = setup_rag_system(settings.FILE_LOCATION)
 
     question = _build_question(payload)
     try:

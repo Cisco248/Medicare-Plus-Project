@@ -7,29 +7,39 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 
 class RAGSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=BASE_DIR / ".env", extra="ignore")
+
     FILE_LOCATION: Path = BASE_DIR / "docs"
-    ARTIFAT_PATH: Path = BASE_DIR / "temp"
+    ARTIFACT_PATH: Path = BASE_DIR / "temp"
+
     # API Keys
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
-    # Embedded Model Params
-    EMBEDDING_PATH: Path = ARTIFAT_PATH / "embedding"
-    EMBEDDING_MODEL_BASE_URL: str = "http://llm-model:11434/"
+
+    # OpenAI model parameters. These defaults follow Documentation.md.
     EMBEDDING_MODEL_NAME: str = "text-embedding-3-small"
-    # LLM Params
-    LLM_BASE_URL: str = "http://llm-model:11434/"
-    LLM_MODEL_NAME: str = "gpt-3.5-turbo-instruct"
-    # Vector DB Param
-    CHROMA_API: str = os.getenv("CHROMA_API_KEY", "")
-    CHROMA_PORT: int = 3000
-    CHROMA_HOST: str = "chroma-server"
-    VECTOR_DB_DIR: Path = ARTIFAT_PATH / "db"
-    COLLECTION_NAME: str = "enterprise_hybrid_search"
-    # Retriever Params
-    CHUNK_SIZE: int = 400
+    LLM_MODEL_NAME: str = "gpt-4o-mini"
+    LLM_TEMPERATURE: float = 0.2
+    MAX_OUTPUT_TOKENS: int = 400
+
+    # Chroma uses local persistence by default. Set CHROMA_HOST to use a
+    # separately deployed Chroma HTTP server.
+    CHROMA_HOST: str = os.getenv("CHROMA_HOST", "")
+    CHROMA_PORT: int = int(os.getenv("CHROMA_PORT", "8000"))
+    VECTOR_DB_DIR: Path = ARTIFACT_PATH / "db"
+    COLLECTION_NAME: str = "medicare_knowledge"
+
+    # Chunking and hybrid retrieval.
+    CHUNK_SIZE: int = 500
     CHUNK_OVERLAP: int = 50
-    RETRIEVER_K: int = 4
+    VECTOR_CANDIDATE_K: int = 8
+    RETRIEVER_K: int = 3
+    SIMILARITY_THRESHOLD: float = 0.55
+    BM25_WEIGHT: float = 0.35
+    BM25_MIN_MATCH_RATIO: float = 0.2
+    RRF_K: int = 60
 
-
-# "groq/compound"
-# "https://api.groq.com/openai/v1"
+    # Per-request cost controls.
+    MAX_REQUEST_TOKENS: int = 4000
+    MAX_CONTEXT_TOKENS: int = 2500
+    MAX_QUERY_CHARS: int = 4000
+    RESPONSE_CACHE_SIZE: int = 128
+    RESPONSE_CACHE_TTL_SECONDS: int = 300

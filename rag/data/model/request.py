@@ -1,11 +1,34 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class Request(BaseModel):
-    question: str
+    question: str = Field(min_length=1, max_length=4000)
+
+
+class SimilaritySearchRequest(Request):
+    k: int = Field(default=3, ge=1, le=20)
+    metadata_filter: dict[str, str | int | float | bool] | None = None
+
+    @field_validator("metadata_filter")
+    @classmethod
+    def validate_filter_keys(cls, value):
+        allowed = {
+            "source",
+            "page",
+            "document_type",
+            "type",
+            "issuer",
+            "hospital",
+        }
+        unknown = set(value or {}) - allowed
+        if unknown:
+            raise ValueError(
+                f"Unsupported metadata filter fields: {', '.join(sorted(unknown))}"
+            )
+        return value
 
 
 class SummaryPeriod(BaseModel):

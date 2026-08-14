@@ -2,6 +2,7 @@ from .request import (
     HealthActivities,
     HealthSummaryRequest,
     Request,
+    SimilaritySearchRequest,
 )
 from .response import HealthSummaryResponse, Response
 
@@ -10,5 +11,6 @@ __all__ = [
     "HealthSummaryRequest",
     "HealthSummaryResponse",
     "Request",
+    "SimilaritySearchRequest",
     "Response",
 ]
