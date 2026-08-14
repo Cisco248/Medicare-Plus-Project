@@ -3,6 +3,7 @@ from langchain_openai import OpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+from pydantic import SecretStr
 
 from core import RAGSettings, DocumentFormat
 
@@ -29,6 +30,9 @@ class RAGChainManager:
             Make sure to answer in a concise manner,
             and if you don't know the answer, just say "I Dont't Know."
               """)
-            | OpenAI(model=settings.LLM_MODEL_NAME, api_key=settings.OPENAI_API_KEY)
+            | OpenAI(
+                model=settings.LLM_MODEL_NAME,
+                api_key=SecretStr(settings.OPENAI_API_KEY),
+            )
             | StrOutputParser()
         )

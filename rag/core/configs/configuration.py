@@ -18,7 +18,7 @@ class RAGSettings(BaseSettings):
     EMBEDDING_MODEL_NAME: str = "text-embedding-3-small"
     # LLM Params
     LLM_BASE_URL: str = "http://llm-model:11434/"
-    LLM_MODEL_NAME: str = "chatgpt-4o-mini"
+    LLM_MODEL_NAME: str = "gpt-3.5-turbo-instruct"
     # Vector DB Param
     CHROMA_API: str = os.getenv("CHROMA_API_KEY", "")
     CHROMA_PORT: int = 3000
