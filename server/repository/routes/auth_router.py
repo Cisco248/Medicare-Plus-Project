@@ -33,4 +33,4 @@ def sign_up(model: UserCreate, db: Session = Depends(get_db)):
 def sign_in(model: UserLogin, db: Session = Depends(get_db)) -> Dict[str, Any]:
     data = db.query(UserModel).filter(UserModel.email == model.email).first()
     result = AuthenticationMiddleware.login_middleware(data, model)
-    return result.__dict__
+    return result.dict()

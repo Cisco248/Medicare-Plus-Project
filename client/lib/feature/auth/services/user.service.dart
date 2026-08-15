@@ -6,7 +6,7 @@ import 'package:client/feature/auth/models/auth.scheme.model.dart';
 import 'package:client/feature/auth/repository/user.repository.dart';
 
 class UserService {
-  final _repo = UserRepository(client: physicalDevice(8080));
+  final _repo = UserRepository(client: virtualDevice(8080));
 
   Future<AuthResponseModel> loginService(String email, String password) async {
     try {

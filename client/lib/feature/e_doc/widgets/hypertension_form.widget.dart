@@ -31,6 +31,13 @@ class _HypertensionFormWidgetState
   Widget build(BuildContext context) {
     Future<void> sendData(BuildContext context) async {
       if (_formKey.currentState!.validate()) {
+        debugPrint(_age.toString());
+        debugPrint(_height.toString());
+        debugPrint(_weight.toString());
+        debugPrint(_hemoglobin.toString());
+        debugPrint(_cholesterol.toString());
+        debugPrint(_diabetesOrdinal.toString());
+        debugPrint(selectGender.toString());
         NotificationUtils.error(context, 'Fields are Empty!');
       }
 

@@ -12,9 +12,9 @@ class AppbarWidget extends ConsumerWidget implements PreferredSizeWidget {
     final theme = Theme.of(context).colorScheme;
 
     return AppBar(
-      backgroundColor: theme.surfaceContainer,
       leading: IconButton(
         tooltip: 'Menu',
+        style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.transparent)),
         onPressed: () => Scaffold.of(context).openDrawer(),
         icon: FaIcon(
           FontAwesomeIcons.bars,
@@ -22,8 +22,10 @@ class AppbarWidget extends ConsumerWidget implements PreferredSizeWidget {
           color: theme.primary,
         ),
       ),
+      centerTitle: true,
+      backgroundColor: theme.surfaceContainer,
       title: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.health_and_safety_rounded,
