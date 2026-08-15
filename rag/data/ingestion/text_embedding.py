@@ -1,27 +1,31 @@
 import logging
-from typing import List
-from langchain_ollama import OllamaEmbeddings
-from langchain_core.documents import Document
-from core import RAGSettings
+from langchain_openai import OpenAIEmbeddings
+from pydantic import SecretStr
+from core.configs.configuration import RAGSettings
 
 logger = logging.getLogger(__name__)
 settings = RAGSettings()
 
 
 class DocumentEmbeddor:
-    @staticmethod
-    def load_embedding(document: List[Document]):
-        # if not settings.EMBEDDING_PATH.exists():
-        #     settings.EMBEDDING_PATH.mkdir(parents=True, exist_ok=True)
-        model = OllamaEmbeddings(
-            model=settings.EMBEDDING_MODEL_NAME,
-            base_url=settings.EMBEDDING_MODEL_BASE_URL,
-        )
-        # joblib.dump(model, f"{settings.EMBEDDING_PATH}/embedding_model.pkl")
-        # model: HuggingFaceEmbeddings = joblib.load(
-        #     f"{settings.EMBEDDING_PATH}/embedding_model.pkl"
-        # )
+    _model: OpenAIEmbeddings | None = None
 
-        logger.info("<--- Text Embedding Started --->")
-        for i, doc in enumerate(document):
-            return model.embed_documents([doc.page_content])
+    @staticmethod
+    def load_embedding() -> OpenAIEmbeddings:
+        """Return one reusable embedding client.
+
+        Chroma performs document embeddings in batches when new chunks are
+        added and performs one query embedding per similarity search.
+        """
+        if DocumentEmbeddor._model is None:
+            if not settings.OPENAI_API_KEY:
+                raise ValueError("OPENAI_API_KEY is required to build the RAG index.")
+            DocumentEmbeddor._model = OpenAIEmbeddings(
+                model=settings.EMBEDDING_MODEL_NAME,
+                api_key=SecretStr(settings.OPENAI_API_KEY),
+            )
+            logger.info(
+                "Initialized OpenAI embedding model %s",
+                settings.EMBEDDING_MODEL_NAME,
+            )
+        return DocumentEmbeddor._model

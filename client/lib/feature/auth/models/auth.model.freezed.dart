@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AuthStatus {
 
- AuthMode get state; String? get token;
+ AuthMode get state; UserModel? get data; String? get token;
 /// Create a copy of AuthStatus
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $AuthStatusCopyWith<AuthStatus> get copyWith => _$AuthStatusCopyWithImpl<AuthSta
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthStatus&&(identical(other.state, state) || other.state == state)&&(identical(other.token, token) || other.token == token));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthStatus&&(identical(other.state, state) || other.state == state)&&(identical(other.data, data) || other.data == data)&&(identical(other.token, token) || other.token == token));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,state,token);
+int get hashCode => Object.hash(runtimeType,state,data,token);
 
 @override
 String toString() {
-  return 'AuthStatus(state: $state, token: $token)';
+  return 'AuthStatus(state: $state, data: $data, token: $token)';
 }
 
 
@@ -45,11 +45,11 @@ abstract mixin class $AuthStatusCopyWith<$Res>  {
   factory $AuthStatusCopyWith(AuthStatus value, $Res Function(AuthStatus) _then) = _$AuthStatusCopyWithImpl;
 @useResult
 $Res call({
- AuthMode state, String? token
+ AuthMode state, UserModel? data, String? token
 });
 
 
-
+$UserModelCopyWith<$Res>? get data;
 
 }
 /// @nodoc
@@ -62,14 +62,27 @@ class _$AuthStatusCopyWithImpl<$Res>
 
 /// Create a copy of AuthStatus
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? state = null,Object? token = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? state = null,Object? data = freezed,Object? token = freezed,}) {
   return _then(_self.copyWith(
 state: null == state ? _self.state : state // ignore: cast_nullable_to_non_nullable
-as AuthMode,token: freezed == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
+as AuthMode,data: freezed == data ? _self.data : data // ignore: cast_nullable_to_non_nullable
+as UserModel?,token: freezed == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
+/// Create a copy of AuthStatus
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserModelCopyWith<$Res>? get data {
+    if (_self.data == null) {
+    return null;
+  }
 
+  return $UserModelCopyWith<$Res>(_self.data!, (value) {
+    return _then(_self.copyWith(data: value));
+  });
+}
 }
 
 
@@ -151,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AuthMode state,  String? token)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( AuthMode state,  UserModel? data,  String? token)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AuthStatus() when $default != null:
-return $default(_that.state,_that.token);case _:
+return $default(_that.state,_that.data,_that.token);case _:
   return orElse();
 
 }
@@ -172,10 +185,10 @@ return $default(_that.state,_that.token);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AuthMode state,  String? token)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( AuthMode state,  UserModel? data,  String? token)  $default,) {final _that = this;
 switch (_that) {
 case _AuthStatus():
-return $default(_that.state,_that.token);case _:
+return $default(_that.state,_that.data,_that.token);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -192,10 +205,10 @@ return $default(_that.state,_that.token);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AuthMode state,  String? token)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( AuthMode state,  UserModel? data,  String? token)?  $default,) {final _that = this;
 switch (_that) {
 case _AuthStatus() when $default != null:
-return $default(_that.state,_that.token);case _:
+return $default(_that.state,_that.data,_that.token);case _:
   return null;
 
 }
@@ -207,10 +220,11 @@ return $default(_that.state,_that.token);case _:
 
 
 class _AuthStatus implements AuthStatus {
-  const _AuthStatus({required this.state, this.token});
+  const _AuthStatus({required this.state, this.data, this.token});
   
 
 @override final  AuthMode state;
+@override final  UserModel? data;
 @override final  String? token;
 
 /// Create a copy of AuthStatus
@@ -223,16 +237,16 @@ _$AuthStatusCopyWith<_AuthStatus> get copyWith => __$AuthStatusCopyWithImpl<_Aut
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AuthStatus&&(identical(other.state, state) || other.state == state)&&(identical(other.token, token) || other.token == token));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AuthStatus&&(identical(other.state, state) || other.state == state)&&(identical(other.data, data) || other.data == data)&&(identical(other.token, token) || other.token == token));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,state,token);
+int get hashCode => Object.hash(runtimeType,state,data,token);
 
 @override
 String toString() {
-  return 'AuthStatus(state: $state, token: $token)';
+  return 'AuthStatus(state: $state, data: $data, token: $token)';
 }
 
 
@@ -243,11 +257,11 @@ abstract mixin class _$AuthStatusCopyWith<$Res> implements $AuthStatusCopyWith<$
   factory _$AuthStatusCopyWith(_AuthStatus value, $Res Function(_AuthStatus) _then) = __$AuthStatusCopyWithImpl;
 @override @useResult
 $Res call({
- AuthMode state, String? token
+ AuthMode state, UserModel? data, String? token
 });
 
 
-
+@override $UserModelCopyWith<$Res>? get data;
 
 }
 /// @nodoc
@@ -260,15 +274,28 @@ class __$AuthStatusCopyWithImpl<$Res>
 
 /// Create a copy of AuthStatus
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? state = null,Object? token = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? state = null,Object? data = freezed,Object? token = freezed,}) {
   return _then(_AuthStatus(
 state: null == state ? _self.state : state // ignore: cast_nullable_to_non_nullable
-as AuthMode,token: freezed == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
+as AuthMode,data: freezed == data ? _self.data : data // ignore: cast_nullable_to_non_nullable
+as UserModel?,token: freezed == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
 
+/// Create a copy of AuthStatus
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserModelCopyWith<$Res>? get data {
+    if (_self.data == null) {
+    return null;
+  }
 
+  return $UserModelCopyWith<$Res>(_self.data!, (value) {
+    return _then(_self.copyWith(data: value));
+  });
+}
 }
 
 // dart format on

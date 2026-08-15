@@ -2,7 +2,8 @@ import logging
 import logging.config
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
-from core import LOGGER, RAGSettings, router, health_router, e_doc_router
+from core import LOGGER, RAGSettings
+from core.api import router, health_router, e_doc_router, knowledge_router
 from domain import setup_rag_system
 
 logging.config.dictConfig(LOGGER)
@@ -13,8 +14,8 @@ settings = RAGSettings()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting RAG system...")
-    app.state.rag = setup_rag_system(f"{settings.FILE_LOCATION}/sample.pdf")
-    logger.info("RAG system loaded successfully")
+    app.state.rag = setup_rag_system(settings.FILE_LOCATION)
+    logger.info("RAG system initialized (ready=%s)", app.state.rag.ready)
     yield
 
     logger.info("Shutting down RAG system...")
@@ -30,4 +31,5 @@ def get_rag(request: Request):
 
 app.include_router(router, prefix="/api")
 app.include_router(e_doc_router, prefix="/api")
+app.include_router(knowledge_router, prefix="/api")
 app.include_router(health_router)

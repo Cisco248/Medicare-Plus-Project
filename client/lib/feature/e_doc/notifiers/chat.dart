@@ -23,7 +23,7 @@ class ChatBotNotify extends _$ChatBotNotify {
       ).sendData(data);
       state = ResponseModel(
         message: res.message,
-        body: {"prediction": res.body!["prediction"]},
+        body: {"prediction": res.body?["prediction"] ?? ''},
       );
     } catch (e) {
       state = ResponseModel(message: e.toString());

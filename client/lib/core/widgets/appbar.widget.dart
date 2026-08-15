@@ -12,25 +12,37 @@ class AppbarWidget extends ConsumerWidget implements PreferredSizeWidget {
     final theme = Theme.of(context).colorScheme;
 
     return AppBar(
-      backgroundColor: theme.surfaceContainer,
-      title: Padding(
-        padding: const EdgeInsets.only(left: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Icon(Icons.health_and_safety_rounded, size: 24, color: theme.primary),
-            const SizedBox(width: 8),
-            Text(
-              "MediCare Plus",
-              style: TextStyle(
-                color: theme.primary,
-                fontFamily: "Inter",
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
+      leading: IconButton(
+        tooltip: 'Menu',
+        style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.transparent)),
+        onPressed: () => Scaffold.of(context).openDrawer(),
+        icon: FaIcon(
+          FontAwesomeIcons.bars,
+          size: 16,
+          color: theme.primary,
         ),
+      ),
+      centerTitle: true,
+      backgroundColor: theme.surfaceContainer,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.health_and_safety_rounded,
+            size: 24,
+            color: theme.primary,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            "MediCare Plus",
+            style: TextStyle(
+              color: theme.primary,
+              fontFamily: "Inter",
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ),
       automaticallyImplyActions: false,
       automaticallyImplyLeading: false,
@@ -43,7 +55,7 @@ class AppbarWidget extends ConsumerWidget implements PreferredSizeWidget {
               ref.watch(themeProvider).isDark
                   ? FontAwesomeIcons.sun
                   : FontAwesomeIcons.moon,
-          
+
               color: ZintraColorPrimitives.primary500,
             ),
             style: ButtonStyle(

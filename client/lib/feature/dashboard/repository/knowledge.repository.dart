@@ -1,32 +1,45 @@
-import 'package:client/core/utils/exception.utils.dart';
-import 'package:dio/dio.dart';
+import 'package:client/core/exceptions/response.exception.dart';
+import 'package:client/feature/dashboard/models/activity.model.dart';
+import 'package:client/feature/dashboard/models/health_summary_request.model.dart';
+import 'package:client/feature/dashboard/models/health_summary_response.model.dart';
+import 'package:client/feature/dashboard/services/rag.service.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+part 'knowledge.repository.g.dart';
+
+@riverpod
+KnowledgeRepository knowledgeRepository(Ref ref) =>
+    KnowledgeRepository(ragService: ref.watch(ragServiceProvider));
+
+/// Domain layer between the notifier and the RAG API.
+///
+/// Builds the structured [HealthSummaryRequest] from normalized activity data
+/// and delegates the HTTP call to [RagService]. Refuses to send empty data to
+/// the RAG system as if it were real.
 class KnowledgeRepository {
-  final Dio _client;
+  KnowledgeRepository({required this._ragService});
 
-  KnowledgeRepository({required this._client});
+  final RagService _ragService;
 
-  Future<void> sendData(Map<String, Object?> data) async {
-    try {
-      final response = await _client.post('/knowledge', data: data);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        throw BaseException(
-          requestOptions: RequestOptions(),
-          message: response.statusMessage,
-          error: response.statusMessage,
-          statusCode: response.statusCode,
-        );
-      }
-    } catch (e) {
-      throw BaseException(requestOptions: RequestOptions(), error: e);
+  Future<HealthSummaryResponse> generateSummary({
+    required ActivityModel activity,
+    required DateTime startTime,
+    required DateTime endTime,
+    String? userId,
+    String? token,
+  }) async {
+    if (!activity.hasAnyData) {
+      throw const ValidationException(
+        message: 'No health data is available to summarize for this period.',
+      );
     }
-  }
 
-  Future<String> getStoredData() async {
-    try {
-      return '';
-    } catch (e) {
-      throw BaseException(requestOptions: RequestOptions(), error: e);
-    }
+    final request = HealthSummaryRequest.fromActivity(
+      activity: activity,
+      startTime: startTime,
+      endTime: endTime,
+      userId: userId,
+    );
+    return _ragService.generateHealthSummary(request, token: token);
   }
 }

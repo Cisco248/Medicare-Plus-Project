@@ -19,7 +19,7 @@ import kotlinx.coroutines.withContext
 import java.time.ZoneId
 
 internal class AggregationManager( private val clientProvider: () -> HealthConnectClient) {
-    suspend fun aggregate(
+    suspend fun result(
         metric: String,
         startTimeMillis: Long,
         endTimeMillis: Long,
@@ -147,24 +147,24 @@ internal class AggregationManager( private val clientProvider: () -> HealthConne
 
     suspend fun getDailyHealthSummary(dateMillis: Long): Map<String, Any?> =
         withContext(Dispatchers.IO) {
+
             val zone = ZoneId.systemDefault()
-            val localDate =
-                InstantOf(dateMillis).atZone(zone).toLocalDate()
+            val localDate = InstantOf(dateMillis).atZone(zone).toLocalDate()
             val dayStart = localDate.atStartOfDay(zone).toInstant()
             val dayEnd = localDate.plusDays(1).atStartOfDay(zone).toInstant()
             val startMillis = dayStart.toEpochMilli()
             val endMillis = dayEnd.toEpochMilli()
 
-            val steps = aggregate("stepsTotal", startMillis, endMillis)["value"] as Double?
-            val distance = aggregate("distanceTotal", startMillis, endMillis)["value"] as Double?
+            val steps = result("stepsTotal", startMillis, endMillis)["value"] as Double?
+            val distance = result("distanceTotal", startMillis, endMillis)["value"] as Double?
             val activeCalories =
-                aggregate("activeCaloriesTotal", startMillis, endMillis)["value"] as Double?
+                result("activeCaloriesTotal", startMillis, endMillis)["value"] as Double?
             val totalCalories =
-                aggregate("totalCaloriesTotal", startMillis, endMillis)["value"] as Double?
-            val avgHr = aggregate("heartRateAvg", startMillis, endMillis)["value"] as Double?
+                result("totalCaloriesTotal", startMillis, endMillis)["value"] as Double?
+            val avgHr = result("heartRateAvg", startMillis, endMillis)["value"] as Double?
             val restingHr =
-                aggregate("restingHeartRateAvg", startMillis, endMillis)["value"] as Double?
-            val weight = aggregate("weightAvg", startMillis, endMillis)["value"] as Double?
+                result("restingHeartRateAvg", startMillis, endMillis)["value"] as Double?
+            val weight = result("weightAvg", startMillis, endMillis)["value"] as Double?
             val sleepMillis = readSleepDurationMillis(dayStart.toEpochMilli(), dayEnd.toEpochMilli())
 
             mapOf(
@@ -179,6 +179,44 @@ internal class AggregationManager( private val clientProvider: () -> HealthConne
                 "weight" to weight,
             )
         }
+
+    // Need to Fix
+
+    // Issue 6 — 🟡 Daily summary: 8 IPC round-trips and incorrect sleep totals
+    // Root cause. getDailyHealthSummary calls aggregate(...) seven times sequentially — each is a separate binder call to the Health Connect provider, which rate-limits foreground calls. Health Connect's AggregateRequest natively accepts multiple metrics.
+
+    // ❌ Current Code
+
+    // AggregationManager.kt
+    // Lines 158-167
+    // val steps = aggregate("stepsTotal", startMillis, endMillis)["value"] as Double?
+    // val distance = aggregate("distanceTotal", startMillis, endMillis)["value"] as Double?
+    // val activeCalories = aggregate("activeCaloriesTotal", startMillis, endMillis)["value"] as Double?
+    // ...
+    // ✅ Corrected Code
+    // val response = clientProvider().aggregate(
+        // AggregateRequest(
+           // metrics = setOf(
+                // StepsRecord.COUNT_TOTAL,
+                // DistanceRecord.DISTANCE_TOTAL,
+                // ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL,
+                // TotalCaloriesBurnedRecord.ENERGY_TOTAL,
+                // HeartRateRecord.BPM_AVG,
+                // RestingHeartRateRecord.BPM_AVG,
+                // WeightRecord.WEIGHT_AVG,
+            // ),
+            // timeRangeFilter = TimeRangeFilter.between(dayStart, dayEnd),
+        // ),
+    // )
+    // val steps = response[StepsRecord.COUNT_TOTAL]?.toDouble()
+    // val distance = response[DistanceRecord.DISTANCE_TOTAL]?.inMeters
+
+    // ... etc., one IPC call instead of seven
+    //Separately, readSleepDurationMillis sums the full duration of every session that merely overlaps the day (a 23:00→07:00 session adds 8h to both days) and ignores pageToken. Clip to the window and paginate:
+
+    // val clippedStart = maxOf(record.startTime, dayStart)
+    // val clippedEnd = minOf(record.endTime, dayEnd)
+    // java.time.Duration.between(clippedStart, clippedEnd).coerceAtLeast(java.time.Duration.ZERO).toMillis()
 
     private suspend fun readSleepDurationMillis(
         startMillis: Long,

@@ -25,6 +25,11 @@ class ServerSettings(BaseSettings):
     # JWT Tokens
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "your-secret-key")
 
+    # Patient document storage (local disk)
+    DOCUMENT_STORAGE_PATH: str = os.getenv(
+        "DOCUMENT_STORAGE_PATH", f"{BASE_DIR}/uploads/documents"
+    )
+
     HYPERTENSION_MODEL_PATH: str = f"{BASE_DIR}/artifacts/base/hypertension/model.pkl"
     HYPERTENSION_FEATURE_PATH: str = (
         f"{BASE_DIR}/artifacts/base/hypertension/features.pkl"

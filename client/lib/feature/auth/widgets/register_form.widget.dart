@@ -1,7 +1,7 @@
 import 'package:client/core/themes/primitives/colors.dart';
 import 'package:client/core/utils/notification.utils.dart';
 import 'package:client/core/widgets/textfield.widget.dart';
-import 'package:client/feature/auth/models/user_model.dart';
+import 'package:client/feature/auth/models/auth.scheme.model.dart';
 import 'package:client/feature/auth/notifiers/authentication.notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

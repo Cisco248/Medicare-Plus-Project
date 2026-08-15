@@ -20,10 +20,9 @@ class TokenGenerator:
         }
         return jwt.encode(payload, secret_key, algorithm)
 
-    def verify_token(self, secret_key: str, algorithm: str = "HS256"):
+    def verify_token(self, secret_key: str, token: str, algorithm: str = "HS256"):
         return jwt.decode(
-            self.x_auth_token,
+            token,
             secret_key,
-            algorithm,
-            verify=True,
+            algorithms=[algorithm],
         )

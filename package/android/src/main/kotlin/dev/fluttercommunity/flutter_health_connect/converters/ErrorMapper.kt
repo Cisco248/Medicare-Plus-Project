@@ -25,7 +25,7 @@ internal object ErrorMapper {
                     else -> "record" to message
                 }
             }
-            is SecurityException -> "security" to message
+            is SecurityException -> "permission_denied" to message
             is RemoteException -> "unavailable" to message
             is IOException -> "record" to message
             is IllegalStateException -> {
