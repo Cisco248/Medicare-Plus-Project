@@ -1,5 +1,4 @@
 import 'package:flutter_health_connect/app.dart';
-import 'package:flutter_health_connect/src/service/method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 /// Platform-specific implementations should set this with their own

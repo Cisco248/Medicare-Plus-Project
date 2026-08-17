@@ -1,12 +1,12 @@
 import 'package:client/core/exceptions/basic.exception.dart';
 import 'package:client/core/exceptions/response.exception.dart';
-import 'package:client/core/utils/dio.client.dart';
+import 'package:client/core/network/dio_client.dart';
 import 'package:client/feature/auth/models/auth.response.model.dart';
 import 'package:client/feature/auth/models/auth.scheme.model.dart';
 import 'package:client/feature/auth/repository/user.repository.dart';
 
 class UserService {
-  final _repo = UserRepository(client: virtualDevice(8080));
+  final _repo = UserRepository(client: client(8080));
 
   Future<AuthResponseModel> loginService(String email, String password) async {
     try {

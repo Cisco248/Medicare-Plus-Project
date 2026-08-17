@@ -62,31 +62,6 @@ services:
 
     restart: unless-stopped
 
-  # llm-model:
-  #     container_name: llm-model
-
-  #     image: ollama/ollama:latest
-
-  #     ports:
-  #       - "11434:11434"
-
-  #     volumes:
-  #       - ollama-data:/root/.ollama
-
-  #     networks:
-  #       - app-network
-      
-  #     entrypoint: >
-  #       sh -c "
-  #         ollama serve &
-  #         sleep 5 &&
-  #         ollama pull qwen3:0.6b &&
-  #         ollama pull paraphrase-multilingual &&
-  #         wait
-  #       "
-
-  #     restart: unless-stopped
-
   # Build the MySQL Database for Back-End Server
   mysql-server:
     container_name: mysql-server

@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:client/core/exceptions/base.exception.dart';
-import 'package:client/core/utils/dio.client.dart';
+import 'package:client/core/network/dio_client.dart';
 import 'package:client/feature/reports/data/demo_documents.dart';
 import 'package:client/feature/reports/models/document.model.dart';
 import 'package:dio/dio.dart';
@@ -11,7 +11,7 @@ part 'report.repository.g.dart';
 
 @riverpod
 ReportRepository reportRepository(Ref ref) =>
-    ReportRepository(client: physicalDevice(8080));
+    ReportRepository(client: client(8080));
 
 /// HTTP access to the backend's patient document endpoints (`/api/documents`).
 ///

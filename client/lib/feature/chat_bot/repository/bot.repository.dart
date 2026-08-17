@@ -1,4 +1,4 @@
-import 'package:client/core/utils/dio.client.dart';
+import 'package:client/core/network/dio_client.dart';
 import 'package:client/feature/chat_bot/models/response.model.dart';
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -7,7 +7,7 @@ part 'bot.repository.g.dart';
 
 @riverpod
 BotRepositoryImpService botRepositoryImpService(Ref ref) =>
-    BotRepositoryImpService(client: virtualDevice(8000));
+    BotRepositoryImpService(client: client(8000));
 
 abstract class BotRepository {
   Future<ChatResponseModel> sendInfo(String info);
