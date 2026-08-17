@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
     app.state.rag = None
 
 
-app = FastAPI(title="RAG System API", version="1.0", lifespan=lifespan)
+app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION, lifespan=lifespan)
 
 
 def get_rag(request: Request):

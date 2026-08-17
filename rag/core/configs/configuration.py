@@ -8,26 +8,26 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 class RAGSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=BASE_DIR / ".env", extra="ignore")
 
+    # RAG System Configurations
+    APP_NAME: str = os.getenv("APP_NAME", "")
+    APP_VERSION: str = os.getenv("APP_VERSION", "")
     FILE_LOCATION: Path = BASE_DIR / "docs"
     ARTIFACT_PATH: Path = BASE_DIR / "temp"
 
-    # API Keys
+    # OpenAI Configurations
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+    LLM_MODEL_NAME: str = os.getenv("LLM_MODEL", "")
+    EMBEDDING_MODEL_NAME: str = os.getenv("EMBEDDING_MODEL", "")
+    LLM_TEMPERATURE: float = float(os.getenv("LLM_TEMPERATURE", 0.2))
+    MAX_OUTPUT_TOKENS: int = int(os.getenv("MAX_OUTPUT_TOKENS", 400))
 
-    # OpenAI model parameters. These defaults follow Documentation.md.
-    EMBEDDING_MODEL_NAME: str = "text-embedding-3-small"
-    LLM_MODEL_NAME: str = "gpt-4o-mini"
-    LLM_TEMPERATURE: float = 0.2
-    MAX_OUTPUT_TOKENS: int = 400
-
-    # Chroma uses local persistence by default. Set CHROMA_HOST to use a
-    # separately deployed Chroma HTTP server.
+    # Chroma Configurations
     CHROMA_HOST: str = os.getenv("CHROMA_HOST", "")
-    CHROMA_PORT: int = int(os.getenv("CHROMA_PORT", "8000"))
+    CHROMA_PORT: int = int(os.getenv("CHROMA_PORT", 3000))
+    COLLECTION_NAME: str = os.getenv("COLLECTION_NAME", "")
     VECTOR_DB_DIR: Path = ARTIFACT_PATH / "db"
-    COLLECTION_NAME: str = "medicare_knowledge"
 
-    # Chunking and hybrid retrieval.
+    # Retrivel Configurations
     CHUNK_SIZE: int = 500
     CHUNK_OVERLAP: int = 50
     VECTOR_CANDIDATE_K: int = 8

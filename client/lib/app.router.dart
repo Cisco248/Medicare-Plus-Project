@@ -57,18 +57,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
       // Authentication state is still being initialized.
       if (authState.isLoading) {
-        return state.matchedLocation == '/loading'
-            ? null
-            : '/loading';
+        return state.matchedLocation == '/loading' ? null : '/loading';
       }
 
       // Don't redirect when authentication has failed.
       // You can replace this with an error page later.
       if (authState.hasError) {
         if (kDebugMode) {
-          debugPrint(
-            'Authentication error: ${authState.error}',
-          );
+          debugPrint('Authentication error: ${authState.error}');
         }
 
         return null;
@@ -78,7 +74,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       final AuthMode authMode = authState.when(
         data: (auth) => auth.state,
         loading: () => AuthMode.initial,
-        error: (_, __) => AuthMode.initial,
+        error: (_, _) => AuthMode.initial,
       );
 
       if (kDebugMode) {
@@ -88,24 +84,16 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       switch (authMode) {
         case AuthMode.initial:
-          return state.matchedLocation == '/splash'
-              ? null
-              : '/splash';
+          return state.matchedLocation == '/splash' ? null : '/splash';
 
         case AuthMode.setup:
-          return state.matchedLocation == '/splash'
-              ? null
-              : '/splash';
+          return state.matchedLocation == '/splash' ? null : '/splash';
 
         case AuthMode.unauthenticated:
-          return state.matchedLocation == '/auth'
-              ? null
-              : '/auth';
+          return state.matchedLocation == '/auth' ? null : '/auth';
 
         case AuthMode.authenticated:
-          return state.matchedLocation == '/home'
-              ? null
-              : '/home';
+          return state.matchedLocation == '/home' ? null : '/home';
       }
     },
   );
@@ -113,18 +101,17 @@ final routerProvider = Provider<GoRouter>((ref) {
 
 class AuthChangeNotifier extends ChangeNotifier {
   AuthChangeNotifier(this.ref) {
-    ref.listen<AsyncValue<AuthStatus>>(
-      authenticationProvider,
-          (previous, next) {
-        notifyListeners();
-      },
-    );
+    ref.listen<AsyncValue<AuthStatus>>(authenticationProvider, (
+      previous,
+      next,
+    ) {
+      notifyListeners();
+    });
   }
 
   final Ref ref;
 }
 
-final authChangeNotifierProvider =
-Provider<AuthChangeNotifier>((ref) {
+final authChangeNotifierProvider = Provider<AuthChangeNotifier>((ref) {
   return AuthChangeNotifier(ref);
 });

@@ -1,7 +1,7 @@
 import 'package:client/core/exceptions/base.exception.dart';
 import 'package:client/core/exceptions/basic.exception.dart';
 import 'package:client/core/exceptions/response.exception.dart';
-import 'package:client/core/utils/dio.client.dart';
+import 'package:client/core/network/dio_client.dart';
 import 'package:client/feature/dashboard/models/health_summary_request.model.dart';
 import 'package:client/feature/dashboard/models/health_summary_response.model.dart';
 import 'package:dio/dio.dart';
@@ -10,7 +10,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'rag.service.g.dart';
 
 @riverpod
-RagService ragService(Ref ref) => RagService(client: ragClient());
+RagService ragService(Ref ref) => RagService(client: client(8000));
 
 /// HTTP integration with the RAG backend.
 ///

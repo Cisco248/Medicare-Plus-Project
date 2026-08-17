@@ -12,7 +12,7 @@ setting = ServerSettings()
 @dataclass
 class DBConnection:
     ENGINE = create_engine(
-        setting.DB_URL,
+        f"mysql+pymysql://{setting.DB_USER}:{setting.DB_PASSWORD}@{setting.DB_HOST}:{setting.DB_PORT}/{setting.DB_NAME}",
         echo=setting.ECO,
         pool_pre_ping=setting.Pool_Pre_Ping,
     )
