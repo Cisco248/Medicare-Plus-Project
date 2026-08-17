@@ -23,7 +23,7 @@ class ServerSettings(BaseSettings):
     APP_HOST: str = os.getenv("HOST", "0.0.0.0")
     APP_PORT: int = int(os.getenv("PORT", 8000))
     DEBUG: bool = os.getenv("DEBUG", "true").lower() == "true"
-    CORS_ORIGIN: list[str] = os.getenv("CORS_ORIGINS", "http://localhost:3000").split()
+    CORS_ORIGIN: list[str] = os.getenv("CORS_ORIGINS", "").split()
 
     # Rag URL
     RAG_HOST: str = os.getenv("RAG_HOST", "loacalhost")
