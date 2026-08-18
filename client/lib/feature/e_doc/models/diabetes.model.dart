@@ -1,11 +1,16 @@
-import 'package:flutter/foundation.dart';
+// @JsonSerializable on freezed factory constructors is the documented way to
+// configure json_serializable for freezed classes.
+// ignore_for_file: invalid_annotation_target
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'diabetes.model.freezed.dart';
 part 'diabetes.model.g.dart';
 
+/// Request body for `POST /api-base/diabetes`.
 @freezed
-sealed class DiabetesModel with _$DiabetesModel {
+abstract class DiabetesModel with _$DiabetesModel {
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory DiabetesModel({
     required int age,
     required String gender,
@@ -19,24 +24,4 @@ sealed class DiabetesModel with _$DiabetesModel {
 
   factory DiabetesModel.fromJson(Map<String, Object?> json) =>
       _$DiabetesModelFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson() =>
-      _$DiabetesModelToJson(this as _DiabetesModel);
-}
-
-@freezed
-sealed class DiabetesResultModel with _$DiabetesResultModel {
-  const factory DiabetesResultModel({
-    required int prediction,
-    required double riskProbability,
-    required String status,
-  }) = _DiabetesResultModel;
-
-  factory DiabetesResultModel.fromJson(Map<String, Object?> json) =>
-      _$DiabetesResultModelFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson() =>
-      _$DiabetesResultModelToJson(this as _DiabetesResultModel);
 }

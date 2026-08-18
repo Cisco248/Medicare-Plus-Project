@@ -1,21 +1,14 @@
+import 'package:client/feature/e_doc/models/assessment.model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'form.notifier.g.dart';
 
 @riverpod
-class FormState extends _$FormState {
+class EDocModelNotifier extends _$EDocModelNotifier {
   @override
-  String build() {
-    return 'Diabetes';
-  }
+  EDocPredictionModel build() => EDocPredictionModel.diabetes;
 
-  void changeStatus(String newStatus) {
-    if (newStatus == 'Diabetes') {
-      state = 'Diabetes';
-    } else if (newStatus == 'Hypertension') {
-      state = 'Hypertension';
-    } else {
-      state = 'Blood Pressure';
-    }
+  void select(EDocPredictionModel model) {
+    state = model;
   }
 }

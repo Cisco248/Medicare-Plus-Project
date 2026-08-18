@@ -1,161 +1,175 @@
-import 'package:client/core/network/dio_client.dart';
 import 'package:client/core/utils/notification.utils.dart';
-import 'package:client/feature/e_doc/constant/button.style.dart';
+import 'package:client/core/widgets/button.widget.dart';
+import 'package:client/core/widgets/textfield.widget.dart';
+import 'package:client/feature/e_doc/models/assessment.model.dart';
 import 'package:client/feature/e_doc/models/diabetes.model.dart';
-import 'package:client/feature/e_doc/repository/diabetes.repository.dart';
+import 'package:client/feature/e_doc/notifiers/assessment.notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DiabetesFormWidget extends StatefulWidget {
+class DiabetesFormWidget extends ConsumerStatefulWidget {
   const DiabetesFormWidget({super.key});
 
   @override
-  State<DiabetesFormWidget> createState() => _DiabetesFormWidgetState();
+  ConsumerState<DiabetesFormWidget> createState() => _DiabetesFormWidgetState();
 }
 
-class _DiabetesFormWidgetState extends State<DiabetesFormWidget> {
-  late final _formKey = GlobalKey<FormState>();
-  final TextEditingController ageController = TextEditingController();
-  final TextEditingController pulseController = TextEditingController();
-  final TextEditingController bpController = TextEditingController();
-  final TextEditingController glucoseController = TextEditingController();
-  final TextEditingController bmiController = TextEditingController();
-  String selectGender = 'male';
-  bool familyDiabetes = false;
-  bool hypertensive = false;
+class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
+  final _formKey = GlobalKey<FormState>();
+  final _age = TextEditingController();
+  final _pulse = TextEditingController();
+  final _bp = TextEditingController();
+  final _glucose = TextEditingController();
+  final _bmi = TextEditingController();
+  String _gender = 'male';
+  bool _familyDiabetes = false;
+  bool _hypertensive = false;
 
-  Future<void> sendData(BuildContext context) async {
-    if (_formKey.currentState!.validate()) {
-      NotificationUtils.error(context, 'Fields are Empty!');
+  @override
+  void dispose() {
+    _age.dispose();
+    _pulse.dispose();
+    _bp.dispose();
+    _glucose.dispose();
+    _bmi.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      NotificationUtils.error(context, 'Please complete the required fields.');
+      return;
     }
 
-    final request = DiabetesModel(
-      age: int.parse(ageController.text),
-      gender: selectGender,
-      pulseRate: double.parse(pulseController.text),
-      bpReading: bpController.text,
-      glucose: double.parse(glucoseController.text),
-      bmi: double.parse(bmiController.text),
-      familyDiabetes: familyDiabetes ? 'Yes' : 'No',
-      hypertensive: hypertensive ? 'Yes' : 'No',
-    );
+    final age = int.tryParse(_age.text.trim());
+    final pulse = double.tryParse(_pulse.text.trim());
+    final glucose = double.tryParse(_glucose.text.trim());
+    final bmi = double.tryParse(_bmi.text.trim());
+    if (age == null || pulse == null || glucose == null || bmi == null) {
+      NotificationUtils.error(context, 'Please enter valid numeric values.');
+      return;
+    }
 
-    final diabetesRepository = DiabetesRepository(dio: client(8080));
-    await diabetesRepository.predict(request);
+    await ref.read(eDocAssessmentProvider.notifier).submitDiabetes(
+      DiabetesModel(
+        age: age,
+        gender: _gender,
+        pulseRate: pulse,
+        bpReading: _bp.text.trim(),
+        glucose: glucose,
+        bmi: bmi,
+        familyDiabetes: _familyDiabetes ? 'Yes' : 'No',
+        hypertensive: _hypertensive ? 'Yes' : 'No',
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final boxWidth = MediaQuery.sizeOf(context).width;
-    final double boxHeight = 40;
+    final assessment = ref.watch(eDocAssessmentProvider);
+    final submitting =
+        assessment.phase == EDocAssessmentPhase.loading &&
+        assessment.model == EDocPredictionModel.diabetes;
 
     return Container(
-      padding: EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
-        shape: BoxShape.rectangle,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Form(
         key: _formKey,
         child: Column(
           children: [
-            SizedBox(
-              height: boxHeight,
-              width: boxWidth,
-              child: TextFormField(
-                style: TextStyle(fontSize: 12),
-                controller: ageController,
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  labelText: 'Age',
-                  labelStyle: TextStyle(fontSize: 12),
-                ),
+            ZintraTextField(
+              label: 'Age',
+              hint: 'e.g. 45',
+              controller: _age,
+              keyboardType: TextInputType.number,
+              validator: _requiredNumber,
+            ),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              initialValue: _gender,
+              decoration: const InputDecoration(labelText: 'Gender'),
+              items: const [
+                DropdownMenuItem(value: 'male', child: Text('Male')),
+                DropdownMenuItem(value: 'female', child: Text('Female')),
+              ],
+              onChanged: (value) {
+                if (value != null) setState(() => _gender = value);
+              },
+            ),
+            const SizedBox(height: 8),
+            ZintraTextField(
+              label: 'Pulse rate',
+              hint: 'e.g. 78',
+              controller: _pulse,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              validator: _requiredNumber,
+            ),
+            const SizedBox(height: 8),
+            ZintraTextField(
+              label: 'Blood pressure',
+              hint: 'e.g. 120/80',
+              controller: _bp,
+              validator: (value) =>
+                  (value == null || value.trim().isEmpty)
+                  ? 'This field is required.'
+                  : null,
+            ),
+            const SizedBox(height: 8),
+            ZintraTextField(
+              label: 'Glucose',
+              hint: 'e.g. 110',
+              controller: _glucose,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              validator: _requiredNumber,
+            ),
+            const SizedBox(height: 8),
+            ZintraTextField(
+              label: 'BMI',
+              hint: 'e.g. 24.5',
+              controller: _bmi,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              validator: _requiredNumber,
+            ),
+            CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              value: _familyDiabetes,
+              onChanged: (value) =>
+                  setState(() => _familyDiabetes = value ?? false),
+              title: const Text(
+                'Family history of diabetes',
+                style: TextStyle(fontFamily: 'Inter', fontSize: 13),
               ),
             ),
-            SizedBox(height: 8),
-            SizedBox(
-              height: boxHeight,
-              width: boxWidth,
-              child: TextFormField(
-                style: TextStyle(fontSize: 12),
-                controller: pulseController,
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  labelText: 'Pulse Rate',
-                  labelStyle: TextStyle(fontSize: 12),
-                ),
+            CheckboxListTile(
+              contentPadding: EdgeInsets.zero,
+              value: _hypertensive,
+              onChanged: (value) =>
+                  setState(() => _hypertensive = value ?? false),
+              title: const Text(
+                'Hypertensive',
+                style: TextStyle(fontFamily: 'Inter', fontSize: 13),
               ),
             ),
-            SizedBox(height: 8),
-            SizedBox(
-              height: boxHeight,
-              width: boxWidth,
-              child: TextFormField(
-                style: TextStyle(fontSize: 12),
-                controller: bpController,
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  labelText: 'Bp Value',
-                  labelStyle: TextStyle(fontSize: 12),
-                ),
-              ),
-            ),
-            SizedBox(height: 8),
-            SizedBox(
-              height: boxHeight,
-              width: boxWidth,
-              child: TextFormField(
-                style: TextStyle(fontSize: 12),
-                controller: glucoseController,
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  labelText: 'Glucose Value',
-                  labelStyle: TextStyle(fontSize: 12),
-                ),
-              ),
-            ),
-            SizedBox(height: 8),
-            SizedBox(
-              height: boxHeight,
-              width: boxWidth,
-              child: TextFormField(
-                style: TextStyle(fontSize: 12),
-                controller: bmiController,
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  labelText: 'BMI Value',
-                  labelStyle: TextStyle(fontSize: 12),
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => sendData(context),
-              style: eDocCardButtonStyle(context, boxWidth, boxHeight),
-              child: Text(
-                'Submit',
-                textAlign: TextAlign.center,
-                style: eDocCardTextStyle(context),
-              ),
+            const SizedBox(height: 16),
+            ZintraButton(
+              label: 'Generate assessment',
+              loading: submitting,
+              fullWidth: true,
+              onPressed: submitting ? null : _submit,
             ),
           ],
         ),
       ),
     );
   }
+}
+
+String? _requiredNumber(String? value) {
+  if (value == null || value.trim().isEmpty) return 'This field is required.';
+  if (num.tryParse(value.trim()) == null) return 'Enter a valid number.';
+  return null;
 }

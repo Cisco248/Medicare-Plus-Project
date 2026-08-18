@@ -9,50 +9,51 @@ part of 'form.notifier.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(FormState)
-final formStateProvider = FormStateProvider._();
+@ProviderFor(EDocModelNotifier)
+final eDocModelProvider = EDocModelNotifierProvider._();
 
-final class FormStateProvider extends $NotifierProvider<FormState, String> {
-  FormStateProvider._()
+final class EDocModelNotifierProvider
+    extends $NotifierProvider<EDocModelNotifier, EDocPredictionModel> {
+  EDocModelNotifierProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'formStateProvider',
+        name: r'eDocModelProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$formStateHash();
+  String debugGetCreateSourceHash() => _$eDocModelNotifierHash();
 
   @$internal
   @override
-  FormState create() => FormState();
+  EDocModelNotifier create() => EDocModelNotifier();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(String value) {
+  Override overrideWithValue(EDocPredictionModel value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<String>(value),
+      providerOverride: $SyncValueProvider<EDocPredictionModel>(value),
     );
   }
 }
 
-String _$formStateHash() => r'ef08d62c1f4206777a52826c36df2c932d8405ca';
+String _$eDocModelNotifierHash() => r'13dd1872944e758adf3e27acde38644fc0bd1deb';
 
-abstract class _$FormState extends $Notifier<String> {
-  String build();
+abstract class _$EDocModelNotifier extends $Notifier<EDocPredictionModel> {
+  EDocPredictionModel build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<String, String>;
+    final ref = this.ref as $Ref<EDocPredictionModel, EDocPredictionModel>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<String, String>,
-              String,
+              AnyNotifier<EDocPredictionModel, EDocPredictionModel>,
+              EDocPredictionModel,
               Object?,
               Object?
             >;

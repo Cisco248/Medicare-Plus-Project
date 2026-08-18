@@ -38,6 +38,15 @@ class _EDocPageState extends ConsumerState<EDocPage> {
               color: colorScheme.onSurface,
             ),
           ),
+          const SizedBox(height: 4),
+          Text(
+            'View uploaded documents or generate a personalized assessment.',
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 12,
+              color: colorScheme.onSurface.withAlpha(150),
+            ),
+          ),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -230,9 +239,10 @@ class _AssessmentSection extends StatelessWidget {
     return const SingleChildScrollView(
       child: Column(
         children: [
-          MeditationFormWidget(),
+          EDocAssessmentForm(),
           SizedBox(height: 24),
           GenerateWidget(),
+          SizedBox(height: 24),
         ],
       ),
     );

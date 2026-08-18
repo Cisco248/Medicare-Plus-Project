@@ -1,7 +1,9 @@
 import 'package:client/core/utils/notification.utils.dart';
-import 'package:client/feature/e_doc/constant/button.style.dart';
+import 'package:client/core/widgets/button.widget.dart';
+import 'package:client/core/widgets/textfield.widget.dart';
+import 'package:client/feature/e_doc/models/assessment.model.dart';
 import 'package:client/feature/e_doc/models/hypertension.model.dart';
-import 'package:client/feature/e_doc/notifiers/chat.dart';
+import 'package:client/feature/e_doc/notifiers/assessment.notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,235 +15,170 @@ class HypertensionFormWidget extends ConsumerStatefulWidget {
       _HypertensionFormWidgetState();
 }
 
-class _HypertensionFormWidgetState
-    extends ConsumerState<HypertensionFormWidget> {
-  late final _formKey = GlobalKey<FormState>();
-  final TextEditingController _age = TextEditingController();
-  final TextEditingController _height = TextEditingController();
-  final TextEditingController _weight = TextEditingController();
-  final TextEditingController _hemoglobin = TextEditingController();
-  final TextEditingController _cholesterol = TextEditingController();
-  final TextEditingController _diabetesOrdinal = TextEditingController();
+class _HypertensionFormWidgetState extends ConsumerState<HypertensionFormWidget> {
+  final _formKey = GlobalKey<FormState>();
+  final _age = TextEditingController();
+  final _height = TextEditingController();
+  final _weight = TextEditingController();
+  final _hba1c = TextEditingController();
+  final _cholesterol = TextEditingController();
+  Gender? _gender;
+  DiabetesOrdinal _diabetes = DiabetesOrdinal.normal;
 
-  bool isChecked = false;
-  List<String> dropDownList = ["Male", "Female"];
-  String? selectGender;
+  @override
+  void dispose() {
+    _age.dispose();
+    _height.dispose();
+    _weight.dispose();
+    _hba1c.dispose();
+    _cholesterol.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      NotificationUtils.error(context, 'Please complete the required fields.');
+      return;
+    }
+    if (_gender == null) {
+      NotificationUtils.error(context, 'Please select a gender.');
+      return;
+    }
+
+    final age = int.tryParse(_age.text.trim());
+    final height = double.tryParse(_height.text.trim());
+    final weight = double.tryParse(_weight.text.trim());
+    final hba1c = double.tryParse(_hba1c.text.trim());
+    final cholesterol = double.tryParse(_cholesterol.text.trim());
+    if (age == null ||
+        height == null ||
+        weight == null ||
+        hba1c == null ||
+        cholesterol == null) {
+      NotificationUtils.error(context, 'Please enter valid numeric values.');
+      return;
+    }
+
+    await ref.read(eDocAssessmentProvider.notifier).submitHypertension(
+      HypertensionModel(
+        age: age,
+        height: height,
+        weight: weight,
+        hba1c: hba1c,
+        cholesterolMgdl: cholesterol,
+        diabetesOrdinal: _diabetes,
+        gender: _gender!,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    Future<void> sendData(BuildContext context) async {
-      if (_formKey.currentState!.validate()) {
-        debugPrint(_age.toString());
-        debugPrint(_height.toString());
-        debugPrint(_weight.toString());
-        debugPrint(_hemoglobin.toString());
-        debugPrint(_cholesterol.toString());
-        debugPrint(_diabetesOrdinal.toString());
-        debugPrint(selectGender.toString());
-        NotificationUtils.error(context, 'Fields are Empty!');
-      }
-
-      DiabetesOrdinal diabetesValue(String? value) => switch (value) {
-        "normal" => DiabetesOrdinal.normal,
-        "preDiabetes" => DiabetesOrdinal.preDiabetes,
-        "diabetes" => DiabetesOrdinal.diabetes,
-        _ => DiabetesOrdinal.normal,
-      };
-
-      final userData = HypertensionModel(
-        age: int.parse(_age.text),
-        weight: double.parse(_weight.text),
-        height: double.parse(_height.text),
-        hba1c: double.parse(_hemoglobin.text),
-        cholesterolUnit: double.parse(_cholesterol.text),
-        diabetesOrdinal: diabetesValue(_diabetesOrdinal.text),
-        gender: selectGender! == "Male" ? Gender.male : Gender.female,
-      );
-      ref.watch(chatBotNotifyProvider.notifier).sendData(userData);
-    }
-
-    final width = MediaQuery.sizeOf(context).width;
-    final colorScheme = Theme.of(context).colorScheme;
+    final assessment = ref.watch(eDocAssessmentProvider);
+    final submitting =
+        assessment.phase == EDocAssessmentPhase.loading &&
+        assessment.model == EDocPredictionModel.hypertension;
 
     return Container(
-      padding: EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
-        shape: BoxShape.rectangle,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Form(
         key: _formKey,
         child: Column(
           children: [
-            SizedBox(
-              width: width,
-              height: 40,
-              child: TextFormField(
-                controller: _age,
-                style: TextStyle(fontSize: 12),
-                decoration: InputDecoration(
-                  labelText: 'Age',
-                  labelStyle: TextStyle(
-                    fontSize: 14,
-                    color: colorScheme.onSurface.withAlpha(100),
-                  ),
-                  hintText: 'E.g: 30',
-                  hintStyle: TextStyle(
-                    fontSize: 12,
-                    color: colorScheme.onSurface.withAlpha(100),
-                  ),
-                ),
-              ),
+            ZintraTextField(
+              label: 'Age',
+              hint: 'e.g. 45',
+              controller: _age,
+              keyboardType: TextInputType.number,
+              validator: _requiredNumber,
             ),
-            SizedBox(height: 8),
-            SizedBox(
-              height: 40,
-              width: width,
-              child: TextFormField(
-                controller: _height,
-                style: TextStyle(fontSize: 12),
-                decoration: InputDecoration(
-                  labelText: 'Height',
-                  labelStyle: TextStyle(
-                    fontSize: 14,
-                    color: colorScheme.onSurface.withAlpha(100),
-                  ),
-                  hintText: 'E.g: 150cm',
-                  hintStyle: TextStyle(
-                    fontSize: 12,
-                    color: colorScheme.onSurface.withAlpha(100),
-                  ),
-                ),
-              ),
+            const SizedBox(height: 8),
+            ZintraTextField(
+              label: 'Height (cm)',
+              hint: 'e.g. 170',
+              controller: _height,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              validator: _requiredNumber,
             ),
-            SizedBox(height: 8),
-            SizedBox(
-              height: 40,
-              width: width,
-              child: TextFormField(
-                controller: _weight,
-                style: TextStyle(fontSize: 12),
-                decoration: InputDecoration(
-                  labelText: 'Weight',
-                  labelStyle: TextStyle(
-                    fontSize: 14,
-                    color: colorScheme.onSurface.withAlpha(100),
-                  ),
-                  hintText: 'E.g: 30.6',
-                  hintStyle: TextStyle(
-                    fontSize: 12,
-                    color: colorScheme.onSurface.withAlpha(100),
-                  ),
-                ),
-              ),
+            const SizedBox(height: 8),
+            ZintraTextField(
+              label: 'Weight (kg)',
+              hint: 'e.g. 70',
+              controller: _weight,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              validator: _requiredNumber,
             ),
-            SizedBox(height: 8),
-            SizedBox(
-              height: 40,
-              width: width,
-              child: TextFormField(
-                controller: _hemoglobin,
-                style: TextStyle(fontSize: 12),
-                decoration: InputDecoration(
-                  labelText: 'Hemoglobin Count',
-                  labelStyle: TextStyle(
-                    fontSize: 14,
-                    color: colorScheme.onSurface.withAlpha(100),
-                  ),
-                  hintText: 'E.g: 4.5',
-                  hintStyle: TextStyle(
-                    fontSize: 12,
-                    color: colorScheme.onSurface.withAlpha(100),
-                  ),
-                ),
-              ),
+            const SizedBox(height: 8),
+            ZintraTextField(
+              label: 'HbA1c (%)',
+              hint: 'e.g. 5.6',
+              controller: _hba1c,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              validator: _requiredNumber,
             ),
-            SizedBox(height: 8),
-            SizedBox(
-              height: 40,
-              width: width,
-              child: TextFormField(
-                controller: _cholesterol,
-                style: TextStyle(fontSize: 12),
-                decoration: InputDecoration(
-                  labelText: 'Cholesterol mgdl',
-                  labelStyle: TextStyle(
-                    fontSize: 14,
-                    color: colorScheme.onSurface.withAlpha(100),
-                  ),
-                  hintText: 'E.g: 200 mgdl',
-                  hintStyle: TextStyle(
-                    fontSize: 12,
-                    color: colorScheme.onSurface.withAlpha(100),
-                  ),
-                ),
-              ),
+            const SizedBox(height: 8),
+            ZintraTextField(
+              label: 'Cholesterol (mg/dL)',
+              hint: 'e.g. 180',
+              controller: _cholesterol,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              validator: _requiredNumber,
             ),
-            SizedBox(height: 8),
-            SizedBox(
-              width: width,
-              height: 40,
-              child: TextFormField(
-                controller: _diabetesOrdinal,
-                style: TextStyle(fontSize: 12),
-                decoration: InputDecoration(
-                  labelText: 'Diabetes Ordinal',
-                  labelStyle: TextStyle(
-                    fontSize: 14,
-                    color: colorScheme.onSurface.withAlpha(100),
-                  ),
-                  hintText: 'E.g: 0',
-                  hintStyle: TextStyle(
-                    fontSize: 12,
-                    color: colorScheme.onSurface.withAlpha(100),
-                  ),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<DiabetesOrdinal>(
+              initialValue: _diabetes,
+              decoration: const InputDecoration(labelText: 'Diabetes status'),
+              items: const [
+                DropdownMenuItem(
+                  value: DiabetesOrdinal.normal,
+                  child: Text('Normal'),
                 ),
-              ),
-            ),
-            SizedBox(height: 8),
-            Container(
-              decoration: BoxDecoration(
-                color: colorScheme.surface,
-                border: Border.all(color: colorScheme.onSurface, width: 1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              width: width,
-              height: 40,
-              child: DropdownButton(
-                value: selectGender,
-                items: dropDownList
-                    .map((i) => DropdownMenuItem(value: i, child: Text(i)))
-                    .toList(),
-                onChanged: (String? value) {
-                  setState(() => selectGender = value);
-                },
-                hint: Text(
-                  'Gender',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: colorScheme.onSurface.withAlpha(100),
-                  ),
+                DropdownMenuItem(
+                  value: DiabetesOrdinal.preDiabetic,
+                  child: Text('Pre-diabetic'),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                style: TextStyle(fontSize: 12, color: colorScheme.onSurface),
-                underline: Container(height: 0),
-                icon: Icon(null),
-              ),
+                DropdownMenuItem(
+                  value: DiabetesOrdinal.diabetic,
+                  child: Text('Diabetic'),
+                ),
+              ],
+              onChanged: (value) {
+                if (value != null) setState(() => _diabetes = value);
+              },
             ),
-            SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () => sendData(context),
-              style: eDocCardButtonStyle(context, width, 40),
-              child: Text(
-                'Submit',
-                textAlign: TextAlign.center,
-                style: eDocCardTextStyle(context),
-              ),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<Gender>(
+              initialValue: _gender,
+              decoration: const InputDecoration(labelText: 'Gender'),
+              items: const [
+                DropdownMenuItem(value: Gender.male, child: Text('Male')),
+                DropdownMenuItem(value: Gender.female, child: Text('Female')),
+                DropdownMenuItem(value: Gender.other, child: Text('Other')),
+              ],
+              onChanged: (value) => setState(() => _gender = value),
+              validator: (value) =>
+                  value == null ? 'Please select a gender.' : null,
+            ),
+            const SizedBox(height: 24),
+            ZintraButton(
+              label: 'Generate assessment',
+              loading: submitting,
+              fullWidth: true,
+              onPressed: submitting ? null : _submit,
             ),
           ],
         ),
       ),
     );
   }
+}
+
+String? _requiredNumber(String? value) {
+  if (value == null || value.trim().isEmpty) return 'This field is required.';
+  if (num.tryParse(value.trim()) == null) return 'Enter a valid number.';
+  return null;
 }
