@@ -15,7 +15,7 @@ class RAGSettings(BaseSettings):
     # RAG System Configurations
     APP_NAME: str = os.getenv("APP_NAME", "")
     APP_VERSION: str = os.getenv("APP_VERSION", "")
-    FILE_LOCATION: str = f"{BASE_DIR}/docs/sample.pdf"
+    FILE_LOCATION: str = f"{BASE_DIR}/docs/knowledge"
     ARTIFACT_PATH: Path = BASE_DIR / "temp"
 
     # OpenAI Configurations
