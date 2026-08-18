@@ -1,20 +1,46 @@
+import 'package:client/core/network/dio_client.dart';
 import 'package:client/core/utils/notification.utils.dart';
 import 'package:client/feature/e_doc/constant/button.style.dart';
+import 'package:client/feature/e_doc/models/diabetes.model.dart';
+import 'package:client/feature/e_doc/repository/diabetes.repository.dart';
 import 'package:flutter/material.dart';
 
-class DiabetesFormWidget extends StatelessWidget {
-  DiabetesFormWidget({super.key});
+class DiabetesFormWidget extends StatefulWidget {
+  const DiabetesFormWidget({super.key});
 
+  @override
+  State<DiabetesFormWidget> createState() => _DiabetesFormWidgetState();
+}
+
+class _DiabetesFormWidgetState extends State<DiabetesFormWidget> {
   late final _formKey = GlobalKey<FormState>();
-  final TextEditingController param_1 = TextEditingController();
-  final TextEditingController param_2 = TextEditingController();
-  final TextEditingController param_3 = TextEditingController();
-  final TextEditingController param_4 = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
+  final TextEditingController pulseController = TextEditingController();
+  final TextEditingController bpController = TextEditingController();
+  final TextEditingController glucoseController = TextEditingController();
+  final TextEditingController bmiController = TextEditingController();
+  String selectGender = 'male';
+  bool familyDiabetes = false;
+  bool hypertensive = false;
 
-  void sendData(BuildContext context) {
+  Future<void> sendData(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       NotificationUtils.error(context, 'Fields are Empty!');
     }
+
+    final request = DiabetesModel(
+      age: int.parse(ageController.text),
+      gender: selectGender,
+      pulseRate: double.parse(pulseController.text),
+      bpReading: bpController.text,
+      glucose: double.parse(glucoseController.text),
+      bmi: double.parse(bmiController.text),
+      familyDiabetes: familyDiabetes ? 'Yes' : 'No',
+      hypertensive: hypertensive ? 'Yes' : 'No',
+    );
+
+    final diabetesRepository = DiabetesRepository(dio: client(8080));
+    await diabetesRepository.predict(request);
   }
 
   @override
@@ -38,13 +64,13 @@ class DiabetesFormWidget extends StatelessWidget {
               width: boxWidth,
               child: TextFormField(
                 style: TextStyle(fontSize: 12),
-                controller: param_1,
+                controller: ageController,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 8,
                   ),
-                  labelText: 'Param one',
+                  labelText: 'Age',
                   labelStyle: TextStyle(fontSize: 12),
                 ),
               ),
@@ -55,13 +81,13 @@ class DiabetesFormWidget extends StatelessWidget {
               width: boxWidth,
               child: TextFormField(
                 style: TextStyle(fontSize: 12),
-                controller: param_2,
+                controller: pulseController,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 8,
                   ),
-                  labelText: 'Param Two',
+                  labelText: 'Pulse Rate',
                   labelStyle: TextStyle(fontSize: 12),
                 ),
               ),
@@ -72,13 +98,13 @@ class DiabetesFormWidget extends StatelessWidget {
               width: boxWidth,
               child: TextFormField(
                 style: TextStyle(fontSize: 12),
-                controller: param_3,
+                controller: bpController,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 8,
                   ),
-                  labelText: 'Param Three',
+                  labelText: 'Bp Value',
                   labelStyle: TextStyle(fontSize: 12),
                 ),
               ),
@@ -89,13 +115,30 @@ class DiabetesFormWidget extends StatelessWidget {
               width: boxWidth,
               child: TextFormField(
                 style: TextStyle(fontSize: 12),
-                controller: param_4,
+                controller: glucoseController,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 8,
                   ),
-                  labelText: 'Param Four',
+                  labelText: 'Glucose Value',
+                  labelStyle: TextStyle(fontSize: 12),
+                ),
+              ),
+            ),
+            SizedBox(height: 8),
+            SizedBox(
+              height: boxHeight,
+              width: boxWidth,
+              child: TextFormField(
+                style: TextStyle(fontSize: 12),
+                controller: bmiController,
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  labelText: 'BMI Value',
                   labelStyle: TextStyle(fontSize: 12),
                 ),
               ),

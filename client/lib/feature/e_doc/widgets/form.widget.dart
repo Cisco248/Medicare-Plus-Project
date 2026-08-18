@@ -1,5 +1,5 @@
 import 'package:client/feature/e_doc/notifiers/form.notifier.dart';
-import 'package:client/feature/e_doc/widgets/blood_pres.widget.dart';
+import 'package:client/feature/e_doc/widgets/heart_disease.widget.dart';
 import 'package:client/feature/e_doc/widgets/diabetes_form.widget.dart';
 import 'package:client/feature/e_doc/widgets/hypertension_form.widget.dart';
 import 'package:flutter/material.dart';

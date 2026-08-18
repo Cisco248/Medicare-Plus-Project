@@ -208,8 +208,8 @@ return $default(_that.start,_that.end,_that.timezoneOffset);case _:
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(fieldRename: FieldRename.snake)
 class _SummaryPeriod implements SummaryPeriod {
   const _SummaryPeriod({required this.start, required this.end, this.timezoneOffset});
   factory _SummaryPeriod.fromJson(Map<String, dynamic> json) => _$SummaryPeriodFromJson(json);
@@ -495,8 +495,8 @@ return $default(_that.userId,_that.period,_that.activities);case _:
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _HealthSummaryRequest implements HealthSummaryRequest {
   const _HealthSummaryRequest({this.userId, required this.period, required this.activities});
   factory _HealthSummaryRequest.fromJson(Map<String, dynamic> json) => _$HealthSummaryRequestFromJson(json);

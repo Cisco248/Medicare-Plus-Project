@@ -209,8 +209,8 @@ return $default(_that.summary,_that.recommendations,_that.disclaimer,_that.gener
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(fieldRename: FieldRename.snake)
 class _HealthSummaryResponse implements HealthSummaryResponse {
   const _HealthSummaryResponse({required this.summary, final  List<String> recommendations = const <String>[], this.disclaimer, this.generatedAt}): _recommendations = recommendations;
   factory _HealthSummaryResponse.fromJson(Map<String, dynamic> json) => _$HealthSummaryResponseFromJson(json);

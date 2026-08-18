@@ -8,11 +8,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'reports.notifier.g.dart';
 
-/// Manages the patient's document list and all document actions.
-///
-/// Errors from actions ([uploadDocument], [deleteDocument], ...) are rethrown
-/// as [AppException]s so the calling page can show a user-friendly message
-/// without corrupting the list state.
 @riverpod
 class ReportsNotifier extends _$ReportsNotifier {
   ReportRepository get _repository => ref.read(reportRepositoryProvider);
@@ -23,7 +18,6 @@ class ReportsNotifier extends _$ReportsNotifier {
   Future<List<DocumentModel>> build() =>
       _repository.fetchDocuments(token: _token);
 
-  /// Re-fetches the document list from the backend.
   Future<void> refresh() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(
@@ -31,7 +25,6 @@ class ReportsNotifier extends _$ReportsNotifier {
     );
   }
 
-  /// Uploads a new document and refreshes the list on success.
   Future<void> uploadDocument({
     required String title,
     required String docType,
@@ -56,7 +49,6 @@ class ReportsNotifier extends _$ReportsNotifier {
     await refresh();
   }
 
-  /// Deletes a document and removes it from the list on success.
   Future<void> deleteDocument(String id) async {
     await _repository.deleteDocument(id, token: _token);
     final current = state.value;
@@ -67,8 +59,6 @@ class ReportsNotifier extends _$ReportsNotifier {
     }
   }
 
-  /// Downloads the document file to the app's documents folder and returns
-  /// the saved location.
   Future<String> downloadDocument(DocumentModel document) async {
     final directory = await getApplicationDocumentsDirectory();
     final savePath = '${directory.path}/${document.fileName}';
@@ -77,7 +67,6 @@ class ReportsNotifier extends _$ReportsNotifier {
   }
 }
 
-/// Raw file bytes of a document, used to preview image documents in-app.
 @riverpod
 Future<Uint8List> documentPreview(Ref ref, String documentId) {
   final token = ref.watch(authenticationProvider).value?.token;

@@ -10,20 +10,20 @@ _SummaryPeriod _$SummaryPeriodFromJson(Map<String, dynamic> json) =>
     _SummaryPeriod(
       start: DateTime.parse(json['start'] as String),
       end: DateTime.parse(json['end'] as String),
-      timezoneOffset: json['timezone_offset'] as String?,
+      timezoneOffset: json['timezoneOffset'] as String?,
     );
 
 Map<String, dynamic> _$SummaryPeriodToJson(_SummaryPeriod instance) =>
     <String, dynamic>{
       'start': instance.start.toIso8601String(),
       'end': instance.end.toIso8601String(),
-      'timezone_offset': instance.timezoneOffset,
+      'timezoneOffset': instance.timezoneOffset,
     };
 
 _HealthSummaryRequest _$HealthSummaryRequestFromJson(
   Map<String, dynamic> json,
 ) => _HealthSummaryRequest(
-  userId: json['user_id'] as String?,
+  userId: json['userId'] as String?,
   period: SummaryPeriod.fromJson(json['period'] as Map<String, dynamic>),
   activities: ActivityModel.fromJson(
     json['activities'] as Map<String, dynamic>,
@@ -33,7 +33,7 @@ _HealthSummaryRequest _$HealthSummaryRequestFromJson(
 Map<String, dynamic> _$HealthSummaryRequestToJson(
   _HealthSummaryRequest instance,
 ) => <String, dynamic>{
-  'user_id': instance.userId,
-  'period': instance.period.toJson(),
-  'activities': instance.activities.toJson(),
+  'userId': instance.userId,
+  'period': instance.period,
+  'activities': instance.activities,
 };

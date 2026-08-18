@@ -13,11 +13,6 @@ part 'report.repository.g.dart';
 ReportRepository reportRepository(Ref ref) =>
     ReportRepository(client: client(8080));
 
-/// HTTP access to the backend's patient document endpoints (`/api/documents`).
-///
-/// Every request carries the session token in the `x-auth-token` header, which
-/// the backend uses to scope documents to the authenticated patient. Transport
-/// failures are mapped to the [AppException] hierarchy.
 class ReportRepository {
   ReportRepository({required this._client});
 
@@ -112,7 +107,6 @@ class ReportRepository {
     }
   }
 
-  /// Raw file content, used for the in-app preview of image documents.
   Future<Uint8List> fetchDocumentBytes(String id, {String? token}) async {
     try {
       final response = await _client.get<List<int>>(
@@ -125,7 +119,6 @@ class ReportRepository {
     }
   }
 
-  /// Downloads the document file to [savePath] on the device.
   Future<void> downloadDocument(
     String id,
     String savePath, {

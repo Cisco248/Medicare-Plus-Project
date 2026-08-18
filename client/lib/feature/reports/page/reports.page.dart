@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-/// Reports tab: the patient's uploaded medical documents.
 class ReportsPage extends ConsumerWidget {
   const ReportsPage({super.key});
 

@@ -16,9 +16,9 @@ _HealthSummaryResponse _$HealthSummaryResponseFromJson(
           .toList() ??
       const <String>[],
   disclaimer: json['disclaimer'] as String?,
-  generatedAt: json['generated_at'] == null
+  generatedAt: json['generatedAt'] == null
       ? null
-      : DateTime.parse(json['generated_at'] as String),
+      : DateTime.parse(json['generatedAt'] as String),
 );
 
 Map<String, dynamic> _$HealthSummaryResponseToJson(
@@ -27,5 +27,5 @@ Map<String, dynamic> _$HealthSummaryResponseToJson(
   'summary': instance.summary,
   'recommendations': instance.recommendations,
   'disclaimer': instance.disclaimer,
-  'generated_at': instance.generatedAt?.toIso8601String(),
+  'generatedAt': instance.generatedAt?.toIso8601String(),
 };

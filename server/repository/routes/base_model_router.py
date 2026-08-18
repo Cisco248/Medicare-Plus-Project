@@ -1,6 +1,6 @@
 import pandas as pd
-from fastapi import APIRouter
-from data import HypertensionScehema
+from fastapi import APIRouter, HTTPException
+from data import HypertensionScehema, DiabetesSchema
 from repository import ArtifactLoader, HypertensionMiddleware, RagClientMiddleware
 from core import ServerSettings
 
@@ -15,9 +15,9 @@ async def hypertension_add_data(
     middleware=HypertensionMiddleware(),
 ):
 
-    model = loader.model_loader(config.HYPERTENSION_MODEL_PATH)
-    features = loader.feature_loader(config.HYPERTENSION_FEATURE_PATH)
-    labels = loader.label_loader(config.HYPERTENSION_LABEL_PATH)
+    model = loader.model_loader(config.HYPERTENSION_PATH + "/model.pkl")
+    features = loader.feature_loader(config.HYPERTENSION_PATH + "/features.pkl")
+    labels = loader.label_loader(config.HYPERTENSION_PATH + "/labels.pkl")
 
     bmi_value = middleware.bmi_calculator(schema.height, schema.weight)
     gender_value = middleware.gender_encoder(schema.gender)
@@ -38,7 +38,7 @@ async def hypertension_add_data(
     pred_code = model.predict(data)[0]
 
     response = await RagClientMiddleware(
-        url=f"{config.RAG_URL}/e-doc",
+        url=f"{config.RAG_HOST}:{config.RAG_PORT}/e-doc",
         data={
             "prediction": labels[pred_code],
             "age": schema.age,
@@ -53,3 +53,15 @@ async def hypertension_add_data(
     ).build()
 
     return response.json()
+
+
+@base_model_router.post("/diabetes", status_code=200, tags=["Base Model"])
+async def diabetes_add_data(request: DiabetesSchema):
+    try:
+        pass
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Prediction failed")

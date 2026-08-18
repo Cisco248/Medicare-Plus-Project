@@ -1,48 +1,31 @@
-# Hypertension
+# Hypertension Overview
 
-## Definition
+## Definition and purpose
 
-Hypertension is persistent elevation of blood pressure.
+Blood pressure is the force of circulating blood against artery walls. Hypertension means blood pressure is persistently elevated and is confirmed through appropriate repeated measurements and clinical assessment. Systolic and diastolic pressure are recorded in mmHg.
 
-## Important Measurements
+## Key facts
 
-- systolic blood pressure
-- diastolic blood pressure
+Hypertension is common and often has no symptoms. Over time it can increase risk of stroke, heart disease, kidney disease, and other vascular complications. Diagnostic thresholds, treatment targets, and confirmation methods differ by guideline, setting, age, pregnancy, and health context; one universal cutoff should not be applied without context.
 
-## Important Context
+## Activity and wearable context
 
-- physical activity
-- weight
-- diet
-- sodium intake
-- sleep
-- diabetes
-- kidney disease
-- medications
+Regular activity supports cardiovascular health, while inactivity can be a risk factor. Steps, sleep, calories, and wrist heart rate do not measure blood pressure. Heart rate is not interchangeable with blood pressure. A low-activity trend may be relevant to lifestyle or illness but cannot show that hypertension is present or uncontrolled.
 
-## Important Rule
+## Safe interpretation
 
-Heart rate does not equal blood pressure.
+- Separate a documented diagnosis from a risk factor or elevated reading.
+- Preserve systolic value, diastolic value, unit, date, measurement setting, and repeat status.
+- Do not diagnose persistent hypertension from one reading.
+- Missing pressure data are unknown, not normal.
+- Do not recommend starting, stopping, or changing medicine.
 
-Low steps do not diagnose hypertension.
+## Routine clinical advice
 
-Hypertension requires appropriate blood-pressure assessment.
+Seek routine clinical advice for repeated readings that are outside a clinician-agreed range, uncertainty about correct measurement, or concerns about cardiovascular risk. Severe symptoms such as chest pressure, major breathing difficulty, fainting, or sudden stroke signs require emergency action regardless of wearable data.
 
-## RAG Example
+## Sources
 
-Observed:
-
-Low activity for 7 days.
-
-Known condition:
-
-Hypertension.
-
-Output:
-
-"Reduced physical activity may be relevant to cardiovascular health and
-blood-pressure management."
-
-Not:
-
-"The patient currently has uncontrolled hypertension."
+- WHO, Hypertension: <https://www.who.int/news-room/fact-sheets/detail/hypertension>
+- NICE NG136: <https://www.nice.org.uk/guidance/ng136>
+- NHS, High blood pressure: <https://www.nhs.uk/conditions/high-blood-pressure-hypertension/>

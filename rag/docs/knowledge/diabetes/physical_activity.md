@@ -1,55 +1,27 @@
 # Diabetes and Physical Activity
 
-## General Relationship
+## Purpose and relationship
 
-Regular physical activity supports:
+Regular physical activity supports cardiovascular fitness, insulin sensitivity, mobility, and general wellbeing. It is one component of type 2 diabetes risk reduction and diabetes self-management, but it does not replace monitoring or clinical care.
 
-- cardiovascular health
-- glucose regulation
-- weight management
-- metabolic health
+## Activity data
 
-## Activity Data
+Relevant data may include activity type, duration, intensity, active minutes, steps, sedentary time, and strength sessions. Steps do not capture cycling, swimming, resistance exercise, disability-adapted movement, or effort. Heart rate and calorie expenditure from consumer devices are estimates.
 
-The application may receive:
+## Safe interpretation
 
-- steps
-- active minutes
-- calories
-- distance
-- activity intensity
-- sedentary time
+Use repeated patterns and specify the comparison window. “Activity was lower than the recorded four-week baseline” is an observation. It does not establish high glucose, poor diabetes control, or the reason for the change. Device non-wear and missing days must be distinguished from inactivity.
 
-## Interpretation
+General WHO adult guidance is 150–300 minutes of moderate-intensity aerobic activity, 75–150 minutes of vigorous activity, or an equivalent combination each week, plus muscle strengthening on at least two days. This is a population guideline, not a personalized prescription. Appropriate activity can differ with age, pregnancy, fitness, disability, complications, illness, and glucose-management needs.
 
-Activity data should be interpreted over time.
+Activity can affect glucose differently depending on timing, intensity, food, and medicines. The RAG system must not advise changing medicine or food dosing around exercise. People using insulin or medicines associated with low glucose need individualized safety guidance from their care team.
 
-A single low-activity day does not establish a health condition.
+## Routine clinical advice
 
-## Trend Example
+Seek routine advice before major activity changes when diabetes, complications, recurrent low glucose, cardiovascular symptoms, foot problems, or mobility limitations are relevant. Discuss persistent unexplained reductions in activity or symptoms during exercise.
 
-If activity changes from:
+## Sources
 
-8000 steps/day
-
-to:
-
-3000 steps/day
-
-for several consecutive days,
-
-the system may identify:
-
-"Reduced activity compared with the patient's recent baseline."
-
-This is an observation rather than a diagnosis.
-
-## RAG Relationship
-
-Low activity
-↓
-Physical inactivity knowledge
-↓
-Diabetes knowledge
-↓
-Potential metabolic concern
+- ADA, Fitness: <https://diabetes.org/health-wellness/fitness>
+- WHO, Physical activity: <https://www.who.int/news-room/fact-sheets/detail/physical-activity>
+- NICE NG28: <https://www.nice.org.uk/guidance/ng28>
