@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Optional
-
 from pydantic import BaseModel, Field, field_validator
 
 
@@ -66,10 +65,10 @@ class BloodPressureSummary(BaseModel):
 
 
 class HealthActivities(BaseModel):
-    """Normalized health metrics collected from Google Health Connect.
+    """
+    Normalized health metrics collected from Google Health Connect.
 
-    ``None`` always means "data unavailable" (missing permission or no
-    records) and must never be interpreted as zero.
+    ``None`` always means "data unavailable" (missing permission or no records) and must never be interpreted as zero.
     """
 
     date: Optional[datetime] = None

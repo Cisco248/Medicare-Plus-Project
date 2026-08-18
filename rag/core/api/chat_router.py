@@ -54,6 +54,6 @@ async def similarity_search(req: SimilaritySearchRequest, request: FastAPIReques
     }
 
 
-@router.get("/usage", status_code=200, tags=["RAG System"])
+@router.get("/usage", status_code=200, tags=["Usage"])
 async def usage(request: FastAPIRequest):
     return request.app.state.rag.usage_stats()

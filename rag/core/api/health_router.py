@@ -1,7 +1,7 @@
 import logging
 from fastapi import APIRouter, status
 from core.formats import ResponseModel, _ResponseCode, _ResponseStatus
-from data import ChromaClient
+from data import ClientFactory
 
 health_router = APIRouter(prefix="", tags=["Health"])
 logger = logging.getLogger("HealthCheck")
@@ -13,8 +13,8 @@ logger = logging.getLogger("HealthCheck")
     response_model=ResponseModel,
 )
 def health() -> ResponseModel:
-    db_client = ChromaClient()
-    is_healthy = db_client.health()
+    db_client = ClientFactory()
+    is_healthy = db_client.health_manager()
     return ResponseModel(
         status_code=(
             _ResponseCode.SUCCESS if is_healthy else _ResponseCode.BAD_REQUEST

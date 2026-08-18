@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime, timezone
-
 from fastapi import APIRouter, HTTPException, Request as FastAPIRequest, status
 
 from core.configs.configuration import RAGSettings
@@ -34,21 +33,27 @@ def _describe_activities(activities: HealthActivities) -> tuple[list[str], list[
     add("Steps", f"{activities.steps}" if activities.steps is not None else None)
     add(
         "Distance",
-        f"{activities.distance_meters:.0f} meters"
-        if activities.distance_meters is not None
-        else None,
+        (
+            f"{activities.distance_meters:.0f} meters"
+            if activities.distance_meters is not None
+            else None
+        ),
     )
     add(
         "Active calories burned",
-        f"{activities.active_calories:.0f} kcal"
-        if activities.active_calories is not None
-        else None,
+        (
+            f"{activities.active_calories:.0f} kcal"
+            if activities.active_calories is not None
+            else None
+        ),
     )
     add(
         "Total calories burned",
-        f"{activities.total_calories:.0f} kcal"
-        if activities.total_calories is not None
-        else None,
+        (
+            f"{activities.total_calories:.0f} kcal"
+            if activities.total_calories is not None
+            else None
+        ),
     )
 
     heart_rate = activities.heart_rate
@@ -85,35 +90,45 @@ def _describe_activities(activities: HealthActivities) -> tuple[list[str], list[
 
     add(
         "Weight",
-        f"{activities.weight_kilograms:.1f} kg"
-        if activities.weight_kilograms is not None
-        else None,
+        (
+            f"{activities.weight_kilograms:.1f} kg"
+            if activities.weight_kilograms is not None
+            else None
+        ),
     )
     add(
         "Height",
-        f"{activities.height_meters:.2f} m"
-        if activities.height_meters is not None
-        else None,
+        (
+            f"{activities.height_meters:.2f} m"
+            if activities.height_meters is not None
+            else None
+        ),
     )
 
     blood_pressure = activities.blood_pressure
     add(
         "Blood pressure",
-        f"{blood_pressure.systolic_mm_hg:.0f}/{blood_pressure.diastolic_mm_hg:.0f} mmHg"
-        if blood_pressure is not None
-        else None,
+        (
+            f"{blood_pressure.systolic_mm_hg:.0f}/{blood_pressure.diastolic_mm_hg:.0f} mmHg"
+            if blood_pressure is not None
+            else None
+        ),
     )
     add(
         "Blood glucose",
-        f"{activities.blood_glucose_mmol_per_liter:.1f} mmol/L"
-        if activities.blood_glucose_mmol_per_liter is not None
-        else None,
+        (
+            f"{activities.blood_glucose_mmol_per_liter:.1f} mmol/L"
+            if activities.blood_glucose_mmol_per_liter is not None
+            else None
+        ),
     )
     add(
         "Oxygen saturation",
-        f"{activities.oxygen_saturation_percent:.0f}%"
-        if activities.oxygen_saturation_percent is not None
-        else None,
+        (
+            f"{activities.oxygen_saturation_percent:.0f}%"
+            if activities.oxygen_saturation_percent is not None
+            else None
+        ),
     )
 
     return facts, unavailable
@@ -164,14 +179,15 @@ def _split_recommendations(text: str) -> tuple[str, list[str]]:
     "/knowledge",
     status_code=status.HTTP_200_OK,
     response_model=HealthSummaryResponse,
-    tags=["RAG System"],
+    tags=["Knowledge"],
 )
 async def generate_health_summary(
-    payload: HealthSummaryRequest, request: FastAPIRequest
+    payload: HealthSummaryRequest,
+    request: FastAPIRequest,
 ) -> HealthSummaryResponse:
     rag = getattr(request.app.state, "rag", None)
     if rag is None:
-        rag = setup_rag_system(settings.FILE_LOCATION)
+        rag = setup_rag_system([settings.FILE_LOCATION])
 
     question = _build_question(payload)
     try:

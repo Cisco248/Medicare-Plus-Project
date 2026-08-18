@@ -7,7 +7,7 @@ from .model import (
     SimilaritySearchRequest,
     Response,
 )
-from .storage import VectorStoreManager, ChromaClient
+from .storage import VectorStoreManager, LocalClient, RemoteClient, ClientFactory
 
 __all__ = [
     "DocumentEmbeddor",
@@ -20,5 +20,7 @@ __all__ = [
     "SimilaritySearchRequest",
     "Response",
     "VectorStoreManager",
-    "ChromaClient",
+    "LocalClient",
+    "RemoteClient",
+    "ClientFactory",
 ]

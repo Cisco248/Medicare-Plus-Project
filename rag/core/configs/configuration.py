@@ -6,20 +6,24 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 
 
 class RAGSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=BASE_DIR / ".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=BASE_DIR / ".env",
+        extra="ignore",
+        env_file_encoding="utf-8",
+    )
 
     # RAG System Configurations
     APP_NAME: str = os.getenv("APP_NAME", "")
     APP_VERSION: str = os.getenv("APP_VERSION", "")
-    FILE_LOCATION: Path = BASE_DIR / "docs"
+    FILE_LOCATION: str = f"{BASE_DIR}/docs/sample.pdf"
     ARTIFACT_PATH: Path = BASE_DIR / "temp"
 
     # OpenAI Configurations
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-    LLM_MODEL_NAME: str = os.getenv("LLM_MODEL", "")
-    EMBEDDING_MODEL_NAME: str = os.getenv("EMBEDDING_MODEL", "")
-    LLM_TEMPERATURE: float = float(os.getenv("LLM_TEMPERATURE", 0.2))
-    MAX_OUTPUT_TOKENS: int = int(os.getenv("MAX_OUTPUT_TOKENS", 400))
+    LLM_MODEL_NAME: str = "gpt-4o-mini"
+    EMBEDDING_MODEL_NAME: str = "text-embedding-3-small"
+    LLM_TEMPERATURE: float = 0.2
+    MAX_OUTPUT_TOKENS: int = 500
 
     # Chroma Configurations
     CHROMA_HOST: str = os.getenv("CHROMA_HOST", "")
@@ -43,3 +47,7 @@ class RAGSettings(BaseSettings):
     MAX_QUERY_CHARS: int = 4000
     RESPONSE_CACHE_SIZE: int = 128
     RESPONSE_CACHE_TTL_SECONDS: int = 300
+
+
+set = RAGSettings()
+print(set.CHROMA_PORT)

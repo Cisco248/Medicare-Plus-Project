@@ -1,5 +1,5 @@
 import logging
-from pathlib import Path
+from typing import List
 
 from core.configs.configuration import RAGSettings
 from .chain_manager import RAGChainManager
@@ -13,50 +13,26 @@ from data import (
 
 settings = RAGSettings()
 logger = logging.getLogger(__name__)
-SUPPORTED_EXTENSIONS = {".txt", ".pdf", ".docx"}
 
 
-def _knowledge_files(location: str | Path | None) -> list[Path]:
-    requested = Path(location) if location is not None else settings.FILE_LOCATION
-    if requested.is_file() and requested.suffix.lower() in SUPPORTED_EXTENSIONS:
-        return [requested]
-
-    directory = requested if requested.is_dir() else settings.FILE_LOCATION
-    if not directory.exists():
-        return []
-    return sorted(
-        path
-        for path in directory.rglob("*")
-        if path.is_file() and path.suffix.lower() in SUPPORTED_EXTENSIONS
-    )
-
-
-def setup_rag_system(file_path: str | Path | None = None):
-    files = _knowledge_files(file_path)
-    if not files:
-        logger.warning(
-            "No supported knowledge files found in %s; RAG starts not ready.",
-            settings.FILE_LOCATION,
-        )
-        return RAGChainManager.build_chain(None, index_version="empty")
-
-    documents = []
-    for path in files:
-        loaded = DocumentLoader.load(str(path))
-        for document in loaded:
-            document.metadata["source"] = str(path)
-        documents.extend(loaded)
-
-    embeddor = DocumentEmbeddor.load_embedding()
-    chunks = DocumentTextSplitters.chunk(
-        documents,
-        embeddor,
-        is_semantic=False,
+def setup_rag_system(files: List[str] | None = None, urls: List[str] | None = None):
+    # Setup Document Loader
+    loader = DocumentLoader(documents=files, urls=urls)
+    docs = loader.load()
+    # Load Embedding Model
+    embeddor = DocumentEmbeddor()
+    model = embeddor.load()
+    # Setup Text Splitter
+    splitter = DocumentTextSplitters(
+        model,
         chunk_size=settings.CHUNK_SIZE,
         chunk_overlap=settings.CHUNK_OVERLAP,
     )
-
-    vector_store, index_version = VectorStoreManager.manager(chunks, embeddor)
+    chunks = splitter.load(docs)
+    # Store chunks in vector storage
+    storage_manager = VectorStoreManager(chunks, model)
+    vector_store, index_version = storage_manager.manager()
+    # Setup hybrid retriever
     retriever = HybridRetriever.build(
         vector_store,
         chunks,

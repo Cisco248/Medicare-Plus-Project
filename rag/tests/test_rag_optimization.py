@@ -3,8 +3,8 @@ from pathlib import Path
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage
 
-from data.ingestion.text_splitters import DocumentTextSplitters
-from data.storage.local_db import LocalDatabase
+from rag.data.ingestion.splitters import DocumentTextSplitters
+from rag.data.storage.local_client import LocalDatabase
 from domain.pipeline.chain_manager import RAGPipeline
 from domain.pipeline.setup import setup_rag_system
 from domain.pipeline.token_budget import TokenBudget
