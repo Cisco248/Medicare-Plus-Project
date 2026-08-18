@@ -188,6 +188,12 @@ async def generate_health_summary(
     rag = getattr(request.app.state, "rag", None)
     if rag is None:
         rag = setup_rag_system([settings.FILE_LOCATION])
+        request.app.state.rag = rag
+    if not getattr(rag, "ready", False):
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="The RAG knowledge index is not ready.",
+        )
 
     question = _build_question(payload)
     try:

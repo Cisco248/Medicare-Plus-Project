@@ -17,7 +17,6 @@ FROM python:3.12-slim AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    CHROMA_DB_DIR=/temp/chroma \
     PATH="/app/.venv/bin:$PATH"
 
 WORKDIR /app
@@ -29,7 +28,7 @@ COPY --from=builder /app/.venv /app/.venv
 COPY . .
 
 
-RUN mkdir -p /models /data/chroma
+RUN mkdir -p /app/temp/db
 
 
 EXPOSE 8000

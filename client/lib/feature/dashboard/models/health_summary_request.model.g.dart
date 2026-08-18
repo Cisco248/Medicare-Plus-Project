@@ -34,6 +34,6 @@ Map<String, dynamic> _$HealthSummaryRequestToJson(
   _HealthSummaryRequest instance,
 ) => <String, dynamic>{
   'userId': instance.userId,
-  'period': instance.period,
-  'activities': instance.activities,
+  'period': instance.period.toJson(),
+  'activities': instance.activities.toJson(),
 };

@@ -1,3 +1,4 @@
+import 'package:client/core/exceptions/base.exception.dart';
 import 'package:client/core/network/dio_client.dart';
 import 'package:client/feature/chat_bot/models/response.model.dart';
 import 'package:dio/dio.dart';
@@ -28,9 +29,7 @@ class BotRepositoryImpService extends BotRepository {
         createdDate: DateTime.now(),
       );
     } on DioException catch (e) {
-      final message =
-          'Status: ${e.response!.statusCode}, Message: ${e.message}';
-      throw Exception(message);
+      throw AppException.fromDioException(e);
     }
   }
 }

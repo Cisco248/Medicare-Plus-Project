@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class DocumentTextSplitters:
     def __init__(
-        self, model: Embeddings | None = None, semantic: bool = True, **kwargs
+        self, model: Embeddings | None = None, semantic: bool = False, **kwargs
     ) -> None:
         self.model = model
         self.semantic = semantic
@@ -30,7 +30,7 @@ class DocumentTextSplitters:
         splitter = RecursiveCharacterTextSplitter(
             chunk_size=self.kwargs.get("chunk_size", 500),
             chunk_overlap=self.kwargs.get("chunk_overlap", 50),
-            separators=["\n\n", "\n", ". ", " ", ""],
+            separators=["\n## ", "\n# ", "\n\n", "\n", ". ", " ", ""],
         )
         chunks = splitter.split_documents(doc)
         source_chunk_indexes: dict[str, int] = {}

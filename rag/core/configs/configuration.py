@@ -13,8 +13,8 @@ class RAGSettings(BaseSettings):
     )
 
     # RAG System Configurations
-    APP_NAME: str = os.getenv("APP_NAME", "")
-    APP_VERSION: str = os.getenv("APP_VERSION", "")
+    APP_NAME: str = os.getenv("APP_NAME", "Medicare Plus RAG")
+    APP_VERSION: str = os.getenv("APP_VERSION", "0.1.0")
     FILE_LOCATION: str = f"{BASE_DIR}/docs/knowledge"
     ARTIFACT_PATH: Path = BASE_DIR / "temp"
 
@@ -28,10 +28,10 @@ class RAGSettings(BaseSettings):
     # Chroma Configurations
     CHROMA_HOST: str = os.getenv("CHROMA_HOST", "")
     CHROMA_PORT: int = int(os.getenv("CHROMA_PORT", 3000))
-    COLLECTION_NAME: str = os.getenv("COLLECTION_NAME", "")
+    COLLECTION_NAME: str = os.getenv("COLLECTION_NAME", "medicare-knowledge")
     VECTOR_DB_DIR: Path = ARTIFACT_PATH / "db"
 
-    # Retrivel Configurations
+    # Retrieval Configurations
     CHUNK_SIZE: int = 500
     CHUNK_OVERLAP: int = 50
     VECTOR_CANDIDATE_K: int = 8
@@ -47,7 +47,3 @@ class RAGSettings(BaseSettings):
     MAX_QUERY_CHARS: int = 4000
     RESPONSE_CACHE_SIZE: int = 128
     RESPONSE_CACHE_TTL_SECONDS: int = 300
-
-
-set = RAGSettings()
-print(set.CHROMA_PORT)

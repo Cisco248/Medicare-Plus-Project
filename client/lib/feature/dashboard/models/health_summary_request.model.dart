@@ -1,3 +1,7 @@
+// @JsonSerializable on freezed factory constructors is the documented way to
+// configure json_serializable for freezed classes.
+// ignore_for_file: invalid_annotation_target
+
 import 'package:client/feature/dashboard/models/activity.model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -6,6 +10,7 @@ part 'health_summary_request.model.g.dart';
 
 @freezed
 abstract class SummaryPeriod with _$SummaryPeriod {
+  @JsonSerializable(explicitToJson: true)
   const factory SummaryPeriod({
     required DateTime start,
     required DateTime end,
@@ -18,6 +23,7 @@ abstract class SummaryPeriod with _$SummaryPeriod {
 
 @freezed
 abstract class HealthSummaryRequest with _$HealthSummaryRequest {
+  @JsonSerializable(explicitToJson: true)
   const factory HealthSummaryRequest({
     String? userId,
     required SummaryPeriod period,
