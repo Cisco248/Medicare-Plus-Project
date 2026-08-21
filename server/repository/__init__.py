@@ -2,6 +2,7 @@ from .middlewares import (
     AuthenticationMiddleware,
     ArtifactLoader,
     HypertensionMiddleware,
+    HARMiddleware,
     RagClientMiddleware,
     DocumentMiddleware,
 )
@@ -23,6 +24,7 @@ __all__ = [
     "base_model_router",
     "document_router",
     "HypertensionMiddleware",
+    "HARMiddleware",
     "RagClientMiddleware",
     "AuthResponse",
     "DocumentResponse",
