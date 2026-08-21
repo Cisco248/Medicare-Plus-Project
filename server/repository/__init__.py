@@ -3,7 +3,6 @@ from .middlewares import (
     ArtifactLoader,
     HypertensionMiddleware,
     DiabetesMiddleware,
-    HARMiddleware,
     RagClientMiddleware,
     DocumentMiddleware,
 )
@@ -26,7 +25,6 @@ __all__ = [
     "document_router",
     "HypertensionMiddleware",
     "DiabetesMiddleware",
-    "HARMiddleware",
     "RagClientMiddleware",
     "AuthResponse",
     "DocumentResponse",
