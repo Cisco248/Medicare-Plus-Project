@@ -1,6 +1,6 @@
 from .user_data_schema import UserCreate, UserLogin
 from .har_data_schema import HARDataScheme
-from .base_model_scehema import HeartScehema, HypertensionScehema
+from .base_model_scehema import HeartScehema, HypertensionScehema, DiabetesScehema
 from .document_data_schema import DocumentStatusUpdate, DocumentUpdate
 
 __all__ = [
@@ -9,6 +9,7 @@ __all__ = [
     "HARDataScheme",
     "HeartScehema",
     "HypertensionScehema",
+    "DiabetesScehema",
     "DocumentUpdate",
     "DocumentStatusUpdate",
 ]

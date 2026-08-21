@@ -73,7 +73,7 @@ services:
       MYSQL_DATABASE: medicare_plus
 
     ports:
-      - "3306:3306"
+      - "3307:3306"
 
     volumes:
       - mysql-data:/var/lib/mysql

@@ -12,6 +12,18 @@ class HypertensionScehema(BaseModel):
     gender: str
 
 
+class DiabetesScehema(BaseModel):
+    age: int
+    gender: str
+    pulse_rate: float
+    systolic_bp: float
+    diastolic_bp: float
+    glucose: float
+    bmi: float
+    family_diabetes: str
+    hypertensive: str
+
+
 class HeartScehema(BaseModel):
     bmi: float
     smoking: str

@@ -5,6 +5,7 @@ from .schemas import (
     HARDataScheme,
     HeartScehema,
     HypertensionScehema,
+    DiabetesScehema,
     DocumentUpdate,
     DocumentStatusUpdate,
 )
@@ -19,6 +20,7 @@ __all__ = [
     "HARDataScheme",
     "HeartScehema",
     "HypertensionScehema",
+    "DiabetesScehema",
     "DocumentUpdate",
     "DocumentStatusUpdate",
 ]

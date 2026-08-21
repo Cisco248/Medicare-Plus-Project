@@ -28,6 +28,9 @@ class ServerSettings(BaseSettings):
     # Rag URL
     RAG_HOST: str = os.getenv("RAG_HOST", "loacalhost")
     RAG_PORT: int = int(os.getenv("RAG_PORT", 8081))
+    RAG_URL: str = os.getenv(
+        "RAG_URL", f"http://{os.getenv('RAG_HOST', 'localhost')}:{os.getenv('RAG_PORT', 8081)}"
+    )
 
     # JWT Tokens
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "secret-key")
@@ -39,5 +42,14 @@ class ServerSettings(BaseSettings):
 
     # Base Models Paths Configurations
     HYPERTENSION_PATH: str = f"{BASE_DIR}/artifacts/base/hypertension"
-    DIABETES_PATH: str = f"{BASE_DIR}/artifacts/base/hypertension"
+    HYPERTENSION_MODEL_PATH: str = f"{BASE_DIR}/artifacts/base/hypertension/risk_classifier.pkl"
+    HYPERTENSION_FEATURE_PATH: str = f"{BASE_DIR}/artifacts/base/hypertension/feature_names.pkl"
+    HYPERTENSION_LABEL_PATH: str = f"{BASE_DIR}/artifacts/base/hypertension/risk_labels.pkl"
+
     BLOOD_PRESSURE_PATH: str = f"{BASE_DIR}/artifacts/base/hypertension"
+
+    # Diabetes (helper model) artifact paths
+    DIABETES_PATH: str = f"{BASE_DIR}/artifacts/base/diabetes"
+    DIABETES_MODEL_PATH: str = f"{BASE_DIR}/artifacts/base/diabetes/diabetes_best_model.pkl"
+    DIABETES_SCALER_PATH: str = f"{BASE_DIR}/artifacts/base/diabetes/scaler.pkl"
+    DIABETES_FEATURE_PATH: str = f"{BASE_DIR}/artifacts/base/diabetes/feature_cols.pkl"
