@@ -1,15 +1,21 @@
 import pandas as pd
 from fastapi import APIRouter, HTTPException
-from data import HypertensionScehema, DiabetesSchema
-from repository import ArtifactLoader, HypertensionMiddleware, RagClientMiddleware
-from repository.middlewares.rag_client_middleware import RagClientError
+from data import HypertensionScehema, DiabetesScehema
+from repository import (
+    ArtifactLoader,
+    HypertensionMiddleware,
+    DiabetesMiddleware,
+    RagClientMiddleware,
+)
 from core import ServerSettings
 
 base_model_router = APIRouter()
 config = ServerSettings()
 
 
-def _compose_hypertension_question(schema: HypertensionScehema, prediction: str, bmi: float) -> str:
+def _compose_hypertension_question(
+    schema: HypertensionScehema, prediction: str, bmi: float
+) -> str:
     return (
         "Explain this hypertension risk assessment for a patient using only "
         "the medical knowledge context. Do not diagnose and do not invent facts. "
@@ -69,28 +75,10 @@ async def hypertension_add_data(
                 "gender": schema.gender,
             },
         ).build()
-    except RagClientError as exc:
+    except HTTPException as exc:
         status_code = 503 if exc.status_code in (503, 504, None) else 502
         if exc.status_code and 400 <= exc.status_code < 500 and exc.status_code != 404:
             status_code = exc.status_code
         raise HTTPException(status_code=status_code, detail=str(exc)) from exc
 
-    try:
-        return response.json()
-    except ValueError as exc:
-        raise HTTPException(
-            status_code=502,
-            detail="The assessment service returned an unexpected response.",
-        ) from exc
-
-
-@base_model_router.post("/diabetes", status_code=200, tags=["Base Model"])
-async def diabetes_add_data(request: DiabetesSchema):
-    try:
-        pass
-
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    except Exception:
-        raise HTTPException(status_code=500, detail="Prediction failed")
+    return response.json()

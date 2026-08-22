@@ -17,3 +17,8 @@ class ArtifactLoader:
         if not label_path:
             raise Exception("Label set not Found")
         return joblib.load(label_path)
+
+    def scaler_loader(self, scaler_path: str):
+        if not scaler_path:
+            raise Exception("Scaler not Found")
+        return joblib.load(scaler_path)
