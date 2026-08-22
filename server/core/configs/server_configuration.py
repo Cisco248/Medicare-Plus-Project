@@ -45,8 +45,14 @@ class ServerSettings(BaseSettings):
 
     BLOOD_PRESSURE_PATH: str = f"{BASE_DIR}/artifacts/base/hypertension"
 
+<<<<<<< HEAD
+    # HAR (Human Activity Recognition) artifact paths
+    HAR_PATH: str = f"{BASE_DIR}/artifacts/base/har"
+    HAR_MODEL_PATH: str = f"{BASE_DIR}/artifacts/base/har/activity_model_final.pkl"
+=======
     # Diabetes (helper model) artifact paths
     DIABETES_PATH: str = f"{BASE_DIR}/artifacts/base/diabetes"
     DIABETES_MODEL_PATH: str = f"{BASE_DIR}/artifacts/base/diabetes/diabetes_best_model.pkl"
     DIABETES_SCALER_PATH: str = f"{BASE_DIR}/artifacts/base/diabetes/scaler.pkl"
     DIABETES_FEATURE_PATH: str = f"{BASE_DIR}/artifacts/base/diabetes/feature_cols.pkl"
+>>>>>>> gen

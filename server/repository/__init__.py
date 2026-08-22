@@ -2,7 +2,11 @@ from .middlewares import (
     AuthenticationMiddleware,
     ArtifactLoader,
     HypertensionMiddleware,
+<<<<<<< HEAD
+    HARMiddleware,
+=======
     DiabetesMiddleware,
+>>>>>>> gen
     RagClientMiddleware,
     # DocumentMiddleware,
 )
@@ -22,9 +26,17 @@ __all__ = [
     "base_model_router",
     # "document_router",
     "HypertensionMiddleware",
+<<<<<<< HEAD
+    "HARMiddleware",
+    "RagClientMiddleware",
+    "AuthResponse",
+    "DocumentResponse",
+]
+=======
     "DiabetesMiddleware",
     "RagClientMiddleware",
     "AuthResponse",
     "DocumentResponse",
     "DiabetesResponse",
 ]
+>>>>>>> gen
