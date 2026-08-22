@@ -116,8 +116,6 @@ async def diabetes_add_data(
         rag_response.raise_for_status()
         recommendations = rag_response.json()
     except Exception:
-        # RAG system unreachable / mis-configured (e.g. missing OpenAI key) --
-        # don't let that take down the diabetes prediction itself.
         recommendations = None
 
     return {
