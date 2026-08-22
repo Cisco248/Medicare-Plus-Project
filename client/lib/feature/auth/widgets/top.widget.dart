@@ -1,4 +1,4 @@
-import 'package:client/feature/auth/models/form.model.dart';
+import 'package:client/feature/auth/models/auth.state.dart';
 import 'package:client/feature/auth/notifiers/form_mode.notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,7 +17,7 @@ class LoginTopSection extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  formState == FormStatus(state: FormMode.signIn)
+                  formState == FormStates(state: FormMode.signIn)
                       ? 'Welcome Back'
                       : 'Welcome to',
                   style: TextStyle(

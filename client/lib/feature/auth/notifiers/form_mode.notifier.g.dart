@@ -13,7 +13,7 @@ part of 'form_mode.notifier.dart';
 final formStateProvider = FormStateNotifierProvider._();
 
 final class FormStateNotifierProvider
-    extends $NotifierProvider<FormStateNotifier, FormStatus> {
+    extends $NotifierProvider<FormStateNotifier, FormStates> {
   FormStateNotifierProvider._()
     : super(
         from: null,
@@ -33,27 +33,27 @@ final class FormStateNotifierProvider
   FormStateNotifier create() => FormStateNotifier();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(FormStatus value) {
+  Override overrideWithValue(FormStates value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<FormStatus>(value),
+      providerOverride: $SyncValueProvider<FormStates>(value),
     );
   }
 }
 
-String _$formStateNotifierHash() => r'002807d757ee1789725fd57d23b91a988bbafde6';
+String _$formStateNotifierHash() => r'7852cad2802a0c74f5f3df2ef285dbb62cbe9a5b';
 
-abstract class _$FormStateNotifier extends $Notifier<FormStatus> {
-  FormStatus build();
+abstract class _$FormStateNotifier extends $Notifier<FormStates> {
+  FormStates build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<FormStatus, FormStatus>;
+    final ref = this.ref as $Ref<FormStates, FormStates>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<FormStatus, FormStatus>,
-              FormStatus,
+              AnyNotifier<FormStates, FormStates>,
+              FormStates,
               Object?,
               Object?
             >;

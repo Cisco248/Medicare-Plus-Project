@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 
 class Response(BaseModel):
@@ -17,7 +17,12 @@ class HealthSummaryResponse(BaseModel):
     medical diagnosis, which the disclaimer states explicitly.
     """
 
+    model_config = ConfigDict(populate_by_name=True, ser_json_by_alias=True)
+
     summary: str
     recommendations: list[str] = Field(default_factory=list)
     disclaimer: str
-    generated_at: datetime
+    generated_at: datetime = Field(
+        validation_alias=AliasChoices("generated_at", "generatedAt"),
+        serialization_alias="generatedAt",
+    )

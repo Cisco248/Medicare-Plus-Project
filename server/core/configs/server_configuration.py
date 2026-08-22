@@ -23,14 +23,11 @@ class ServerSettings(BaseSettings):
     APP_HOST: str = os.getenv("HOST", "0.0.0.0")
     APP_PORT: int = int(os.getenv("PORT", 8000))
     DEBUG: bool = os.getenv("DEBUG", "true").lower() == "true"
-    CORS_ORIGIN: list[str] = os.getenv("CORS_ORIGINS", "http://localhost:3000").split()
+    CORS_ORIGIN: list[str] = os.getenv("CORS_ORIGINS", "").split()
 
     # Rag URL
     RAG_HOST: str = os.getenv("RAG_HOST", "loacalhost")
     RAG_PORT: int = int(os.getenv("RAG_PORT", 8081))
-    RAG_URL: str = os.getenv(
-        "RAG_URL", f"http://{os.getenv('RAG_HOST', 'localhost')}:{os.getenv('RAG_PORT', 8081)}"
-    )
 
     # JWT Tokens
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "secret-key")

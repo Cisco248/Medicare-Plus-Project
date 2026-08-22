@@ -6,7 +6,7 @@ import 'package:client/feature/dashboard/page/dashboard.dart';
 import 'package:client/feature/e_doc/page/e_doc.page.dart';
 import 'package:client/feature/pharmacy/page/shop.dart';
 import 'package:client/feature/reports/page/reports.page.dart';
-import 'package:client/layout/providers/navigation.notifier.dart';
+import 'package:client/layout/notifiers/navigation.notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

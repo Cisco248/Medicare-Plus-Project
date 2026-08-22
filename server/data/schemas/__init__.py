@@ -9,7 +9,6 @@ __all__ = [
     "HARDataScheme",
     "HeartScehema",
     "HypertensionScehema",
-    "DiabetesScehema",
     "DocumentUpdate",
     "DocumentStatusUpdate",
 ]

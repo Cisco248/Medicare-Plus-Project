@@ -1,11 +1,66 @@
 from datetime import datetime
 from typing import Optional
-
-from pydantic import BaseModel, Field, field_validator
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class Request(BaseModel):
     question: str = Field(min_length=1, max_length=4000)
+
+
+class EDocRequest(BaseModel):
+    """Payload of ``POST /api/e-doc``.
+
+    Accepts a free-text ``question`` and/or the structured hypertension
+    assessment fields the backend already sends.
+    """
+
+    question: Optional[str] = Field(default=None, max_length=4000)
+    prediction: Optional[str] = None
+    age: Optional[int] = None
+    height: Optional[float] = None
+    weight: Optional[float] = None
+    bmi: Optional[float] = None
+    hemoglobin_count: Optional[float] = None
+    cholesterol_mgdl: Optional[float] = None
+    diabetes_ordinal: Optional[str] = None
+    gender: Optional[str] = None
+
+    @model_validator(mode="after")
+    def require_question_or_prediction(self):
+        if self.question and self.question.strip():
+            return self
+        if self.prediction and str(self.prediction).strip():
+            return self
+        raise ValueError("Provide a question or a prediction result.")
+
+
+def compose_edoc_question(payload: EDocRequest) -> str:
+    """Turn an E-Doc request into a grounded retrieval question."""
+    if payload.question and payload.question.strip():
+        return payload.question.strip()
+
+    lines = [
+        "Explain this hypertension risk assessment for a patient using only "
+        "the medical knowledge context. Do not diagnose and do not invent facts.",
+        f"Predicted status: {payload.prediction}.",
+    ]
+    if payload.age is not None:
+        lines.append(f"Age: {payload.age}.")
+    if payload.gender:
+        lines.append(f"Gender: {payload.gender}.")
+    if payload.height is not None:
+        lines.append(f"Height: {payload.height} cm.")
+    if payload.weight is not None:
+        lines.append(f"Weight: {payload.weight} kg.")
+    if payload.bmi is not None:
+        lines.append(f"BMI: {payload.bmi:.1f}.")
+    if payload.hemoglobin_count is not None:
+        lines.append(f"HbA1c: {payload.hemoglobin_count}%.")
+    if payload.cholesterol_mgdl is not None:
+        lines.append(f"Cholesterol: {payload.cholesterol_mgdl} mg/dL.")
+    if payload.diabetes_ordinal:
+        lines.append(f"Diabetes status: {payload.diabetes_ordinal}.")
+    return " ".join(lines)
 
 
 class SimilaritySearchRequest(Request):
@@ -34,9 +89,14 @@ class SimilaritySearchRequest(Request):
 class SummaryPeriod(BaseModel):
     """Date range the health data was collected for (UTC instants)."""
 
+    model_config = ConfigDict(populate_by_name=True)
+
     start: datetime
     end: datetime
-    timezone_offset: Optional[str] = None
+    timezone_offset: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasChoices("timezone_offset", "timezoneOffset"),
+    )
 
 
 class HeartRateSummary(BaseModel):
@@ -66,10 +126,10 @@ class BloodPressureSummary(BaseModel):
 
 
 class HealthActivities(BaseModel):
-    """Normalized health metrics collected from Google Health Connect.
+    """
+    Normalized health metrics collected from Google Health Connect.
 
-    ``None`` always means "data unavailable" (missing permission or no
-    records) and must never be interpreted as zero.
+    ``None`` always means "data unavailable" (missing permission or no records) and must never be interpreted as zero.
     """
 
     date: Optional[datetime] = None
@@ -90,6 +150,11 @@ class HealthActivities(BaseModel):
 class HealthSummaryRequest(BaseModel):
     """Payload of ``POST /api/knowledge`` sent by the mobile client."""
 
-    user_id: Optional[str] = None
+    model_config = ConfigDict(populate_by_name=True)
+
+    user_id: Optional[str] = Field(
+        default=None,
+        validation_alias=AliasChoices("user_id", "userId"),
+    )
     period: SummaryPeriod
     activities: HealthActivities

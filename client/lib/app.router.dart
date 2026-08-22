@@ -1,6 +1,6 @@
 import 'package:client/core/components/loading.component.dart';
 import 'package:client/core/components/splash.component.dart';
-import 'package:client/feature/auth/models/auth.model.dart';
+import 'package:client/feature/auth/models/auth.state.dart';
 import 'package:client/feature/auth/notifiers/authentication.notifier.dart';
 import 'package:client/feature/auth/pages/auth.page.dart';
 import 'package:client/layout/page/layout.page.dart';
@@ -55,13 +55,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (kDebugMode) {
         debugPrint('AUTH STATE: $authState');
       }
-      // Authentication state is still being initialized.
       if (authState.isLoading) {
         return state.matchedLocation == '/loading' ? null : '/loading';
       }
 
-      // Don't redirect when authentication has failed.
-      // You can replace this with an error page later.
       if (authState.hasError) {
         if (kDebugMode) {
           debugPrint('Authentication error: ${authState.error}');
@@ -70,7 +67,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         return null;
       }
 
-      // Get current authentication mode.
       final AuthMode authMode = authState.when(
         data: (auth) => auth.state,
         loading: () => AuthMode.initial,
@@ -101,7 +97,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
 class AuthChangeNotifier extends ChangeNotifier {
   AuthChangeNotifier(this.ref) {
-    ref.listen<AsyncValue<AuthStatus>>(authenticationProvider, (
+    ref.listen<AsyncValue<AuthStates>>(authenticationProvider, (
       previous,
       next,
     ) {

@@ -8,27 +8,12 @@ part of 'reports.notifier.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Manages the patient's document list and all document actions.
-///
-/// Errors from actions ([uploadDocument], [deleteDocument], ...) are rethrown
-/// as [AppException]s so the calling page can show a user-friendly message
-/// without corrupting the list state.
 
 @ProviderFor(ReportsNotifier)
 final reportsProvider = ReportsNotifierProvider._();
 
-/// Manages the patient's document list and all document actions.
-///
-/// Errors from actions ([uploadDocument], [deleteDocument], ...) are rethrown
-/// as [AppException]s so the calling page can show a user-friendly message
-/// without corrupting the list state.
 final class ReportsNotifierProvider
     extends $AsyncNotifierProvider<ReportsNotifier, List<DocumentModel>> {
-  /// Manages the patient's document list and all document actions.
-  ///
-  /// Errors from actions ([uploadDocument], [deleteDocument], ...) are rethrown
-  /// as [AppException]s so the calling page can show a user-friendly message
-  /// without corrupting the list state.
   ReportsNotifierProvider._()
     : super(
         from: null,
@@ -48,13 +33,7 @@ final class ReportsNotifierProvider
   ReportsNotifier create() => ReportsNotifier();
 }
 
-String _$reportsNotifierHash() => r'f5252f2cac0f4bfb795106040e50c43f865f1f0a';
-
-/// Manages the patient's document list and all document actions.
-///
-/// Errors from actions ([uploadDocument], [deleteDocument], ...) are rethrown
-/// as [AppException]s so the calling page can show a user-friendly message
-/// without corrupting the list state.
+String _$reportsNotifierHash() => r'03a015b763c7ff19546b3b8aa1fe723a3183a5fc';
 
 abstract class _$ReportsNotifier extends $AsyncNotifier<List<DocumentModel>> {
   FutureOr<List<DocumentModel>> build();
@@ -75,12 +54,8 @@ abstract class _$ReportsNotifier extends $AsyncNotifier<List<DocumentModel>> {
   }
 }
 
-/// Raw file bytes of a document, used to preview image documents in-app.
-
 @ProviderFor(documentPreview)
 final documentPreviewProvider = DocumentPreviewFamily._();
-
-/// Raw file bytes of a document, used to preview image documents in-app.
 
 final class DocumentPreviewProvider
     extends
@@ -90,7 +65,6 @@ final class DocumentPreviewProvider
           FutureOr<Uint8List>
         >
     with $FutureModifier<Uint8List>, $FutureProvider<Uint8List> {
-  /// Raw file bytes of a document, used to preview image documents in-app.
   DocumentPreviewProvider._({
     required DocumentPreviewFamily super.from,
     required String super.argument,
@@ -134,9 +108,7 @@ final class DocumentPreviewProvider
   }
 }
 
-String _$documentPreviewHash() => r'5ff7e553410d60aa76a489cd2d79cd8959df8c35';
-
-/// Raw file bytes of a document, used to preview image documents in-app.
+String _$documentPreviewHash() => r'48bd831c133c6be387b288aaf575555079c13598';
 
 final class DocumentPreviewFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<Uint8List>, String> {
@@ -148,8 +120,6 @@ final class DocumentPreviewFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
-
-  /// Raw file bytes of a document, used to preview image documents in-app.
 
   DocumentPreviewProvider call(String documentId) =>
       DocumentPreviewProvider._(argument: documentId, from: this);

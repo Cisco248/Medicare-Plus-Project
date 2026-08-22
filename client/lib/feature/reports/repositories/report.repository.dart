@@ -11,22 +11,15 @@ part 'report.repository.g.dart';
 
 @riverpod
 ReportRepository reportRepository(Ref ref) =>
-    ReportRepository(client: client(8080));
+    ReportRepository(client: client());
 
-/// HTTP access to the backend's patient document endpoints (`/api/documents`).
-///
-/// Every request carries the session token in the `x-auth-token` header, which
-/// the backend uses to scope documents to the authenticated patient. Transport
-/// failures are mapped to the [AppException] hierarchy.
 class ReportRepository {
   ReportRepository({required this._client});
 
   final Dio _client;
 
-  Options _authOptions(String? token, {ResponseType? responseType}) => Options(
-    headers: {'x-auth-token': ?token},
-    responseType: responseType,
-  );
+  Options _authOptions(String? token, {ResponseType? responseType}) =>
+      Options(headers: {'x-auth-token': ?token}, responseType: responseType);
 
   Future<List<DocumentModel>> fetchDocuments({String? token}) async {
     try {
@@ -106,13 +99,15 @@ class ReportRepository {
 
   Future<void> deleteDocument(String id, {String? token}) async {
     try {
-      await _client.delete<void>('/documents/$id', options: _authOptions(token));
+      await _client.delete<void>(
+        '/documents/$id',
+        options: _authOptions(token),
+      );
     } on DioException catch (e) {
       throw AppException.fromDioException(e);
     }
   }
 
-  /// Raw file content, used for the in-app preview of image documents.
   Future<Uint8List> fetchDocumentBytes(String id, {String? token}) async {
     try {
       final response = await _client.get<List<int>>(
@@ -125,7 +120,6 @@ class ReportRepository {
     }
   }
 
-  /// Downloads the document file to [savePath] on the device.
   Future<void> downloadDocument(
     String id,
     String savePath, {

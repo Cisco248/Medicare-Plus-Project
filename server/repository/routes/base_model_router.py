@@ -1,5 +1,5 @@
 import pandas as pd
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from data import HypertensionScehema, DiabetesScehema
 from repository import (
     ArtifactLoader,
@@ -13,6 +13,21 @@ base_model_router = APIRouter()
 config = ServerSettings()
 
 
+def _compose_hypertension_question(
+    schema: HypertensionScehema, prediction: str, bmi: float
+) -> str:
+    return (
+        "Explain this hypertension risk assessment for a patient using only "
+        "the medical knowledge context. Do not diagnose and do not invent facts. "
+        f"Predicted status: {prediction}. "
+        f"Age: {schema.age}. Gender: {schema.gender}. "
+        f"Height: {schema.height} cm. Weight: {schema.weight} kg. "
+        f"BMI: {bmi:.1f}. HbA1c: {schema.hba1c}%. "
+        f"Cholesterol: {schema.cholesterol_mgdl} mg/dL. "
+        f"Diabetes status: {schema.diabetes_ordinal}."
+    )
+
+
 @base_model_router.post("/hypertension", status_code=200, tags=["Base Model"])
 async def hypertension_add_data(
     schema: HypertensionScehema,
@@ -20,9 +35,9 @@ async def hypertension_add_data(
     middleware=HypertensionMiddleware(),
 ):
 
-    model = loader.model_loader(config.HYPERTENSION_MODEL_PATH)
-    features = loader.feature_loader(config.HYPERTENSION_FEATURE_PATH)
-    labels = loader.label_loader(config.HYPERTENSION_LABEL_PATH)
+    model = loader.model_loader(config.HYPERTENSION_PATH + "/model.pkl")
+    features = loader.feature_loader(config.HYPERTENSION_PATH + "/features.pkl")
+    labels = loader.label_loader(config.HYPERTENSION_PATH + "/labels.pkl")
 
     bmi_value = middleware.bmi_calculator(schema.height, schema.weight)
     gender_value = middleware.gender_encoder(schema.gender)
@@ -41,86 +56,29 @@ async def hypertension_add_data(
         ]
     )[features]
     pred_code = model.predict(data)[0]
+    prediction = labels[pred_code]
+    question = _compose_hypertension_question(schema, prediction, bmi_value)
 
-    response = await RagClientMiddleware(
-        url=f"{config.RAG_URL}/e-doc",
-        data={
-            "prediction": labels[pred_code],
-            "age": schema.age,
-            "height": schema.height,
-            "weight": schema.weight,
-            "bmi": bmi_value,
-            "hemoglobin_count": schema.hba1c,
-            "cholesterol_mgdl": schema.cholesterol_mgdl,
-            "diabetes_ordinal": schema.diabetes_ordinal,
-            "gender": schema.gender,
-        },
-    ).build()
+    try:
+        response = await RagClientMiddleware(
+            url=f"{config.RAG_HOST}:{config.RAG_PORT}/api/e-doc",
+            data={
+                "question": question,
+                "prediction": prediction,
+                "age": schema.age,
+                "height": schema.height,
+                "weight": schema.weight,
+                "bmi": bmi_value,
+                "hemoglobin_count": schema.hba1c,
+                "cholesterol_mgdl": schema.cholesterol_mgdl,
+                "diabetes_ordinal": schema.diabetes_ordinal,
+                "gender": schema.gender,
+            },
+        ).build()
+    except HTTPException as exc:
+        status_code = 503 if exc.status_code in (503, 504, None) else 502
+        if exc.status_code and 400 <= exc.status_code < 500 and exc.status_code != 404:
+            status_code = exc.status_code
+        raise HTTPException(status_code=status_code, detail=str(exc)) from exc
 
     return response.json()
-
-
-@base_model_router.post("/diabetes", status_code=200, tags=["Base Model"])
-async def diabetes_add_data(
-    schema: DiabetesScehema,
-    loader=ArtifactLoader(),
-    middleware=DiabetesMiddleware(),
-):
-    model = loader.model_loader(config.DIABETES_MODEL_PATH)
-    scaler = loader.scaler_loader(config.DIABETES_SCALER_PATH)
-    features = loader.feature_loader(config.DIABETES_FEATURE_PATH)
-
-    gender_value = middleware.gender_encoder(schema.gender)
-    family_diabetes_value = middleware.yes_no_encoder(schema.family_diabetes)
-    hypertensive_value = middleware.yes_no_encoder(schema.hypertensive)
-
-    data = pd.DataFrame(
-        [
-            {
-                "age": schema.age,
-                "gender": gender_value,
-                "pulse_rate": schema.pulse_rate,
-                "systolic_bp": schema.systolic_bp,
-                "diastolic_bp": schema.diastolic_bp,
-                "glucose": schema.glucose,
-                "bmi": schema.bmi,
-                "family_diabetes": family_diabetes_value,
-                "hypertensive": hypertensive_value,
-            }
-        ]
-    )[features]
-
-    scaled_data = scaler.transform(data)
-    pred_code = int(model.predict(scaled_data)[0])
-    pred_proba = float(model.predict_proba(scaled_data)[0][pred_code])
-    diagnosis = middleware.risk_label(pred_code)
-
-    question = middleware.build_rag_question(
-        diagnosis=diagnosis,
-        age=schema.age,
-        gender=schema.gender,
-        glucose=schema.glucose,
-        bmi=schema.bmi,
-        systolic_bp=schema.systolic_bp,
-        diastolic_bp=schema.diastolic_bp,
-        family_diabetes=schema.family_diabetes,
-        hypertensive=schema.hypertensive,
-    )
-
-    recommendations = None
-    try:
-        rag_response = await RagClientMiddleware(
-            url=f"{config.RAG_URL}/e-doc",
-            data={"question": question},
-        ).build()
-        rag_response.raise_for_status()
-        recommendations = rag_response.json()
-    except Exception:
-        recommendations = None
-
-    return {
-        "prediction": pred_code,
-        "diagnosis": diagnosis,
-        "confidence": round(pred_proba, 4),
-        "recommendations": recommendations,
-    }

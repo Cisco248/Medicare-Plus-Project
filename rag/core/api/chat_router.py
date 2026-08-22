@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request as FastAPIRequest, status
+from core.api.ready import require_ready
 from data import Request as AskRequest, SimilaritySearchRequest
 
 router = APIRouter()
@@ -6,7 +7,7 @@ router = APIRouter()
 
 @router.post("/ask", status_code=200, tags=["RAG System"])
 async def ask_question(req: AskRequest, request: FastAPIRequest):
-    pipeline = request.app.state.rag
+    pipeline = require_ready(request)
     try:
         return pipeline.invoke(req.question)
     except ValueError as exc:
@@ -19,7 +20,7 @@ async def ask_question(req: AskRequest, request: FastAPIRequest):
 @router.post("/search", status_code=200, tags=["RAG System"])
 async def similarity_search(req: SimilaritySearchRequest, request: FastAPIRequest):
     """Inspect retrieval quality without paying for an LLM generation call."""
-    pipeline = request.app.state.rag
+    pipeline = require_ready(request)
     try:
         documents = pipeline.search(
             req.question,
@@ -54,6 +55,6 @@ async def similarity_search(req: SimilaritySearchRequest, request: FastAPIReques
     }
 
 
-@router.get("/usage", status_code=200, tags=["RAG System"])
+@router.get("/usage", status_code=200, tags=["Usage"])
 async def usage(request: FastAPIRequest):
     return request.app.state.rag.usage_stats()

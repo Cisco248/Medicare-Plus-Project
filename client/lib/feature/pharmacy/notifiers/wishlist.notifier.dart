@@ -3,14 +3,13 @@ import 'package:client/feature/pharmacy/notifiers/pharmacy.notifier.dart';
 import 'package:client/feature/pharmacy/repositories/pharmacy_store.repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+final _store = PharmacyStoreRepository();
+
 class WishlistNotifier extends AsyncNotifier<List<String>> {
   @override
-  Future<List<String>> build() {
-    return ref.read(pharmacyStoreProvider).loadWishlist();
-  }
+  Future<List<String>> build() async => await _store.loadWishlist();
 
-  bool contains(String productId) =>
-      state.value?.contains(productId) ?? false;
+  bool contains(String productId) => state.value?.contains(productId) ?? false;
 
   Future<void> toggle(String productId) async {
     final current = List<String>.from(state.value ?? const []);
@@ -20,7 +19,7 @@ class WishlistNotifier extends AsyncNotifier<List<String>> {
       current.add(productId);
     }
     state = AsyncData(current);
-    await ref.read(pharmacyStoreProvider).saveWishlist(current);
+    await _store.saveWishlist(current);
   }
 }
 

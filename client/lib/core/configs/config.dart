@@ -12,6 +12,10 @@ final settings = ConnectionSettings(
 );
 
 final String isSetupKey = 'setup_key';
+
 final String userTokenKey = 'user_token';
+final String userIDKey = 'user_id';
+final String userNameKey = 'user_name';
 final String userEmailKey = 'user_email';
+final String userMobileKey = 'user_mobnum';
 final String userPasswordKey = 'user_password';

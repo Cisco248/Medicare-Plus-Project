@@ -1,5 +1,5 @@
 from typing import Any
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class HypertensionScehema(BaseModel):
@@ -42,3 +42,14 @@ class HeartScehema(BaseModel):
     asthma: str
     kidney_disease: str
     skin_cancer: str
+
+
+class DiabetesSchema(BaseModel):
+    age: int = Field(..., ge=1, le=120)
+    gender: str
+    pulse_rate: float
+    bp_reading: str
+    glucose: float
+    bmi: float
+    family_diabetes: str
+    hypertensive: str

@@ -60,4 +60,9 @@ class DailySummary {
       weight: (map['weight'] as num?)?.toDouble(),
     );
   }
+
+  @override
+  String toString() {
+    return "DailySummary(date: $date, steps: $steps, distanceMeters: $distanceMeters, activeCalories: $activeCalories, totalCalories: $totalCalories, averageHeartRate: $averageHeartRate, restingHeartRate: $restingHeartRate, sleepDuration: $sleepDuration, weight: $weight)";
+  }
 }

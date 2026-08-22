@@ -8,6 +8,7 @@ from .schemas import (
     DiabetesScehema,
     DocumentUpdate,
     DocumentStatusUpdate,
+    DiabetesSchema,
 )
 
 __all__ = [
@@ -23,4 +24,5 @@ __all__ = [
     "DiabetesScehema",
     "DocumentUpdate",
     "DocumentStatusUpdate",
+    "DiabetesSchema",
 ]

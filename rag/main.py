@@ -14,7 +14,7 @@ settings = RAGSettings()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting RAG system...")
-    app.state.rag = setup_rag_system(settings.FILE_LOCATION)
+    app.state.rag = setup_rag_system(files=[settings.FILE_LOCATION])
     logger.info("RAG system initialized (ready=%s)", app.state.rag.ready)
     yield
 
