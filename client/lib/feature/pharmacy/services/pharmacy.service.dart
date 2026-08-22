@@ -1,35 +1,14 @@
-import 'package:client/core/utils/dio.client.dart';
-import 'package:client/feature/pharmacy/models/medicine.model.dart';
+import 'package:client/feature/pharmacy/models/product.model.dart';
 import 'package:client/feature/pharmacy/repositories/pharma.repository.dart';
 
 class PharmacyService {
-  final _repository = PharmaRepository(client: physicalDevice(8080));
+  PharmacyService({PharmaRepository? repository})
+    : _repository = repository ?? const PharmaRepository();
 
-  Future<List<MedicineModel>> fetchMedicines() async {
-    try {
-      final res = await _repository.fetchMedicines();
-      return res
-          .map(
-            (e) => MedicineModel(
-              medicineName: e.medicineName,
-              category: MedicineCategory.values[e.category.index],
-              dosage: e.dosage,
-              price: e.price,
-              imgPath: e.imgPath,
-            ),
-          )
-          .toList();
-    } catch (e) {
-      throw Exception('Failed to fetch medicines: $e');
-    }
-  }
+  final PharmaRepository _repository;
 
-  Future<List<MedicineModel>> searchMedicines(String query) async {
-    try {
-      final res = await _repository.searchMedicines(query);
-      return res.map((e) => MedicineModel.fromJson(e)).toList();
-    } catch (e) {
-      throw Exception('Failed to search medicines: $e');
-    }
-  }
+  Future<List<PharmacyProduct>> fetchMedicines() => _repository.fetchProducts();
+
+  Future<List<PharmacyProduct>> searchMedicines(String query) =>
+      _repository.searchProducts(query);
 }

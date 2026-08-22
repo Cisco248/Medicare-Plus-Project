@@ -1,41 +1,32 @@
-import 'package:client/core/exceptions/basic.exception.dart';
 import 'package:client/core/exceptions/response.exception.dart';
 import 'package:client/feature/dashboard/models/activity.model.dart';
-import 'package:dio/dio.dart';
+import 'package:client/feature/dashboard/models/health_summary.model.dart';
+import 'package:client/feature/dashboard/services/rag.service.dart';
 
 class KnowledgeRepository {
-  final Dio _client;
+  KnowledgeRepository({required this._ragService});
 
-  KnowledgeRepository({required this._client});
+  final RagService _ragService;
 
-  Future<void> sendData(ActivityModel data) async {
-    try {
-      final response = await _client.post(
-        '/knowledge',
-        data: ActivityModel(
-          steps: data.steps,
-          walking: data.walking,
-          running: data.running,
-          climbing: data.climbing,
-          sleeping: data.sleeping,
-        ).toJson(),
+  Future<HealthSummaryResponse> generateSummary({
+    required ActivityModel activity,
+    required DateTime startTime,
+    required DateTime endTime,
+    String? userId,
+    String? token,
+  }) async {
+    if (!activity.hasAnyData) {
+      throw const ValidationException(
+        message: 'No health data is available to summarize for this period.',
       );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        throw NetworkException(
-          details: response.statusMessage,
-          code: response.statusCode,
-        );
-      }
-    } catch (e) {
-      throw ServerException(details: e);
     }
-  }
 
-  Future<String> getStoredData() async {
-    try {
-      return '';
-    } catch (e) {
-      throw ServerException(details: e);
-    }
+    final request = HealthSummaryRequest.fromActivity(
+      activity: activity,
+      startTime: startTime,
+      endTime: endTime,
+      userId: userId,
+    );
+    return _ragService.generateHealthSummary(request, token: token);
   }
 }

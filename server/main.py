@@ -5,13 +5,16 @@ from core import ServerSettings
 from repository import (
     init_router,
     auth_router,
-    har_router,
+    # har_router,
     base_model_router,
+    # document_router,
 )
 from data import BASE
 from core import DBConnection
+from repository.middlewares.document_middleware import DocumentMiddleware
 
 BASE.metadata.create_all(bind=DBConnection.ENGINE, checkfirst=True)
+DocumentMiddleware.ensure_optional_columns(DBConnection.ENGINE)
 setting = ServerSettings()
 
 
@@ -28,9 +31,10 @@ app.add_middleware(
 
 app.include_router(router=init_router)
 app.include_router(router=auth_router, prefix="/api")
-app.include_router(router=har_router, prefix="/api-har")
+# app.include_router(router=document_router, prefix="/api")
+# app.include_router(router=har_router, prefix="/api-har")
 app.include_router(router=base_model_router, prefix="/api-base")
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=setting.PORT, reload=True)
+    uvicorn.run("main:app", host=setting.APP_HOST, port=setting.APP_PORT, reload=True)

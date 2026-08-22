@@ -1,5 +1,5 @@
+import 'package:client/core/exceptions/base.exception.dart';
 import 'package:client/feature/dashboard/notifiers/activity.notifier.dart';
-import 'package:client/feature/dashboard/notifiers/knowledge.notifier.dart';
 import 'package:client/feature/dashboard/widgets/activity.widget.dart';
 import 'package:client/feature/dashboard/widgets/knowledge.widget.dart';
 import 'package:client/feature/dashboard/widgets/patient.widget.dart';
@@ -15,6 +15,10 @@ class Dashboard extends ConsumerStatefulWidget {
   ConsumerState<Dashboard> createState() => _DashboardState();
 }
 
+/// Returns the message intended for the patient, never the raw exception.
+String _userMessage(Object error, String subject) =>
+    error is AppException ? error.message : 'Unable to load $subject.';
+
 class _DashboardState extends ConsumerState<Dashboard> {
   final ScrollController _scrollController = ScrollController();
 
@@ -27,101 +31,102 @@ class _DashboardState extends ConsumerState<Dashboard> {
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
-
-    final steps = ref.watch(stepsActivityProvider);
+    final height = ref.watch(bodyHeightProvider);
     final summary = ref.watch(dailyActivityProvider);
-    final knowledge = ref.watch(knowledgeProvider);
-    print(knowledge);
 
     return SingleChildScrollView(
       controller: _scrollController,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const PatientCard(),
-            const SizedBox(height: 16),
-            const RemainderCard(),
-            const SizedBox(height: 16),
-            steps.when(
-              data: (value) => ActivityCardWidget(
-                value: value.toString(),
-                valueName: "Foot Steps",
-                icon: FontAwesomeIcons.shoePrints,
-                iconColor: Colors.red,
-              ),
-              loading: () => const CircularProgressIndicator(),
-              error: (error, stackTrace) => Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadiusDirectional.all(
-                    Radius.circular(16),
+      child: Column(
+        children: [
+          const PatientCard(),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 16),
+                const RemainderCard(),
+                const SizedBox(height: 16),
+                height.when(
+                  data: (data) => ActivityCardWidget(
+                    value: "${data.toStringAsFixed(2)} m",
+                    valueName: "Height",
+                    icon: FontAwesomeIcons.rulerVertical,
+                    iconColor: Colors.purple,
+                    callback: () {},
                   ),
-                  gradient: LinearGradient(
-                    colors: [
-                      colorScheme.onSurface.withAlpha(10),
-                      colorScheme.surfaceContainer.withAlpha(100),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+                  error: (e, st) => Text(_userMessage(e, st.toString())),
+                  loading: () => CircularProgressIndicator(),
+                ),
+                SizedBox(height: 8),
+                summary.when(
+                  data: (value) {
+                    return Column(
+                      children: [
+                        ActivityCardWidget(
+                          value: value.steps.toString(),
+                          valueName: "Foot Steps",
+                          icon: FontAwesomeIcons.shoePrints,
+                          iconColor: Colors.red,
+                          callback: () {},
+                        ),
+                        SizedBox(height: 8),
+                        ActivityCardWidget(
+                          value: value.totalCalories?.toStringAsFixed(1) ?? '0',
+                          valueName: "Burn Calaries",
+                          icon: FontAwesomeIcons.fire,
+                          iconColor: Colors.orange,
+                          callback: () {},
+                        ),
+                        SizedBox(height: 8),
+                        ActivityCardWidget(
+                          value: value.weight?.toStringAsFixed(1) ?? '0',
+                          valueName: "Weight",
+                          icon: FontAwesomeIcons.dumbbell,
+                          iconColor: Colors.green,
+                          callback: () {},
+                        ),
+                        SizedBox(height: 8),
+                        ActivityCardWidget(
+                          value:
+                              value.sleepDuration?.inHours.toString() ?? "0.0",
+                          valueName: "Sleep Hour",
+                          icon: FontAwesomeIcons.bed,
+                          iconColor: Colors.blue,
+                          callback: () {},
+                        ),
+                      ],
+                    );
+                  },
+                  loading: () => const CircularProgressIndicator(),
+                  error: (error, stackTrace) => Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadiusDirectional.all(
+                        Radius.circular(16),
+                      ),
+                      gradient: LinearGradient(
+                        colors: [
+                          colorScheme.onSurface.withAlpha(10),
+                          colorScheme.surfaceContainer.withAlpha(100),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.width / 2,
+                    child: Center(
+                      child: Text(_userMessage(error, 'your daily summary')),
+                    ),
                   ),
                 ),
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.width / 2,
-                child: Center(child: Text('Unable to load steps')),
-              ),
+                const SizedBox(height: 16),
+                const KnowledgeWidget(),
+                const SizedBox(height: 32),
+              ],
             ),
-            const SizedBox(height: 8),
-            summary.when(
-              data: (value) => Column(
-                children: [
-                  ActivityCardWidget(
-                    value: value.totalCalories?.toStringAsFixed(1) ?? '0',
-                    valueName: "Burn Calaries",
-                    icon: FontAwesomeIcons.fire,
-                    iconColor: Colors.orange,
-                  ),
-                  SizedBox(height: 8),
-                  ActivityCardWidget(
-                    value: value.distanceMeters?.toStringAsFixed(1) ?? '0',
-                    valueName: "Distance",
-                    icon: FontAwesomeIcons.road,
-                    iconColor: Colors.blue,
-                  ),
-                  SizedBox(height: 8),
-                  ActivityCardWidget(
-                    value: "${value.weight?.toStringAsFixed(1) ?? 0} KG",
-                    valueName: "Weight",
-                    icon: FontAwesomeIcons.dumbbell,
-                    iconColor: Colors.green,
-                  ),
-                ],
-              ),
-              loading: () => const CircularProgressIndicator(),
-              error: (error, stackTrace) => Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadiusDirectional.all(
-                    Radius.circular(16),
-                  ),
-                  gradient: LinearGradient(
-                    colors: [
-                      colorScheme.onSurface.withAlpha(10),
-                      colorScheme.surfaceContainer.withAlpha(100),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.width / 2,
-                child: Center(child: Text('Unable to load calories')),
-              ),
-            ),
-            const SizedBox(height: 16),
-            KnowledgeWidget(knowledge),
-            const SizedBox(height: 32),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

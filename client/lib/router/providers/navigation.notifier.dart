@@ -11,5 +11,3 @@ class NavigationNotifier extends _$NavigationNotifier {
     state = index;
   }
 }
-
-

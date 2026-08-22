@@ -1,0 +1,27 @@
+# Server Requirements
+bcrypt>=5.0.0
+fastapi[standard]>=0.136.1
+pandas>=3.0.3
+pyjwt>=2.12.1
+pymysql>=1.2.0
+sqlalchemy>=2.0.49
+joblib
+scikit-learn
+
+# RAG Requirements
+chromadb
+docx2txt
+langchain
+langchain-chroma
+langchain-community
+langchain-core
+langchain-experimental
+langchain-openai
+langchain-text-splitters
+pydantic
+pydantic-settings
+pypdf
+python-dotenv
+rank-bm25
+tiktoken
+uvicorn

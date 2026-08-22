@@ -5,7 +5,7 @@ part 'medicine.model.g.dart';
 
 enum MedicineCategory { tablet, capsule, syrup, injection }
 
-@freezed
+@Freezed(toJson: true, fromJson: true, copyWith: true)
 sealed class MedicineModel with _$MedicineModel {
   const factory MedicineModel({
     required String medicineName,
@@ -14,7 +14,4 @@ sealed class MedicineModel with _$MedicineModel {
     required double price,
     required String imgPath,
   }) = _MedicineModel;
-
-  factory MedicineModel.fromJson(Map<String, dynamic> json) =>
-      _$MedicineModelFromJson(json);
 }

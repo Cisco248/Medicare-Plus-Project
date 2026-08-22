@@ -13,7 +13,7 @@ part of 'authentication.notifier.dart';
 final authenticationProvider = AuthenticationNotifierProvider._();
 
 final class AuthenticationNotifierProvider
-    extends $AsyncNotifierProvider<AuthenticationNotifier, AuthStatus> {
+    extends $AsyncNotifierProvider<AuthenticationNotifier, AuthStates> {
   AuthenticationNotifierProvider._()
     : super(
         from: null,
@@ -34,19 +34,19 @@ final class AuthenticationNotifierProvider
 }
 
 String _$authenticationNotifierHash() =>
-    r'cfe0aa83d845ac0ed12353565f93f5dc3dd2e8ed';
+    r'90f6211a31977e2e03f19ea02ac68437c5d21c2b';
 
-abstract class _$AuthenticationNotifier extends $AsyncNotifier<AuthStatus> {
-  FutureOr<AuthStatus> build();
+abstract class _$AuthenticationNotifier extends $AsyncNotifier<AuthStates> {
+  FutureOr<AuthStates> build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<AuthStatus>, AuthStatus>;
+    final ref = this.ref as $Ref<AsyncValue<AuthStates>, AuthStates>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<AuthStatus>, AuthStatus>,
-              AsyncValue<AuthStatus>,
+              AnyNotifier<AsyncValue<AuthStates>, AuthStates>,
+              AsyncValue<AuthStates>,
               Object?,
               Object?
             >;

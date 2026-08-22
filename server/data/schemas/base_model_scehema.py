@@ -1,5 +1,5 @@
 from typing import Any
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class HypertensionScehema(BaseModel):
@@ -10,6 +10,18 @@ class HypertensionScehema(BaseModel):
     cholesterol_mgdl: float
     diabetes_ordinal: str
     gender: str
+
+
+class DiabetesScehema(BaseModel):
+    age: int
+    gender: str
+    pulse_rate: float
+    systolic_bp: float
+    diastolic_bp: float
+    glucose: float
+    bmi: float
+    family_diabetes: str
+    hypertensive: str
 
 
 class HeartScehema(BaseModel):
@@ -30,3 +42,14 @@ class HeartScehema(BaseModel):
     asthma: str
     kidney_disease: str
     skin_cancer: str
+
+
+class DiabetesSchema(BaseModel):
+    age: int = Field(..., ge=1, le=120)
+    gender: str
+    pulse_rate: float
+    bp_reading: str
+    glucose: float
+    bmi: float
+    family_diabetes: str
+    hypertensive: str

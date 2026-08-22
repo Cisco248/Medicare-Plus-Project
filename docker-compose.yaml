@@ -2,11 +2,7 @@ name: "medicare-plus"
 
 services:
   rag-system:
-    container_name: rag-system
-
-    depends_on: 
-      llm-model:
-        condition: service_started
+    container_name: rag-systemd
 
     build:
       context: ./rag
@@ -18,28 +14,44 @@ services:
     env_file:
       - ./rag/.env
 
+    environment:
+      CHROMA_HOST: chroma-server
+      CHROMA_PORT: "3000"
+      COLLECTION_NAME: medicare-knowledge
+
     volumes:
-      - rag-data:/temp/models
-      - rag-data:/temp/chroma
-    
+      - rag-data:/app/temp/db
+
+    depends_on:
+      chroma-server:
+        condition: service_started
+
     networks:
       - app-network
 
     restart: unless-stopped
 
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health", "||", "exit 1"]
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')",
+        ]
       interval: 1m30s
       timeout: 30s
       retries: 5
       start_period: 30s
-  
+
   back-end-server:
     container_name: back-end-server
 
     depends_on:
       mysql-server:
         condition: service_healthy
+      rag-system:
+        condition: service_started
 
     build:
       context: ./server
@@ -51,6 +63,10 @@ services:
     env_file:
       - ./server/.env
 
+    environment:
+      RAG_HOST: http://rag-systemd
+      RAG_PORT: "8000"
+
     volumes:
       - server-data:/app/data
 
@@ -58,38 +74,19 @@ services:
       - app-network
 
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health", "||", "exit 1"]
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')",
+        ]
       interval: 1m30s
       timeout: 30s
       retries: 5
       start_period: 30s
 
     restart: unless-stopped
-
-  llm-model:
-      container_name: llm-model
-
-      image: ollama/ollama:latest
-
-      ports:
-        - "11434:11434"
-
-      volumes:
-        - ollama-data:/root/.ollama
-
-      networks:
-        - app-network
-      
-      entrypoint: >
-        sh -c "
-          ollama serve &
-          sleep 5 &&
-          ollama pull qwen3:0.6b &&
-          ollama pull paraphrase-multilingual &&
-          wait
-        "
-
-      restart: unless-stopped
 
   # Build the MySQL Database for Back-End Server
   mysql-server:
@@ -102,7 +99,7 @@ services:
       MYSQL_DATABASE: medicare_plus
 
     ports:
-      - "3306:3306"
+      - "3307:3306"
 
     volumes:
       - mysql-data:/var/lib/mysql
@@ -111,7 +108,7 @@ services:
       - app-network
 
     healthcheck:
-      test: > 
+      test: >
         mysqladmin ping -h localhost -uroot -proot123
       interval: 1m30s
       timeout: 30s
@@ -135,9 +132,6 @@ services:
 
     networks:
       - app-network
-    
-    # entrypoint: > 
-    #    chroma login && chroma copy --to-cloud --all
 
     command: run --host 0.0.0.0 --port 3000
 
@@ -151,7 +145,7 @@ services:
     restart: unless-stopped
 
 networks:
-  app-network: 
+  app-network:
     driver: bridge
 
 volumes:

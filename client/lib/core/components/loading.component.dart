@@ -21,7 +21,11 @@ class AppLoadingPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Icon(Icons.health_and_safety_rounded, size: 64, color: theme.primary),
+                    Icon(
+                      Icons.health_and_safety_rounded,
+                      size: 64,
+                      color: theme.primary,
+                    ),
                     const SizedBox(height: 8),
                     Text(
                       "MediCare Plus",

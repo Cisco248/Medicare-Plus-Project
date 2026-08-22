@@ -1,5 +1,6 @@
 from .store_manager import VectorStoreManager
-from .client import ChromaClient
-from .local_db import LocalDatabase
+from .remote_client import RemoteClient
+from .local_client import LocalClient
+from .client_manager import ClientFactory
 
-__all__ = ["VectorStoreManager", "ChromaClient", "LocalDatabase"]
+__all__ = ["VectorStoreManager", "RemoteClient", "LocalClient", "ClientFactory"]

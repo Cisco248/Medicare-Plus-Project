@@ -7,26 +7,52 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 
 class ServerSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=BASE_DIR / ".env", extra="ignore")
-    # DB Configs
-    DB_URL: str = os.getenv("DB_URL", "your-url-link")
+
+    # Database Configurations
+    DB_HOST: str = os.getenv("MYSQL_HOST", "localhost")
+    DB_PORT: int = int(os.getenv("MYSQL_PORT", 3306))
+    DB_USER: str = os.getenv("MYSQL_USER", "root")
+    DB_PASSWORD: str = os.getenv("MYSQL_PASSWORD", "password")
+    DB_NAME: str = os.getenv("MYSQL_DATABASE", "db_name")
     ECO: bool = False
     Pool_Pre_Ping: bool = True
-    # App Configs
-    APP_NAME: str = "Medicare Plus API"
-    APP_VERSION: str = "1.0.0"
+
+    # Server Configurations
+    APP_NAME: str = os.getenv("APP_NAME", "app_name")
+    APP_VERSION: str = os.getenv("APP_VERSION", "app_version")
+    APP_HOST: str = os.getenv("HOST", "0.0.0.0")
+    APP_PORT: int = int(os.getenv("PORT", 8000))
     DEBUG: bool = os.getenv("DEBUG", "true").lower() == "true"
-    HOST: str = os.getenv("HOST", "0.0.0.0")
-    PORT: int = int(os.getenv("PORT", "8080"))
-    CORS_ORIGIN: list[str] = os.getenv("CORS_ORIGINS", "http://localhost:3000").split()
+    CORS_ORIGIN: list[str] = os.getenv("CORS_ORIGINS", "").split()
 
     # Rag URL
-    RAG_URL: str = "http://rag-server:8000"
+    RAG_HOST: str = os.getenv("RAG_HOST", "loacalhost")
+    RAG_PORT: int = int(os.getenv("RAG_PORT", 8081))
 
     # JWT Tokens
-    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "your-secret-key")
+    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "secret-key")
 
-    HYPERTENSION_MODEL_PATH: str = f"{BASE_DIR}/artifacts/base/hypertension/model.pkl"
-    HYPERTENSION_FEATURE_PATH: str = (
-        f"{BASE_DIR}/artifacts/base/hypertension/features.pkl"
+    # Patient document storage (local disk)
+    DOCUMENT_STORAGE_PATH: str = os.getenv(
+        "DOCUMENT_STORAGE_PATH", f"{BASE_DIR}/uploads/documents"
     )
-    HYPERTENSION_LABEL_PATH: str = f"{BASE_DIR}/artifacts/base/hypertension/labels.pkl"
+
+    # Base Models Paths Configurations
+    HYPERTENSION_PATH: str = f"{BASE_DIR}/artifacts/base/hypertension"
+    HYPERTENSION_MODEL_PATH: str = f"{BASE_DIR}/artifacts/base/hypertension/risk_classifier.pkl"
+    HYPERTENSION_FEATURE_PATH: str = f"{BASE_DIR}/artifacts/base/hypertension/feature_names.pkl"
+    HYPERTENSION_LABEL_PATH: str = f"{BASE_DIR}/artifacts/base/hypertension/risk_labels.pkl"
+
+    BLOOD_PRESSURE_PATH: str = f"{BASE_DIR}/artifacts/base/hypertension"
+
+<<<<<<< HEAD
+    # HAR (Human Activity Recognition) artifact paths
+    HAR_PATH: str = f"{BASE_DIR}/artifacts/base/har"
+    HAR_MODEL_PATH: str = f"{BASE_DIR}/artifacts/base/har/activity_model_final.pkl"
+=======
+    # Diabetes (helper model) artifact paths
+    DIABETES_PATH: str = f"{BASE_DIR}/artifacts/base/diabetes"
+    DIABETES_MODEL_PATH: str = f"{BASE_DIR}/artifacts/base/diabetes/diabetes_best_model.pkl"
+    DIABETES_SCALER_PATH: str = f"{BASE_DIR}/artifacts/base/diabetes/scaler.pkl"
+    DIABETES_FEATURE_PATH: str = f"{BASE_DIR}/artifacts/base/diabetes/feature_cols.pkl"
+>>>>>>> gen

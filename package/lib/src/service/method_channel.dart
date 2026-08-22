@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_health_connect/src/service/android.platform.dart';
 import 'package:flutter_health_connect/src/converters/export.dart';
 import 'package:flutter_health_connect/src/enums/export.dart';
+import 'package:flutter_health_connect/src/exceptions/exception.dart';
 import 'package:flutter_health_connect/src/models/export.dart';
 
 /// MethodChannel implementation of [HealthConnectPlatform].
@@ -19,10 +20,34 @@ class MethodChannelHealthConnect extends HealthConnectPlatform {
 
   final MethodChannel _channel;
 
-  Future<T> _invoke<T>(String method, [Map<String, Object?>? args]) async {
+  /// Invokes [method] and requires a non-null [T] payload.
+  Future<T> _invoke<T extends Object>(
+    String method, [
+    Map<String, Object?>? args,
+  ]) async {
+    final Object? result;
     try {
-      final result = await _channel.invokeMethod<T>(method, args);
-      return result as T;
+      result = await _channel.invokeMethod<T>(method, args);
+    } catch (error, stack) {
+      throw ExceptionConverter.fromError(error, stack);
+    }
+    if (result is! T) {
+      // A null or mistyped payload means the Dart and Kotlin sides disagree
+      // about this method's contract. Reporting it as a bridge fault is far
+      // more actionable than the raw cast error it used to surface as.
+      throw HealthConnectOperationException(
+        "Platform channel returned ${result.runtimeType} for '$method', "
+        'expected $T.',
+        code: 'invalid_platform_response',
+      );
+    }
+    return result;
+  }
+
+  /// Invokes [method] and ignores the payload.
+  Future<void> _invokeVoid(String method, [Map<String, Object?>? args]) async {
+    try {
+      await _channel.invokeMethod<void>(method, args);
     } catch (error, stack) {
       throw ExceptionConverter.fromError(error, stack);
     }
@@ -30,13 +55,13 @@ class MethodChannelHealthConnect extends HealthConnectPlatform {
 
   @override
   Future<void> initialize({required bool enableLogging}) async {
-    await _invoke<void>('initialize', {'enableLogging': enableLogging});
+    await _invokeVoid('initialize', {'enableLogging': enableLogging});
   }
 
   @override
   Future<Availability> getAvailability() async {
     final value = await _invoke<String>('getAvailability');
-    return Availability.values.byName(value);
+    return Availability.values.asNameMap()[value] ?? Availability.unknown;
   }
 
   @override
@@ -69,12 +94,17 @@ class MethodChannelHealthConnect extends HealthConnectPlatform {
 
   @override
   Future<void> openHealthConnectSettings() async {
-    await _invoke<void>('openHealthConnectSettings');
+    await _invokeVoid('openHealthConnectSettings');
   }
 
   @override
   Future<void> openAppPermissions() async {
-    await _invoke<void>('openAppPermissions');
+    await _invokeVoid('openAppPermissions');
+  }
+
+  @override
+  Future<void> openHealthConnectDataManagement() async {
+    await _invokeVoid('openHealthConnectDataManagement');
   }
 
   @override
@@ -107,7 +137,7 @@ class MethodChannelHealthConnect extends HealthConnectPlatform {
     required RecordType type,
     required String recordId,
   }) async {
-    await _invoke<void>('deleteRecord', {
+    await _invokeVoid('deleteRecord', {
       'recordType': type.name,
       'recordId': recordId,
     });
@@ -119,7 +149,7 @@ class MethodChannelHealthConnect extends HealthConnectPlatform {
     required DateTime startTime,
     required DateTime endTime,
   }) async {
-    await _invoke<void>('deleteRecordsByTimeRange', {
+    await _invokeVoid('deleteRecordsByTimeRange', {
       'recordType': type.name,
       'startTimeMillis': startTime.toUtc().millisecondsSinceEpoch,
       'endTimeMillis': endTime.toUtc().millisecondsSinceEpoch,

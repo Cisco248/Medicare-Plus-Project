@@ -12,6 +12,14 @@ class ZintraAppBar extends ConsumerWidget {
     title: Text("Medicare +"),
     automaticallyImplyActions: false,
     automaticallyImplyLeading: false,
+    leading: IconButton(
+      tooltip: 'Menu',
+      onPressed: () => Scaffold.of(context).openDrawer(),
+      icon: FaIcon(
+        FontAwesomeIcons.bars,
+        color: ZintraColorPrimitives.primary500,
+      ),
+    ),
     actions: [
       IconButton(
         onPressed: () => ref.read(themeProvider.notifier).toggle(),

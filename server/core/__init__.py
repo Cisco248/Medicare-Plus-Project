@@ -4,6 +4,7 @@ from .constants import (
     _ResponseStatus,
     DBConnnectionException,
     AuthString,
+    DocumentString,
 )
 from .utils import (
     get_db,
@@ -23,6 +24,7 @@ __all__ = [
     "ResponseMessage",
     "DBConnnectionException",
     "AuthString",
+    "DocumentString",
     "get_db",
     "EncryptionUtility",
     "TokenGenerator",

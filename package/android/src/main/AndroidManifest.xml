@@ -1,60 +1,43 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="dev.fluttercommunity.flutter_health_connect">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Package visibility for Health Connect APK on Android 13 and lower -->
+    <!--
+        Package visibility. Required on Android 11+ so that
+        HealthConnectClient.getSdkStatus() can see the provider APK and so that
+        SettingsManager can resolve Health Connect Intents before starting them.
+
+        The <intent> entries cover the case where the provider is reachable
+        through its actions rather than by package name (Android 14+, where
+        Health Connect is a platform component).
+    -->
     <queries>
         <package android:name="com.google.android.apps.healthdata" />
+
+        <intent>
+            <action android:name="androidx.health.ACTION_HEALTH_CONNECT_SETTINGS" />
+        </intent>
+        <intent>
+            <action android:name="androidx.health.ACTION_MANAGE_HEALTH_DATA" />
+        </intent>
     </queries>
 
-    <application>
-        <!-- 1. Activity declared with correct name -->
-        <activity
-            android:name=".PermissionsRationaleActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
-            </intent-filter>
+    <!--
+        This plugin intentionally declares no android.permission.health.* entries
+        and no permissions-rationale Activity.
 
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE"/>
-                <category android:name="android.intent.category.HEALTH_PERMISSIONS"/>
-            </intent-filter>
-        </activity>
+        Health Connect permissions must be declared by the host application,
+        which is the entity that justifies each one to the user and to Play
+        review. A library that injects the full permission set would force every
+        consumer to request data it never reads.
 
-        <!-- 2. targetActivity updated to match .PermissionRationaleActivity -->
-        <activity-alias
-            android:name="ViewPermissionUsageActivity"
-            android:exported="true"
-            android:targetActivity="dev.fluttercommunity.flutter_health_connect.PermissionsRationaleActivity"
-            android:permission="android.permission.START_VIEW_PERMISSION_USAGE">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
-                <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
-            </intent-filter>
-        </activity-alias>
-    </application>
+        The rationale Activity (androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE)
+        must likewise live in the host application, because only the application
+        can present its own privacy policy. Declaring it here with a class that
+        does not exist in the plugin is what previously crashed the permission
+        sheet's privacy-policy link with a ClassNotFoundException.
 
-    <!-- Health Connect permissions. -->
-    <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND" />
-    <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_HISTORY" />
-    
-    <uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE" />
-    <uses-permission android:name="android.permission.health.READ_STEPS" />
-    <uses-permission android:name="android.permission.health.READ_DISTANCE" />
-    <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED" />
-    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED" />
-    <uses-permission android:name="android.permission.health.READ_FLOORS_CLIMBED" />
-    <uses-permission android:name="android.permission.health.READ_EXERCISE" />
-    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
-    <uses-permission android:name="android.permission.health.READ_RESTING_HEART_RATE" />
-    <uses-permission android:name="android.permission.health.READ_HEART_RATE_VARIABILITY" />
-    <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED" />
-    <uses-permission android:name="android.permission.health.READ_WEIGHT" />
-    <uses-permission android:name="android.permission.health.READ_HEIGHT" />
-    <uses-permission android:name="android.permission.health.READ_BODY_FAT" />
-    <uses-permission android:name="android.permission.health.READ_SLEEP" />
-    <uses-permission android:name="android.permission.health.READ_OXYGEN_SATURATION" />
-    <uses-permission android:name="android.permission.health.READ_BODY_TEMPERATURE" />
-    <uses-permission android:name="android.permission.health.READ_NUTRITION" />
-    <uses-permission android:name="android.permission.health.READ_BLOOD_GLUCOSE" />
+        For the host-side declaration see
+        client/android/app/src/main/AndroidManifest.xml and
+        client/android/app/src/main/kotlin/com/example/client/PermissionsRationaleActivity.kt
+    -->
+
 </manifest>

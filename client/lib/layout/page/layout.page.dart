@@ -1,10 +1,12 @@
 import 'package:client/core/widgets/appbar.widget.dart';
 import 'package:client/core/widgets/bottom_navigation.widget.dart';
+import 'package:client/core/widgets/drawer.widget.dart';
 import 'package:client/feature/chat_bot/page/ask.page.dart';
 import 'package:client/feature/dashboard/page/dashboard.dart';
 import 'package:client/feature/e_doc/page/e_doc.page.dart';
 import 'package:client/feature/pharmacy/page/shop.dart';
-import 'package:client/layout/providers/navigation.notifier.dart';
+import 'package:client/feature/reports/page/reports.page.dart';
+import 'package:client/layout/notifiers/navigation.notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -24,6 +26,7 @@ class _AppLayoutState extends ConsumerState<AppLayout> {
 
     return Scaffold(
       appBar: AppbarWidget(),
+      drawer: const AppDrawer(),
       body: SafeArea(
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
@@ -37,6 +40,7 @@ class _AppLayoutState extends ConsumerState<AppLayout> {
                   AskPage(),
                   EDocPage(),
                   EPharmacy(),
+                  ReportsPage(),
                 ],
               ),
               // if (isPopUpOpen)

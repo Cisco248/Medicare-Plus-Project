@@ -1,6 +1,6 @@
 import 'package:client/core/components/loading.component.dart';
 import 'package:client/core/components/splash.component.dart';
-import 'package:client/feature/auth/models/auth.model.dart';
+import 'package:client/feature/auth/models/auth.state.dart';
 import 'package:client/feature/auth/notifiers/authentication.notifier.dart';
 import 'package:client/feature/auth/pages/auth.page.dart';
 import 'package:client/layout/page/layout.page.dart';
@@ -13,55 +13,99 @@ final routerProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     initialLocation: '/splash',
+
     refreshListenable: authNotifier,
+
     routes: [
       GoRoute(
         path: '/splash',
-        builder: (context, state) => const GetStartedPage(),
+        name: 'splash',
+        builder: (context, state) {
+          return const GetStartedPage();
+        },
       ),
-      GoRoute(path: '/auth', builder: (context, state) => const LoginPage()),
+
+      GoRoute(
+        path: '/auth',
+        name: 'auth',
+        builder: (context, state) {
+          return const LoginPage();
+        },
+      ),
+
       GoRoute(
         path: '/loading',
-        builder: (context, state) => const AppLoadingPage(),
+        name: 'loading',
+        builder: (context, state) {
+          return const AppLoadingPage();
+        },
       ),
-      GoRoute(path: '/home', builder: (context, state) => const AppLayout()),
+
+      GoRoute(
+        path: '/home',
+        name: 'home',
+        builder: (context, state) {
+          return const AppLayout();
+        },
+      ),
     ],
+
     redirect: (context, state) {
       final authState = ref.read(authenticationProvider);
-      final authStatus = authState.value?.state;
       if (kDebugMode) {
-        print(authStatus);
+        debugPrint('AUTH STATE: $authState');
+      }
+      if (authState.isLoading) {
+        return state.matchedLocation == '/loading' ? null : '/loading';
       }
 
-      if (authState.isLoading) return '/loading';
-      if (authState.hasError) return null;
+      if (authState.hasError) {
+        if (kDebugMode) {
+          debugPrint('Authentication error: ${authState.error}');
+        }
 
-      switch (authStatus) {
+        return null;
+      }
+
+      final AuthMode authMode = authState.when(
+        data: (auth) => auth.state,
+        loading: () => AuthMode.initial,
+        error: (_, _) => AuthMode.initial,
+      );
+
+      if (kDebugMode) {
+        debugPrint('Auth Mode: $authMode');
+        debugPrint('Current Route: ${state.matchedLocation}');
+      }
+
+      switch (authMode) {
+        case AuthMode.initial:
+          return state.matchedLocation == '/splash' ? null : '/splash';
+
         case AuthMode.setup:
-          return '/splash';
+          return state.matchedLocation == '/splash' ? null : '/splash';
 
         case AuthMode.unauthenticated:
-          return '/auth';
+          return state.matchedLocation == '/auth' ? null : '/auth';
 
         case AuthMode.authenticated:
-          return '/home';
-
-        case AuthMode.initial:
-        case null:
-          return '/splash';
+          return state.matchedLocation == '/home' ? null : '/home';
       }
     },
   );
 });
 
 class AuthChangeNotifier extends ChangeNotifier {
-  final Ref ref;
-
   AuthChangeNotifier(this.ref) {
-    ref.listen(authenticationProvider, (previous, next) {
+    ref.listen<AsyncValue<AuthStates>>(authenticationProvider, (
+      previous,
+      next,
+    ) {
       notifyListeners();
     });
   }
+
+  final Ref ref;
 }
 
 final authChangeNotifierProvider = Provider<AuthChangeNotifier>((ref) {

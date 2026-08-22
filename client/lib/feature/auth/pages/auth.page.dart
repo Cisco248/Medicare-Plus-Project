@@ -1,5 +1,5 @@
 import 'package:client/core/widgets/appbar.widget.dart';
-import 'package:client/feature/auth/models/form.model.dart';
+import 'package:client/feature/auth/models/auth.state.dart';
 import 'package:client/feature/auth/notifiers/form_mode.notifier.dart';
 import 'package:client/feature/auth/widgets/bottom.widget.dart';
 import 'package:client/feature/auth/widgets/login_form.widget.dart';

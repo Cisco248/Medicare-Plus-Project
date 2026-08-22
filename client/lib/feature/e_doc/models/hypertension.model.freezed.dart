@@ -11,30 +11,33 @@ part of 'hypertension.model.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
+
 /// @nodoc
 mixin _$HypertensionModel {
 
- int get age; double get weight; double get height; double get hba1c; double get cholesterolUnit; DiabetesOrdinal get diabetesOrdinal; Gender get gender;
+ int get age; double get height; double get weight; double get hba1c;@JsonKey(name: 'cholesterol_mgdl') double get cholesterolMgdl; DiabetesOrdinal get diabetesOrdinal; Gender get gender;
 /// Create a copy of HypertensionModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $HypertensionModelCopyWith<HypertensionModel> get copyWith => _$HypertensionModelCopyWithImpl<HypertensionModel>(this as HypertensionModel, _$identity);
 
+  /// Serializes this HypertensionModel to a JSON map.
+  Map<String, dynamic> toJson();
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HypertensionModel&&(identical(other.age, age) || other.age == age)&&(identical(other.weight, weight) || other.weight == weight)&&(identical(other.height, height) || other.height == height)&&(identical(other.hba1c, hba1c) || other.hba1c == hba1c)&&(identical(other.cholesterolUnit, cholesterolUnit) || other.cholesterolUnit == cholesterolUnit)&&(identical(other.diabetesOrdinal, diabetesOrdinal) || other.diabetesOrdinal == diabetesOrdinal)&&(identical(other.gender, gender) || other.gender == gender));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HypertensionModel&&(identical(other.age, age) || other.age == age)&&(identical(other.height, height) || other.height == height)&&(identical(other.weight, weight) || other.weight == weight)&&(identical(other.hba1c, hba1c) || other.hba1c == hba1c)&&(identical(other.cholesterolMgdl, cholesterolMgdl) || other.cholesterolMgdl == cholesterolMgdl)&&(identical(other.diabetesOrdinal, diabetesOrdinal) || other.diabetesOrdinal == diabetesOrdinal)&&(identical(other.gender, gender) || other.gender == gender));
 }
 
-
+@JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,age,weight,height,hba1c,cholesterolUnit,diabetesOrdinal,gender);
+int get hashCode => Object.hash(runtimeType,age,height,weight,hba1c,cholesterolMgdl,diabetesOrdinal,gender);
 
 @override
 String toString() {
-  return 'HypertensionModel(age: $age, weight: $weight, height: $height, hba1c: $hba1c, cholesterolUnit: $cholesterolUnit, diabetesOrdinal: $diabetesOrdinal, gender: $gender)';
+  return 'HypertensionModel(age: $age, height: $height, weight: $weight, hba1c: $hba1c, cholesterolMgdl: $cholesterolMgdl, diabetesOrdinal: $diabetesOrdinal, gender: $gender)';
 }
 
 
@@ -45,7 +48,7 @@ abstract mixin class $HypertensionModelCopyWith<$Res>  {
   factory $HypertensionModelCopyWith(HypertensionModel value, $Res Function(HypertensionModel) _then) = _$HypertensionModelCopyWithImpl;
 @useResult
 $Res call({
- int age, double weight, double height, double hba1c, double cholesterolUnit, DiabetesOrdinal diabetesOrdinal, Gender gender
+ int age, double height, double weight, double hba1c,@JsonKey(name: 'cholesterol_mgdl') double cholesterolMgdl, DiabetesOrdinal diabetesOrdinal, Gender gender
 });
 
 
@@ -62,13 +65,13 @@ class _$HypertensionModelCopyWithImpl<$Res>
 
 /// Create a copy of HypertensionModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? age = null,Object? weight = null,Object? height = null,Object? hba1c = null,Object? cholesterolUnit = null,Object? diabetesOrdinal = null,Object? gender = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? age = null,Object? height = null,Object? weight = null,Object? hba1c = null,Object? cholesterolMgdl = null,Object? diabetesOrdinal = null,Object? gender = null,}) {
   return _then(_self.copyWith(
 age: null == age ? _self.age : age // ignore: cast_nullable_to_non_nullable
-as int,weight: null == weight ? _self.weight : weight // ignore: cast_nullable_to_non_nullable
-as double,height: null == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
+as int,height: null == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
+as double,weight: null == weight ? _self.weight : weight // ignore: cast_nullable_to_non_nullable
 as double,hba1c: null == hba1c ? _self.hba1c : hba1c // ignore: cast_nullable_to_non_nullable
-as double,cholesterolUnit: null == cholesterolUnit ? _self.cholesterolUnit : cholesterolUnit // ignore: cast_nullable_to_non_nullable
+as double,cholesterolMgdl: null == cholesterolMgdl ? _self.cholesterolMgdl : cholesterolMgdl // ignore: cast_nullable_to_non_nullable
 as double,diabetesOrdinal: null == diabetesOrdinal ? _self.diabetesOrdinal : diabetesOrdinal // ignore: cast_nullable_to_non_nullable
 as DiabetesOrdinal,gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
 as Gender,
@@ -118,7 +121,10 @@ return $default(_that);case _:
 final _that = this;
 switch (_that) {
 case _HypertensionModel():
-return $default(_that);}
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -153,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int age,  double weight,  double height,  double hba1c,  double cholesterolUnit,  DiabetesOrdinal diabetesOrdinal,  Gender gender)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int age,  double height,  double weight,  double hba1c, @JsonKey(name: 'cholesterol_mgdl')  double cholesterolMgdl,  DiabetesOrdinal diabetesOrdinal,  Gender gender)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HypertensionModel() when $default != null:
-return $default(_that.age,_that.weight,_that.height,_that.hba1c,_that.cholesterolUnit,_that.diabetesOrdinal,_that.gender);case _:
+return $default(_that.age,_that.height,_that.weight,_that.hba1c,_that.cholesterolMgdl,_that.diabetesOrdinal,_that.gender);case _:
   return orElse();
 
 }
@@ -174,10 +180,13 @@ return $default(_that.age,_that.weight,_that.height,_that.hba1c,_that.cholestero
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int age,  double weight,  double height,  double hba1c,  double cholesterolUnit,  DiabetesOrdinal diabetesOrdinal,  Gender gender)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int age,  double height,  double weight,  double hba1c, @JsonKey(name: 'cholesterol_mgdl')  double cholesterolMgdl,  DiabetesOrdinal diabetesOrdinal,  Gender gender)  $default,) {final _that = this;
 switch (_that) {
 case _HypertensionModel():
-return $default(_that.age,_that.weight,_that.height,_that.hba1c,_that.cholesterolUnit,_that.diabetesOrdinal,_that.gender);}
+return $default(_that.age,_that.height,_that.weight,_that.hba1c,_that.cholesterolMgdl,_that.diabetesOrdinal,_that.gender);case _:
+  throw StateError('Unexpected subclass');
+
+}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -191,10 +200,10 @@ return $default(_that.age,_that.weight,_that.height,_that.hba1c,_that.cholestero
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int age,  double weight,  double height,  double hba1c,  double cholesterolUnit,  DiabetesOrdinal diabetesOrdinal,  Gender gender)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int age,  double height,  double weight,  double hba1c, @JsonKey(name: 'cholesterol_mgdl')  double cholesterolMgdl,  DiabetesOrdinal diabetesOrdinal,  Gender gender)?  $default,) {final _that = this;
 switch (_that) {
 case _HypertensionModel() when $default != null:
-return $default(_that.age,_that.weight,_that.height,_that.hba1c,_that.cholesterolUnit,_that.diabetesOrdinal,_that.gender);case _:
+return $default(_that.age,_that.height,_that.weight,_that.hba1c,_that.cholesterolMgdl,_that.diabetesOrdinal,_that.gender);case _:
   return null;
 
 }
@@ -204,16 +213,16 @@ return $default(_that.age,_that.weight,_that.height,_that.hba1c,_that.cholestero
 
 /// @nodoc
 
-
+@JsonSerializable(fieldRename: FieldRename.snake)
 class _HypertensionModel implements HypertensionModel {
-  const _HypertensionModel({required this.age, required this.weight, required this.height, required this.hba1c, required this.cholesterolUnit, required this.diabetesOrdinal, required this.gender});
-  
+  const _HypertensionModel({required this.age, required this.height, required this.weight, required this.hba1c, @JsonKey(name: 'cholesterol_mgdl') required this.cholesterolMgdl, required this.diabetesOrdinal, required this.gender});
+  factory _HypertensionModel.fromJson(Map<String, dynamic> json) => _$HypertensionModelFromJson(json);
 
 @override final  int age;
-@override final  double weight;
 @override final  double height;
+@override final  double weight;
 @override final  double hba1c;
-@override final  double cholesterolUnit;
+@override@JsonKey(name: 'cholesterol_mgdl') final  double cholesterolMgdl;
 @override final  DiabetesOrdinal diabetesOrdinal;
 @override final  Gender gender;
 
@@ -223,20 +232,23 @@ class _HypertensionModel implements HypertensionModel {
 @pragma('vm:prefer-inline')
 _$HypertensionModelCopyWith<_HypertensionModel> get copyWith => __$HypertensionModelCopyWithImpl<_HypertensionModel>(this, _$identity);
 
-
+@override
+Map<String, dynamic> toJson() {
+  return _$HypertensionModelToJson(this, );
+}
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HypertensionModel&&(identical(other.age, age) || other.age == age)&&(identical(other.weight, weight) || other.weight == weight)&&(identical(other.height, height) || other.height == height)&&(identical(other.hba1c, hba1c) || other.hba1c == hba1c)&&(identical(other.cholesterolUnit, cholesterolUnit) || other.cholesterolUnit == cholesterolUnit)&&(identical(other.diabetesOrdinal, diabetesOrdinal) || other.diabetesOrdinal == diabetesOrdinal)&&(identical(other.gender, gender) || other.gender == gender));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HypertensionModel&&(identical(other.age, age) || other.age == age)&&(identical(other.height, height) || other.height == height)&&(identical(other.weight, weight) || other.weight == weight)&&(identical(other.hba1c, hba1c) || other.hba1c == hba1c)&&(identical(other.cholesterolMgdl, cholesterolMgdl) || other.cholesterolMgdl == cholesterolMgdl)&&(identical(other.diabetesOrdinal, diabetesOrdinal) || other.diabetesOrdinal == diabetesOrdinal)&&(identical(other.gender, gender) || other.gender == gender));
 }
 
-
+@JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,age,weight,height,hba1c,cholesterolUnit,diabetesOrdinal,gender);
+int get hashCode => Object.hash(runtimeType,age,height,weight,hba1c,cholesterolMgdl,diabetesOrdinal,gender);
 
 @override
 String toString() {
-  return 'HypertensionModel(age: $age, weight: $weight, height: $height, hba1c: $hba1c, cholesterolUnit: $cholesterolUnit, diabetesOrdinal: $diabetesOrdinal, gender: $gender)';
+  return 'HypertensionModel(age: $age, height: $height, weight: $weight, hba1c: $hba1c, cholesterolMgdl: $cholesterolMgdl, diabetesOrdinal: $diabetesOrdinal, gender: $gender)';
 }
 
 
@@ -247,7 +259,7 @@ abstract mixin class _$HypertensionModelCopyWith<$Res> implements $HypertensionM
   factory _$HypertensionModelCopyWith(_HypertensionModel value, $Res Function(_HypertensionModel) _then) = __$HypertensionModelCopyWithImpl;
 @override @useResult
 $Res call({
- int age, double weight, double height, double hba1c, double cholesterolUnit, DiabetesOrdinal diabetesOrdinal, Gender gender
+ int age, double height, double weight, double hba1c,@JsonKey(name: 'cholesterol_mgdl') double cholesterolMgdl, DiabetesOrdinal diabetesOrdinal, Gender gender
 });
 
 
@@ -264,13 +276,13 @@ class __$HypertensionModelCopyWithImpl<$Res>
 
 /// Create a copy of HypertensionModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? age = null,Object? weight = null,Object? height = null,Object? hba1c = null,Object? cholesterolUnit = null,Object? diabetesOrdinal = null,Object? gender = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? age = null,Object? height = null,Object? weight = null,Object? hba1c = null,Object? cholesterolMgdl = null,Object? diabetesOrdinal = null,Object? gender = null,}) {
   return _then(_HypertensionModel(
 age: null == age ? _self.age : age // ignore: cast_nullable_to_non_nullable
-as int,weight: null == weight ? _self.weight : weight // ignore: cast_nullable_to_non_nullable
-as double,height: null == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
+as int,height: null == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
+as double,weight: null == weight ? _self.weight : weight // ignore: cast_nullable_to_non_nullable
 as double,hba1c: null == hba1c ? _self.hba1c : hba1c // ignore: cast_nullable_to_non_nullable
-as double,cholesterolUnit: null == cholesterolUnit ? _self.cholesterolUnit : cholesterolUnit // ignore: cast_nullable_to_non_nullable
+as double,cholesterolMgdl: null == cholesterolMgdl ? _self.cholesterolMgdl : cholesterolMgdl // ignore: cast_nullable_to_non_nullable
 as double,diabetesOrdinal: null == diabetesOrdinal ? _self.diabetesOrdinal : diabetesOrdinal // ignore: cast_nullable_to_non_nullable
 as DiabetesOrdinal,gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
 as Gender,
