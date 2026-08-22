@@ -24,7 +24,7 @@ services:
 
     depends_on:
       chroma-server:
-        condition: service_healthy
+        condition: service_started
 
     networks:
       - app-network

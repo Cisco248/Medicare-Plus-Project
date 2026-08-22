@@ -78,18 +78,27 @@ internal object RecordTypeMapper {
         }
     }
 
-    fun permissionMap(permission: String): Map<String, String>? {
-        for (type in SUPPORTED_TYPES) {
-            val read = HealthPermission.getReadPermission(recordClass(type))
-            if (permission == read) {
-                return mapOf("recordType" to type, "access" to "read")
-            }
-            val write = HealthPermission.getWritePermission(recordClass(type))
-            if (permission == write) {
-                return mapOf("recordType" to type, "access" to "write")
+    /**
+     * Resolves a raw Health Connect permission string back to a record type and
+     * access mode, or `null` for permissions this plugin does not model (for
+     * example `READ_HEALTH_DATA_IN_BACKGROUND`).
+     */
+    fun permissionMap(permission: String): Map<String, String>? = PERMISSION_INDEX[permission]
+
+    private val PERMISSION_INDEX: Map<String, Map<String, String>> by lazy {
+        buildMap {
+            for (type in SUPPORTED_TYPES) {
+                val clazz = recordClass(type)
+                put(
+                    HealthPermission.getReadPermission(clazz),
+                    mapOf("recordType" to type, "access" to "read"),
+                )
+                put(
+                    HealthPermission.getWritePermission(clazz),
+                    mapOf("recordType" to type, "access" to "write"),
+                )
             }
         }
-        return null
     }
 
     val SUPPORTED_TYPES: List<String> =

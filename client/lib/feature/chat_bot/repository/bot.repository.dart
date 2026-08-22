@@ -8,7 +8,7 @@ part 'bot.repository.g.dart';
 
 @riverpod
 BotRepositoryImpService botRepositoryImpService(Ref ref) =>
-    BotRepositoryImpService(client: client(8000));
+    BotRepositoryImpService(client: ragClient());
 
 abstract class BotRepository {
   Future<ChatResponseModel> sendInfo(String info);
@@ -23,7 +23,10 @@ class BotRepositoryImpService extends BotRepository {
   Future<ChatResponseModel> sendInfo(String value) async {
     if (value.isEmpty) throw Exception('Value Not Found!');
     try {
-      final response = await _client.post('/ask', data: {'question': value});
+      final response = await _client.post(
+        '/api/ask',
+        data: {'question': value},
+      );
       return ChatResponseModel(
         message: response.data.toString(),
         createdDate: DateTime.now(),

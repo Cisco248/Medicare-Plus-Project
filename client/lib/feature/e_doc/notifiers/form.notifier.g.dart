@@ -13,7 +13,7 @@ part of 'form.notifier.dart';
 final eDocModelProvider = EDocModelNotifierProvider._();
 
 final class EDocModelNotifierProvider
-    extends $NotifierProvider<EDocModelNotifier, EDocPredictionModel> {
+    extends $NotifierProvider<EDocModelNotifier, DocModel> {
   EDocModelNotifierProvider._()
     : super(
         from: null,
@@ -33,27 +33,27 @@ final class EDocModelNotifierProvider
   EDocModelNotifier create() => EDocModelNotifier();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(EDocPredictionModel value) {
+  Override overrideWithValue(DocModel value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<EDocPredictionModel>(value),
+      providerOverride: $SyncValueProvider<DocModel>(value),
     );
   }
 }
 
-String _$eDocModelNotifierHash() => r'13dd1872944e758adf3e27acde38644fc0bd1deb';
+String _$eDocModelNotifierHash() => r'4fa55abf78eab57a936ba1357a379eb302b04b74';
 
-abstract class _$EDocModelNotifier extends $Notifier<EDocPredictionModel> {
-  EDocPredictionModel build();
+abstract class _$EDocModelNotifier extends $Notifier<DocModel> {
+  DocModel build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<EDocPredictionModel, EDocPredictionModel>;
+    final ref = this.ref as $Ref<DocModel, DocModel>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<EDocPredictionModel, EDocPredictionModel>,
-              EDocPredictionModel,
+              AnyNotifier<DocModel, DocModel>,
+              DocModel,
               Object?,
               Object?
             >;

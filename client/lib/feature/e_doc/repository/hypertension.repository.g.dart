@@ -55,4 +55,4 @@ final class HypertensionRepositoryProvider
 }
 
 String _$hypertensionRepositoryHash() =>
-    r'95056651bc09d423060bc4b5ce80725cb1cacbea';
+    r'db40ae8ba27a78d54aa3056ce7cd61982b259f39';

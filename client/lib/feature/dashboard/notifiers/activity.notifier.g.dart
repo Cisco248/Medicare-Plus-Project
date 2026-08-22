@@ -34,7 +34,7 @@ final class StepsActivityNotifierProvider
 }
 
 String _$stepsActivityNotifierHash() =>
-    r'2945570826a05e43f23c93158e762bfab156aced';
+    r'3f38f47a4b79773d79cd20b70d3c407288bf23e6';
 
 abstract class _$StepsActivityNotifier extends $AsyncNotifier<int> {
   FutureOr<int> build();
@@ -79,7 +79,7 @@ final class BurnCaloriesActivityNotifierProvider
 }
 
 String _$burnCaloriesActivityNotifierHash() =>
-    r'3752d7e4a060c17871266437110b0ab6edc3c6be';
+    r'465927ea06c16f93dca76fcb6c07306860c2f322';
 
 abstract class _$BurnCaloriesActivityNotifier extends $AsyncNotifier<double> {
   FutureOr<double> build();
@@ -110,7 +110,7 @@ final class DailyActivityNotifierProvider
         argument: null,
         retry: null,
         name: r'dailyActivityProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -124,7 +124,7 @@ final class DailyActivityNotifierProvider
 }
 
 String _$dailyActivityNotifierHash() =>
-    r'7c769e1a112c4e168dce72dec301b53779244eb9';
+    r'617dbf5b0cd6880e80245d3e7d3dff4a643f31ce';
 
 abstract class _$DailyActivityNotifier extends $AsyncNotifier<DailySummary> {
   FutureOr<DailySummary> build();
@@ -144,36 +144,101 @@ abstract class _$DailyActivityNotifier extends $AsyncNotifier<DailySummary> {
   }
 }
 
-/// Coordinates the Knowledge (health-summary) flow:
-///
-/// Health Connect → normalize → [ActivityModel] → summary request →
-/// RAG API → AI summary → [KnowledgeState] consumed by `KnowledgeWidget`.
-///
-/// Kept alive so a generated summary is cached across widget rebuilds and
-/// navigation; it is only regenerated on explicit request or when the
-/// underlying health data changes.
+@ProviderFor(BodyHeightNotifier)
+final bodyHeightProvider = BodyHeightNotifierProvider._();
+
+final class BodyHeightNotifierProvider
+    extends $AsyncNotifierProvider<BodyHeightNotifier, double> {
+  BodyHeightNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'bodyHeightProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$bodyHeightNotifierHash();
+
+  @$internal
+  @override
+  BodyHeightNotifier create() => BodyHeightNotifier();
+}
+
+String _$bodyHeightNotifierHash() =>
+    r'3f7d8f7c9f38aa200b7dad5090bdf722cffa59f9';
+
+abstract class _$BodyHeightNotifier extends $AsyncNotifier<double> {
+  FutureOr<double> build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<double>, double>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<double>, double>,
+              AsyncValue<double>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
+@ProviderFor(SleepHoursNotifier)
+final sleepHoursProvider = SleepHoursNotifierProvider._();
+
+final class SleepHoursNotifierProvider
+    extends $AsyncNotifierProvider<SleepHoursNotifier, double> {
+  SleepHoursNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'sleepHoursProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$sleepHoursNotifierHash();
+
+  @$internal
+  @override
+  SleepHoursNotifier create() => SleepHoursNotifier();
+}
+
+String _$sleepHoursNotifierHash() =>
+    r'6334370ef428025f1780f780baec5f91eb3da037';
+
+abstract class _$SleepHoursNotifier extends $AsyncNotifier<double> {
+  FutureOr<double> build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<double>, double>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<double>, double>,
+              AsyncValue<double>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
 
 @ProviderFor(ActivityNotifier)
 final activityProvider = ActivityNotifierProvider._();
 
-/// Coordinates the Knowledge (health-summary) flow:
-///
-/// Health Connect → normalize → [ActivityModel] → summary request →
-/// RAG API → AI summary → [KnowledgeState] consumed by `KnowledgeWidget`.
-///
-/// Kept alive so a generated summary is cached across widget rebuilds and
-/// navigation; it is only regenerated on explicit request or when the
-/// underlying health data changes.
 final class ActivityNotifierProvider
     extends $NotifierProvider<ActivityNotifier, KnowledgeState> {
-  /// Coordinates the Knowledge (health-summary) flow:
-  ///
-  /// Health Connect → normalize → [ActivityModel] → summary request →
-  /// RAG API → AI summary → [KnowledgeState] consumed by `KnowledgeWidget`.
-  ///
-  /// Kept alive so a generated summary is cached across widget rebuilds and
-  /// navigation; it is only regenerated on explicit request or when the
-  /// underlying health data changes.
   ActivityNotifierProvider._()
     : super(
         from: null,
@@ -201,16 +266,7 @@ final class ActivityNotifierProvider
   }
 }
 
-String _$activityNotifierHash() => r'5e976a343c638e9a1afdae84f1105f06364a395e';
-
-/// Coordinates the Knowledge (health-summary) flow:
-///
-/// Health Connect → normalize → [ActivityModel] → summary request →
-/// RAG API → AI summary → [KnowledgeState] consumed by `KnowledgeWidget`.
-///
-/// Kept alive so a generated summary is cached across widget rebuilds and
-/// navigation; it is only regenerated on explicit request or when the
-/// underlying health data changes.
+String _$activityNotifierHash() => r'3ff6403875314e9c84a8c89301d83e8566ee90d7';
 
 abstract class _$ActivityNotifier extends $Notifier<KnowledgeState> {
   KnowledgeState build();

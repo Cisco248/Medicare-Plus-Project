@@ -1,12 +1,6 @@
 import 'package:client/feature/pharmacy/data/demo_catalog.dart';
 import 'package:client/feature/pharmacy/models/product.model.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final pharmaRepositoryProvider = Provider<PharmaRepository>(
-  (ref) => PharmaRepository(),
-);
-
-/// Demo pharmacy catalogue. There is no external pharmacy API in this project.
 class PharmaRepository {
   const PharmaRepository();
 

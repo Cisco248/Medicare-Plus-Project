@@ -1,13 +1,9 @@
 import 'package:client/core/widgets/button.widget.dart';
-import 'package:client/feature/e_doc/models/assessment.model.dart';
-import 'package:client/feature/e_doc/notifiers/assessment.notifier.dart';
+import 'package:client/feature/e_doc/models/doc.state.dart';
+import 'package:client/feature/e_doc/notifiers/doc.state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Blood-pressure / heart-risk form.
-///
-/// The server defines `HeartScehema` but does not expose a prediction route
-/// yet, so this screen explains that instead of posting to an invented URL.
 class BloodPressureFormWidget extends ConsumerWidget {
   const BloodPressureFormWidget({super.key});
 
@@ -47,8 +43,8 @@ class BloodPressureFormWidget extends ConsumerWidget {
             label: 'Show status',
             fullWidth: true,
             onPressed: () => ref
-                .read(eDocAssessmentProvider.notifier)
-                .markUnavailable(EDocPredictionModel.bloodPressure),
+                .read(docStateProvider.notifier)
+                .markUnavailable(DocModel.bloodPressure),
           ),
         ],
       ),

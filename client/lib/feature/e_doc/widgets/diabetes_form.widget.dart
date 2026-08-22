@@ -1,9 +1,9 @@
 import 'package:client/core/utils/notification.utils.dart';
 import 'package:client/core/widgets/button.widget.dart';
 import 'package:client/core/widgets/textfield.widget.dart';
-import 'package:client/feature/e_doc/models/assessment.model.dart';
+import 'package:client/feature/e_doc/models/doc.state.dart';
 import 'package:client/feature/e_doc/models/diabetes.model.dart';
-import 'package:client/feature/e_doc/notifiers/assessment.notifier.dart';
+import 'package:client/feature/e_doc/notifiers/doc.state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -50,26 +50,28 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
       return;
     }
 
-    await ref.read(eDocAssessmentProvider.notifier).submitDiabetes(
-      DiabetesModel(
-        age: age,
-        gender: _gender,
-        pulseRate: pulse,
-        bpReading: _bp.text.trim(),
-        glucose: glucose,
-        bmi: bmi,
-        familyDiabetes: _familyDiabetes ? 'Yes' : 'No',
-        hypertensive: _hypertensive ? 'Yes' : 'No',
-      ),
-    );
+    await ref
+        .read(docStateProvider.notifier)
+        .submitDiabetes(
+          DiabetesModel(
+            age: age,
+            gender: _gender,
+            pulseRate: pulse,
+            bpReading: _bp.text.trim(),
+            glucose: glucose,
+            bmi: bmi,
+            familyDiabetes: _familyDiabetes ? 'Yes' : 'No',
+            hypertensive: _hypertensive ? 'Yes' : 'No',
+          ),
+        );
   }
 
   @override
   Widget build(BuildContext context) {
-    final assessment = ref.watch(eDocAssessmentProvider);
+    final assessment = ref.watch(docStateProvider);
     final submitting =
-        assessment.phase == EDocAssessmentPhase.loading &&
-        assessment.model == EDocPredictionModel.diabetes;
+        assessment.phase == DocPhase.loading &&
+        assessment.model == DocModel.diabetes;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -105,7 +107,9 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
               label: 'Pulse rate',
               hint: 'e.g. 78',
               controller: _pulse,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               validator: _requiredNumber,
             ),
             const SizedBox(height: 8),
@@ -113,8 +117,7 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
               label: 'Blood pressure',
               hint: 'e.g. 120/80',
               controller: _bp,
-              validator: (value) =>
-                  (value == null || value.trim().isEmpty)
+              validator: (value) => (value == null || value.trim().isEmpty)
                   ? 'This field is required.'
                   : null,
             ),
@@ -123,7 +126,9 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
               label: 'Glucose',
               hint: 'e.g. 110',
               controller: _glucose,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               validator: _requiredNumber,
             ),
             const SizedBox(height: 8),
@@ -131,7 +136,9 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
               label: 'BMI',
               hint: 'e.g. 24.5',
               controller: _bmi,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               validator: _requiredNumber,
             ),
             CheckboxListTile(

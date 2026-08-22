@@ -55,4 +55,4 @@ final class DiabetesRepositoryProvider
 }
 
 String _$diabetesRepositoryHash() =>
-    r'c6a6a9403883fa1f7c198f35d737ac657643c91a';
+    r'50ebf3a9874e7553f5ebb93298dca536bf1e7985';

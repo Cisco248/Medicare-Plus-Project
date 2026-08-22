@@ -9,39 +9,39 @@ part of 'document.model.dart';
 _DocumentModel _$DocumentModelFromJson(Map<String, dynamic> json) =>
     _DocumentModel(
       id: json['id'] as String,
-      userId: json['user_id'] as String,
+      userId: json['userId'] as String,
       title: json['title'] as String,
-      docType: json['doc_type'] as String,
-      fileName: json['file_name'] as String,
-      fileType: json['file_type'] as String,
+      docType: json['docType'] as String,
+      fileName: json['fileName'] as String,
+      fileType: json['fileType'] as String,
       description: json['description'] as String?,
       issuer: json['issuer'] as String?,
       hospital: json['hospital'] as String?,
-      reportDate: json['report_date'] == null
+      reportDate: json['reportDate'] == null
           ? null
-          : DateTime.parse(json['report_date'] as String),
+          : DateTime.parse(json['reportDate'] as String),
       status: json['status'] as String,
-      createdAt: json['created_at'] == null
+      createdAt: json['createdAt'] == null
           ? null
-          : DateTime.parse(json['created_at'] as String),
-      updatedAt: json['updated_at'] == null
+          : DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] == null
           ? null
-          : DateTime.parse(json['updated_at'] as String),
+          : DateTime.parse(json['updatedAt'] as String),
     );
 
 Map<String, dynamic> _$DocumentModelToJson(_DocumentModel instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'user_id': instance.userId,
+      'userId': instance.userId,
       'title': instance.title,
-      'doc_type': instance.docType,
-      'file_name': instance.fileName,
-      'file_type': instance.fileType,
+      'docType': instance.docType,
+      'fileName': instance.fileName,
+      'fileType': instance.fileType,
       'description': instance.description,
       'issuer': instance.issuer,
       'hospital': instance.hospital,
-      'report_date': instance.reportDate?.toIso8601String(),
+      'reportDate': instance.reportDate?.toIso8601String(),
       'status': instance.status,
-      'created_at': instance.createdAt?.toIso8601String(),
-      'updated_at': instance.updatedAt?.toIso8601String(),
+      'createdAt': instance.createdAt?.toIso8601String(),
+      'updatedAt': instance.updatedAt?.toIso8601String(),
     };

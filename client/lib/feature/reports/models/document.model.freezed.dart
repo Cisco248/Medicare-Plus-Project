@@ -218,8 +218,8 @@ return $default(_that.id,_that.userId,_that.title,_that.docType,_that.fileName,_
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(fieldRename: FieldRename.snake)
 class _DocumentModel extends DocumentModel {
   const _DocumentModel({required this.id, required this.userId, required this.title, required this.docType, required this.fileName, required this.fileType, this.description, this.issuer, this.hospital, this.reportDate, required this.status, this.createdAt, this.updatedAt}): super._();
   factory _DocumentModel.fromJson(Map<String, dynamic> json) => _$DocumentModelFromJson(json);

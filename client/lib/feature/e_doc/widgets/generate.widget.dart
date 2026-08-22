@@ -1,5 +1,5 @@
-import 'package:client/feature/e_doc/models/assessment.model.dart';
-import 'package:client/feature/e_doc/notifiers/assessment.notifier.dart';
+import 'package:client/feature/e_doc/models/doc.state.dart';
+import 'package:client/feature/e_doc/notifiers/doc.state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,7 +9,7 @@ class GenerateWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(eDocAssessmentProvider);
+    final state = ref.watch(docStateProvider);
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
@@ -25,7 +25,7 @@ class GenerateWidget extends ConsumerWidget {
           Row(
             children: [
               Text(
-                'Assessment result',
+                'Health Result',
                 style: TextStyle(
                   color: colorScheme.onSurface,
                   fontSize: 14,
@@ -43,7 +43,7 @@ class GenerateWidget extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           switch (state.phase) {
-            EDocAssessmentPhase.idle => Text(
+            DocPhase.idle => Text(
               'Submit an assessment to generate a personalized explanation.',
               style: TextStyle(
                 fontFamily: 'Inter',
@@ -51,11 +51,11 @@ class GenerateWidget extends ConsumerWidget {
                 color: colorScheme.onSurface.withAlpha(180),
               ),
             ),
-            EDocAssessmentPhase.loading => const Padding(
+            DocPhase.loading => const Padding(
               padding: EdgeInsets.symmetric(vertical: 12),
               child: Center(child: CircularProgressIndicator()),
             ),
-            EDocAssessmentPhase.error => Text(
+            DocPhase.error => Text(
               state.errorMessage ??
                   'Unable to generate the assessment. Please try again.',
               style: TextStyle(
@@ -64,7 +64,7 @@ class GenerateWidget extends ConsumerWidget {
                 color: colorScheme.error,
               ),
             ),
-            EDocAssessmentPhase.empty => Text(
+            DocPhase.empty => Text(
               state.errorMessage ??
                   'No personalized result is available for this assessment yet.',
               style: TextStyle(
@@ -73,7 +73,7 @@ class GenerateWidget extends ConsumerWidget {
                 color: colorScheme.onSurface.withAlpha(180),
               ),
             ),
-            EDocAssessmentPhase.success => Column(
+            DocPhase.success => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (state.model != null)

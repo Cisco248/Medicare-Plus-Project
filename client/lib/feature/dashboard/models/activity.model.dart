@@ -1,18 +1,10 @@
-// @JsonSerializable on freezed factory constructors is the documented way to
-// configure json_serializable for freezed classes.
-// ignore_for_file: invalid_annotation_target
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'activity.model.freezed.dart';
 part 'activity.model.g.dart';
 
-/// Aggregated heart-rate statistics for a period.
-///
-/// `null` fields mean the metric could not be measured, never zero.
 @freezed
 abstract class HeartRateSummary with _$HeartRateSummary {
-  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory HeartRateSummary({
     double? averageBpm,
     int? minBpm,
@@ -24,10 +16,8 @@ abstract class HeartRateSummary with _$HeartRateSummary {
       _$HeartRateSummaryFromJson(json);
 }
 
-/// Aggregated sleep information for a period.
 @freezed
 abstract class SleepSummary with _$SleepSummary {
-  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory SleepSummary({
     required int totalMinutes,
     required int sessionCount,
@@ -37,10 +27,8 @@ abstract class SleepSummary with _$SleepSummary {
       _$SleepSummaryFromJson(json);
 }
 
-/// A single normalized workout/exercise session.
 @freezed
 abstract class WorkoutSummary with _$WorkoutSummary {
-  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory WorkoutSummary({
     required String type,
     String? title,
@@ -53,10 +41,8 @@ abstract class WorkoutSummary with _$WorkoutSummary {
       _$WorkoutSummaryFromJson(json);
 }
 
-/// Latest blood-pressure measurement within a period.
 @freezed
 abstract class BloodPressureSummary with _$BloodPressureSummary {
-  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory BloodPressureSummary({
     required double systolicMmHg,
     required double diastolicMmHg,
@@ -67,16 +53,10 @@ abstract class BloodPressureSummary with _$BloodPressureSummary {
       _$BloodPressureSummaryFromJson(json);
 }
 
-/// Normalized application-level health/activity data for a period.
-///
-/// This is the aggregation of raw Health Connect records, not a copy of the
-/// SDK objects. Every metric is nullable: `null` means "data unavailable"
-/// (missing permission or no records), which must never be interpreted as 0.
 @freezed
 abstract class ActivityModel with _$ActivityModel {
   const ActivityModel._();
 
-  @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
   const factory ActivityModel({
     required DateTime date,
     int? steps,
@@ -96,7 +76,10 @@ abstract class ActivityModel with _$ActivityModel {
   factory ActivityModel.fromJson(Map<String, Object?> json) =>
       _$ActivityModelFromJson(json);
 
-  /// Whether at least one health metric was collected for the period.
+  @override
+  Map<String, dynamic> toJson() =>
+      _$ActivityModelToJson(this as _ActivityModel);
+
   bool get hasAnyData =>
       steps != null ||
       distanceMeters != null ||
@@ -110,4 +93,15 @@ abstract class ActivityModel with _$ActivityModel {
       bloodPressure != null ||
       bloodGlucoseMmolPerLiter != null ||
       oxygenSaturationPercent != null;
+}
+
+enum HealthAccessStatus { unavailable, denied, partial, granted }
+
+@Freezed(fromJson: true, toJson: true, toStringOverride: true, copyWith: true)
+abstract class HealthDataResult with _$HealthDataResult {
+  const factory HealthDataResult({
+    required HealthAccessStatus status,
+    @Default(null) ActivityModel? activity,
+    @Default(<String>[]) List<String> deniedMetrics,
+  }) = _HealthDataResult;
 }

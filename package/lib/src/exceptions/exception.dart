@@ -1,7 +1,5 @@
 library;
 
-export 'package:flutter_health_connect/src/exceptions/exception.dart';
-
 /// [HealthConnectException] is a base sealed exception for all Health Connect plugin failures.
 /// Base sealed exception for all Health Connect plugin failures.
 ///
@@ -140,6 +138,65 @@ class HealthConnectInvalidTimeRangeException extends HealthConnectException {
 /// - [details] - Optional platform details (never contains health record payloads).
 class HealthConnectUnsupportedRecordException extends HealthConnectException {
   const HealthConnectUnsupportedRecordException(
+    super.message, {
+    super.code,
+    super.details,
+  });
+}
+
+/// [FlutterHealthConnect.initialize] has not completed yet.
+///
+/// This is a caller lifecycle error, not a device capability problem. It is a
+/// distinct type so that "you called us too early" is never presented to the
+/// user as "Health Connect is not available on this device".
+///
+/// - [message] - Human-readable description of the failure.
+/// - [code] - Stable machine-readable error code from the platform bridge.
+/// - [details] - Optional platform details (never contains health record payloads).
+class HealthConnectNotInitializedException extends HealthConnectException {
+  const HealthConnectNotInitializedException(
+    super.message, {
+    super.code,
+    super.details,
+  });
+}
+
+/// Health Connect is installed and reachable, but the operation failed.
+///
+/// Covers provider-side faults: binder/IPC failures, client construction
+/// failures, I/O errors, and rejected requests. Retrying is often reasonable.
+///
+/// - [message] - Human-readable description of the failure.
+/// - [code] - Stable machine-readable error code from the platform bridge.
+/// - [details] - Optional platform details (never contains health record payloads).
+class HealthConnectOperationException extends HealthConnectException {
+  const HealthConnectOperationException(
+    super.message, {
+    super.code,
+    super.details,
+  });
+}
+
+/// The request itself was malformed or unsupported by the provider.
+///
+/// - [message] - Human-readable description of the failure.
+/// - [code] - Stable machine-readable error code from the platform bridge.
+/// - [details] - Optional platform details (never contains health record payloads).
+class HealthConnectInvalidRequestException extends HealthConnectException {
+  const HealthConnectInvalidRequestException(
+    super.message, {
+    super.code,
+    super.details,
+  });
+}
+
+/// No Health Connect screen could be opened for the requested destination.
+///
+/// - [message] - Human-readable description of the failure.
+/// - [code] - Stable machine-readable error code from the platform bridge.
+/// - [details] - Optional platform details (never contains health record payloads).
+class HealthConnectNavigationException extends HealthConnectException {
+  const HealthConnectNavigationException(
     super.message, {
     super.code,
     super.details,

@@ -11,17 +11,15 @@ part 'report.repository.g.dart';
 
 @riverpod
 ReportRepository reportRepository(Ref ref) =>
-    ReportRepository(client: client(8080));
+    ReportRepository(client: client());
 
 class ReportRepository {
   ReportRepository({required this._client});
 
   final Dio _client;
 
-  Options _authOptions(String? token, {ResponseType? responseType}) => Options(
-    headers: {'x-auth-token': ?token},
-    responseType: responseType,
-  );
+  Options _authOptions(String? token, {ResponseType? responseType}) =>
+      Options(headers: {'x-auth-token': ?token}, responseType: responseType);
 
   Future<List<DocumentModel>> fetchDocuments({String? token}) async {
     try {
@@ -101,7 +99,10 @@ class ReportRepository {
 
   Future<void> deleteDocument(String id, {String? token}) async {
     try {
-      await _client.delete<void>('/documents/$id', options: _authOptions(token));
+      await _client.delete<void>(
+        '/documents/$id',
+        options: _authOptions(token),
+      );
     } on DioException catch (e) {
       throw AppException.fromDioException(e);
     }

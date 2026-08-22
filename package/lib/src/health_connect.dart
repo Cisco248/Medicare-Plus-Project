@@ -33,6 +33,7 @@ class FlutterHealthConnect {
   final Configuration _config;
   final HealthConnectPlatform _platform;
   bool _initialized = false;
+  Future<void>? _initialization;
 
   bool get isInitialized => _initialized;
 
@@ -40,7 +41,7 @@ class FlutterHealthConnect {
 
   void _ensureInitialized() {
     if (!_initialized) {
-      throw const HealthConnectUnavailableException(
+      throw const HealthConnectNotInitializedException(
         'FlutterHealthConnect.initialize() must be called before use.',
         code: 'not_initialized',
       );
@@ -65,10 +66,17 @@ class FlutterHealthConnect {
     }
   }
 
-  Future<void> initialize() async {
-    if (_initialized) return;
-    await _platform.initialize(enableLogging: _config.enableLogging);
-    _initialized = true;
+  /// Prepares the platform implementation. Safe to call repeatedly.
+  ///
+  /// Concurrent callers share a single in-flight initialization instead of each
+  /// issuing their own platform call. A failed attempt is discarded so the next
+  /// call retries rather than leaving the instance permanently uninitialized.
+  Future<void> initialize() {
+    if (_initialized) return Future<void>.value();
+    return _initialization ??= _platform
+        .initialize(enableLogging: _config.enableLogging)
+        .then((_) => _initialized = true)
+        .whenComplete(() => _initialization = null);
   }
 
   Future<Availability> getAvailability() async {
@@ -93,16 +101,26 @@ class FlutterHealthConnect {
     return _platform.getGrantedPermissions();
   }
 
-  /// Opens the Health Connect settings screen.
+  /// Opens the Health Connect home / settings screen.
   Future<void> openHealthConnectSettings() async {
     _ensureInitialized();
     return _platform.openHealthConnectSettings();
   }
 
   /// Opens the screen for managing this app's Health Connect permissions.
+  ///
+  /// This navigates only. Permissions are granted through the Health Connect
+  /// UI launched by [requestPermissions]; no app can grant them itself.
   Future<void> openAppPermissions() async {
     _ensureInitialized();
     return _platform.openAppPermissions();
+  }
+
+  /// Opens the Health Connect data and access management screen, where the user
+  /// reviews stored data and which apps can read it.
+  Future<void> openHealthConnectDataManagement() async {
+    _ensureInitialized();
+    return _platform.openHealthConnectDataManagement();
   }
 
   /// Reads records of [type] between [startTime] and [endTime] (UTC instants).

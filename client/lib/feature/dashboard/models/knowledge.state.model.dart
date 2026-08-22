@@ -1,5 +1,5 @@
 import 'package:client/feature/dashboard/models/activity.model.dart';
-import 'package:client/feature/dashboard/models/health_summary_response.model.dart';
+import 'package:client/feature/dashboard/models/health_summary.model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'knowledge.state.model.freezed.dart';
@@ -37,7 +37,6 @@ abstract class KnowledgeState with _$KnowledgeState {
   bool get hasError => phase == KnowledgePhase.failure;
   bool get needsPermission => phase == KnowledgePhase.permissionRequired;
   bool get isUnavailable => phase == KnowledgePhase.healthConnectUnavailable;
-
   bool get isSummaryUpToDate =>
       summary != null && summarySource != null && summarySource == activity;
 }

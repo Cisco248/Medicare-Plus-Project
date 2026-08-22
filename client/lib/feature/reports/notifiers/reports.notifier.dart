@@ -12,7 +12,7 @@ part 'reports.notifier.g.dart';
 class ReportsNotifier extends _$ReportsNotifier {
   ReportRepository get _repository => ref.read(reportRepositoryProvider);
 
-  String? get _token => ref.read(authenticationProvider).value?.token;
+  String? get _token => ref.read(authenticationProvider).value?.data?.token;
 
   @override
   Future<List<DocumentModel>> build() =>
@@ -69,7 +69,7 @@ class ReportsNotifier extends _$ReportsNotifier {
 
 @riverpod
 Future<Uint8List> documentPreview(Ref ref, String documentId) {
-  final token = ref.watch(authenticationProvider).value?.token;
+  final token = ref.watch(authenticationProvider).value?.data?.token;
   return ref
       .watch(reportRepositoryProvider)
       .fetchDocumentBytes(documentId, token: token);

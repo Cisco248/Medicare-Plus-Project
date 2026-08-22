@@ -213,8 +213,8 @@ return $default(_that.age,_that.gender,_that.pulseRate,_that.bpReading,_that.glu
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(fieldRename: FieldRename.snake)
 class _DiabetesModel implements DiabetesModel {
   const _DiabetesModel({required this.age, required this.gender, required this.pulseRate, required this.bpReading, required this.glucose, required this.bmi, required this.familyDiabetes, required this.hypertensive});
   factory _DiabetesModel.fromJson(Map<String, dynamic> json) => _$DiabetesModelFromJson(json);

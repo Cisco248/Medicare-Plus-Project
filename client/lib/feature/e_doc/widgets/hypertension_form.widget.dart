@@ -1,9 +1,9 @@
 import 'package:client/core/utils/notification.utils.dart';
 import 'package:client/core/widgets/button.widget.dart';
 import 'package:client/core/widgets/textfield.widget.dart';
-import 'package:client/feature/e_doc/models/assessment.model.dart';
+import 'package:client/feature/e_doc/models/doc.state.dart';
 import 'package:client/feature/e_doc/models/hypertension.model.dart';
-import 'package:client/feature/e_doc/notifiers/assessment.notifier.dart';
+import 'package:client/feature/e_doc/notifiers/doc.state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,7 +15,8 @@ class HypertensionFormWidget extends ConsumerStatefulWidget {
       _HypertensionFormWidgetState();
 }
 
-class _HypertensionFormWidgetState extends ConsumerState<HypertensionFormWidget> {
+class _HypertensionFormWidgetState
+    extends ConsumerState<HypertensionFormWidget> {
   final _formKey = GlobalKey<FormState>();
   final _age = TextEditingController();
   final _height = TextEditingController();
@@ -59,25 +60,27 @@ class _HypertensionFormWidgetState extends ConsumerState<HypertensionFormWidget>
       return;
     }
 
-    await ref.read(eDocAssessmentProvider.notifier).submitHypertension(
-      HypertensionModel(
-        age: age,
-        height: height,
-        weight: weight,
-        hba1c: hba1c,
-        cholesterolMgdl: cholesterol,
-        diabetesOrdinal: _diabetes,
-        gender: _gender!,
-      ),
-    );
+    await ref
+        .read(docStateProvider.notifier)
+        .submitHypertension(
+          HypertensionModel(
+            age: age,
+            height: height,
+            weight: weight,
+            hba1c: hba1c,
+            cholesterolMgdl: cholesterol,
+            diabetesOrdinal: _diabetes,
+            gender: _gender!,
+          ),
+        );
   }
 
   @override
   Widget build(BuildContext context) {
-    final assessment = ref.watch(eDocAssessmentProvider);
+    final assessment = ref.watch(docStateProvider);
     final submitting =
-        assessment.phase == EDocAssessmentPhase.loading &&
-        assessment.model == EDocPredictionModel.hypertension;
+        assessment.phase == DocPhase.loading &&
+        assessment.model == DocModel.hypertension;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -101,7 +104,9 @@ class _HypertensionFormWidgetState extends ConsumerState<HypertensionFormWidget>
               label: 'Height (cm)',
               hint: 'e.g. 170',
               controller: _height,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               validator: _requiredNumber,
             ),
             const SizedBox(height: 8),
@@ -109,7 +114,9 @@ class _HypertensionFormWidgetState extends ConsumerState<HypertensionFormWidget>
               label: 'Weight (kg)',
               hint: 'e.g. 70',
               controller: _weight,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               validator: _requiredNumber,
             ),
             const SizedBox(height: 8),
@@ -117,7 +124,9 @@ class _HypertensionFormWidgetState extends ConsumerState<HypertensionFormWidget>
               label: 'HbA1c (%)',
               hint: 'e.g. 5.6',
               controller: _hba1c,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               validator: _requiredNumber,
             ),
             const SizedBox(height: 8),
@@ -125,7 +134,9 @@ class _HypertensionFormWidgetState extends ConsumerState<HypertensionFormWidget>
               label: 'Cholesterol (mg/dL)',
               hint: 'e.g. 180',
               controller: _cholesterol,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               validator: _requiredNumber,
             ),
             const SizedBox(height: 8),

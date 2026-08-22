@@ -10,11 +10,11 @@ _DiabetesModel _$DiabetesModelFromJson(Map<String, dynamic> json) =>
     _DiabetesModel(
       age: (json['age'] as num).toInt(),
       gender: json['gender'] as String,
-      pulseRate: (json['pulse_rate'] as num).toDouble(),
-      bpReading: json['bp_reading'] as String,
+      pulseRate: (json['pulseRate'] as num).toDouble(),
+      bpReading: json['bpReading'] as String,
       glucose: (json['glucose'] as num).toDouble(),
       bmi: (json['bmi'] as num).toDouble(),
-      familyDiabetes: json['family_diabetes'] as String,
+      familyDiabetes: json['familyDiabetes'] as String,
       hypertensive: json['hypertensive'] as String,
     );
 
@@ -22,10 +22,10 @@ Map<String, dynamic> _$DiabetesModelToJson(_DiabetesModel instance) =>
     <String, dynamic>{
       'age': instance.age,
       'gender': instance.gender,
-      'pulse_rate': instance.pulseRate,
-      'bp_reading': instance.bpReading,
+      'pulseRate': instance.pulseRate,
+      'bpReading': instance.bpReading,
       'glucose': instance.glucose,
       'bmi': instance.bmi,
-      'family_diabetes': instance.familyDiabetes,
+      'familyDiabetes': instance.familyDiabetes,
       'hypertensive': instance.hypertensive,
     };

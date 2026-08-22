@@ -1,6 +1,7 @@
-import 'package:client/feature/e_doc/models/assessment.model.dart';
-import 'package:client/feature/e_doc/notifiers/assessment.notifier.dart';
+import 'package:client/feature/e_doc/models/doc.state.dart';
+import 'package:client/feature/e_doc/notifiers/doc.state.dart';
 import 'package:client/feature/e_doc/notifiers/form.notifier.dart';
+// import 'package:client/feature/e_doc/notifiers/form.notifier.dart';
 import 'package:client/feature/e_doc/widgets/diabetes_form.widget.dart';
 import 'package:client/feature/e_doc/widgets/heart_disease.widget.dart';
 import 'package:client/feature/e_doc/widgets/hypertension_form.widget.dart';
@@ -26,7 +27,7 @@ class EDocAssessmentForm extends ConsumerWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           alignment: Alignment.center,
-          child: DropdownButton<EDocPredictionModel>(
+          child: DropdownButton<DocModel>(
             value: model,
             isExpanded: true,
             underline: const SizedBox.shrink(),
@@ -35,20 +36,20 @@ class EDocAssessmentForm extends ConsumerWidget {
             onChanged: (value) {
               if (value != null) {
                 ref.read(eDocModelProvider.notifier).select(value);
-                ref.read(eDocAssessmentProvider.notifier).clear();
+                ref.read(docStateProvider.notifier).clear();
               }
             },
             items: [
-              for (final item in EDocPredictionModel.values)
+              for (final item in DocModel.values)
                 DropdownMenuItem(value: item, child: Text(item.label)),
             ],
           ),
         ),
         const SizedBox(height: 16),
         switch (model) {
-          EDocPredictionModel.diabetes => const DiabetesFormWidget(),
-          EDocPredictionModel.hypertension => const HypertensionFormWidget(),
-          EDocPredictionModel.bloodPressure => const BloodPressureFormWidget(),
+          DocModel.diabetes => const DiabetesFormWidget(),
+          DocModel.hypertension => const HypertensionFormWidget(),
+          DocModel.bloodPressure => const BloodPressureFormWidget(),
         },
       ],
     );

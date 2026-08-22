@@ -35,7 +35,9 @@ internal class RecordManager(
                         ),
                     )
                 all.addAll(response.records)
-                pageToken = response.pageToken
+                // Some providers signal "no more pages" with an empty string
+                // rather than null; treating that as a token loops forever.
+                pageToken = response.pageToken?.takeIf { it.isNotEmpty() }
             } while (pageToken != null)
 
             // Deduplicate by record ID while preserving order.
