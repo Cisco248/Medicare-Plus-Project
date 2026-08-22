@@ -10,13 +10,12 @@ class HARMiddleware:
         ['acc_x (STDEV)', 'acc_y (STDEV)', 'acc_z (STDEV)', 'acc_average',
          'gyro_x (STDEV)', 'gyro_y (STDEV)', 'gyro_z (STDEV)', 'gyro_average']
 
-    NOTE: 'acc_average' / 'gyro_average' are assumed here to be the mean of
-    the per-sample vector magnitude (sqrt(x^2 + y^2 + z^2)) across the
-    window, which is the standard approach for this kind of feature set.
-    Double check this against the original training notebook's feature
-    engineering cell -- if it used a different definition (e.g. mean of the
-    raw axis values), update `_average_magnitude` below to match, otherwise
-    predictions will be inconsistent with the reported accuracy.
+    NOTE: 'acc_average' / 'gyro_average' are computed as the mean vector
+    magnitude of each axis after de-meaning (i.e. subtracting each axis's
+    own window average first). This removes any constant offset -- such as
+    gravity sitting on one accelerometer axis in raw sensor data -- before
+    computing magnitude, which matches KU-HAR's gravity-free feature values
+    (stationary activities like Sit/Stand/Lay average close to 0).
     """
 
     MIN_WINDOW_SIZE = 10  # sanity floor; ideally ~300 samples (3s @ 100Hz)
@@ -30,7 +29,17 @@ class HARMiddleware:
         return statistics.stdev(values)
 
     def _average_magnitude(self, xs: list[float], ys: list[float], zs: list[float]) -> float:
-        magnitudes = [math.sqrt(x**2 + y**2 + z**2) for x, y, z in zip(xs, ys, zs)]
+        # De-mean each axis first so a constant offset (e.g. gravity sitting on
+        # one axis in raw accelerometer data) cancels out before computing the
+        # magnitude. This matches KU-HAR's gravity-free feature values, where
+        # stationary activities (Sit/Stand/Lay) average close to 0.
+        mx = sum(xs) / len(xs)
+        my = sum(ys) / len(ys)
+        mz = sum(zs) / len(zs)
+        magnitudes = [
+            math.sqrt((x - mx) ** 2 + (y - my) ** 2 + (z - mz) ** 2)
+            for x, y, z in zip(xs, ys, zs)
+        ]
         return sum(magnitudes) / len(magnitudes)
 
     def extract_features(self, readings: list) -> dict:
