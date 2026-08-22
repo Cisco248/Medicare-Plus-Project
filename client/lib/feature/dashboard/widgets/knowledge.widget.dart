@@ -1,5 +1,5 @@
 import 'package:client/core/themes/primitives/colors.dart';
-import 'package:client/feature/dashboard/models/health_summary_response.model.dart';
+import 'package:client/feature/dashboard/models/health_summary.model.dart';
 import 'package:client/feature/dashboard/models/knowledge.state.model.dart';
 import 'package:client/feature/dashboard/notifiers/activity.notifier.dart';
 import 'package:flutter/material.dart';

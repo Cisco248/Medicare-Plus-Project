@@ -1,3 +1,8 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'prescription.model.freezed.dart';
+part 'prescription.model.g.dart';
+
 enum PrescriptionStatus {
   notSubmitted('Not Submitted'),
   pendingVerification('Pending Verification'),
@@ -8,49 +13,23 @@ enum PrescriptionStatus {
   final String label;
 }
 
-class PrescriptionRecord {
-  const PrescriptionRecord({
-    required this.productId,
-    this.status = PrescriptionStatus.notSubmitted,
-    this.documentId,
-    this.fileName,
-  });
+@Freezed(fromJson: true, toJson: true, toStringOverride: true)
+abstract class PrescriptionRecord with _$PrescriptionRecord {
+  const PrescriptionRecord._();
 
-  final String productId;
-  final PrescriptionStatus status;
-  final String? documentId;
-  final String? fileName;
+  const factory PrescriptionRecord({
+    required String productId,
+    @Default(null) PrescriptionStatus? status,
+    @Default(null) String? documentId,
+    @Default(null) String? fileName,
+  }) = _PrescriptionRecord;
 
   bool get canPurchase => status == PrescriptionStatus.approved;
 
-  PrescriptionRecord copyWith({
-    PrescriptionStatus? status,
-    String? documentId,
-    String? fileName,
-  }) {
-    return PrescriptionRecord(
-      productId: productId,
-      status: status ?? this.status,
-      documentId: documentId ?? this.documentId,
-      fileName: fileName ?? this.fileName,
-    );
-  }
-
-  Map<String, Object?> toJson() => {
-    'productId': productId,
-    'status': status.name,
-    'documentId': documentId,
-    'fileName': fileName,
-  };
-
   factory PrescriptionRecord.fromJson(Map<String, dynamic> json) =>
-      PrescriptionRecord(
-        productId: json['productId'] as String,
-        status: PrescriptionStatus.values.firstWhere(
-          (value) => value.name == json['status'],
-          orElse: () => PrescriptionStatus.notSubmitted,
-        ),
-        documentId: json['documentId'] as String?,
-        fileName: json['fileName'] as String?,
-      );
+      _$PrescriptionRecordFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() =>
+      _$PrescriptionRecordToJson(this as _PrescriptionRecord);
 }

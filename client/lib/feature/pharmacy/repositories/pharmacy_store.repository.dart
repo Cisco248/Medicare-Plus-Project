@@ -5,7 +5,6 @@ import 'package:client/feature/pharmacy/data/demo_catalog.dart';
 import 'package:client/feature/pharmacy/models/cart.model.dart';
 import 'package:client/feature/pharmacy/models/order.model.dart';
 import 'package:client/feature/pharmacy/models/prescription.model.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const _cartKey = 'pharmacy_cart';
 const _wishlistKey = 'pharmacy_wishlist';
@@ -14,11 +13,6 @@ const _addressKey = 'pharmacy_address';
 const _recentKey = 'pharmacy_recent';
 const _rxKey = 'pharmacy_prescriptions';
 
-final pharmacyStoreProvider = Provider<PharmacyStoreRepository>(
-  (ref) => PharmacyStoreRepository(),
-);
-
-/// Persists cart, wishlist, orders and related demo state with SharedPreferences.
 class PharmacyStoreRepository {
   PharmacyStoreRepository({PrefStorageUtils? storage})
     : _storage = storage ?? PrefStorageUtils();
@@ -97,7 +91,9 @@ class PharmacyStoreRepository {
     );
   }
 
-  Future<void> savePrescriptions(Map<String, PrescriptionRecord> records) async {
+  Future<void> savePrescriptions(
+    Map<String, PrescriptionRecord> records,
+  ) async {
     await _storage.setString(
       _rxKey,
       jsonEncode(records.map((key, value) => MapEntry(key, value.toJson()))),
@@ -108,9 +104,7 @@ class PharmacyStoreRepository {
     PharmacyOrder(
       orderId: 'ORD-DEMO-1001',
       userId: 'demo',
-      items: [
-        CartItem(product: DemoCatalog.products.first, quantity: 2),
-      ],
+      items: [CartItem(product: DemoCatalog.products.first, quantity: 2)],
       subtotal: 2100,
       deliveryFee: 250,
       discount: 150,

@@ -2,6 +2,10 @@
     <!-- The INTERNET permission is required for development. Specifically,
          the Flutter tool needs it to communicate with the running application
          to allow setting breakpoints, to provide hot reload, etc.
+
+         Permissions, activities and <queries> are declared once in the main
+         manifest and merged into every variant; redeclaring them here only
+         risks the variants drifting apart.
     -->
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

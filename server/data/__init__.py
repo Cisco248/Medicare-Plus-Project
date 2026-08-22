@@ -7,8 +7,10 @@ from .schemas import (
     HARWindowScheme,
     HeartScehema,
     HypertensionScehema,
+    DiabetesScehema,
     DocumentUpdate,
     DocumentStatusUpdate,
+    DiabetesSchema,
 )
 
 __all__ = [
@@ -23,6 +25,8 @@ __all__ = [
     "HARWindowScheme",
     "HeartScehema",
     "HypertensionScehema",
+    "DiabetesScehema",
     "DocumentUpdate",
     "DocumentStatusUpdate",
+    "DiabetesSchema",
 ]

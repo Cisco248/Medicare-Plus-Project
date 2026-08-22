@@ -1,17 +1,20 @@
 import logging
 from fastapi import APIRouter, HTTPException, Request as FastAPIRequest, status
 
-from data import Request
+from core.api.ready import require_ready
+from data import EDocRequest, compose_edoc_question
 
 e_doc_router = APIRouter(tags=["E Doc"])
 logger = logging.getLogger("E-Doc-Ask")
 
 
 @e_doc_router.post("/e-doc", status_code=status.HTTP_200_OK)
-def generate(model: Request, request: FastAPIRequest):
+def generate(model: EDocRequest, request: FastAPIRequest):
     """Answer an E-Doc question using the already initialized knowledge index."""
+    pipeline = require_ready(request)
     try:
-        return request.app.state.rag.invoke(model.question)
+        question = compose_edoc_question(model)
+        return pipeline.invoke(question)
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

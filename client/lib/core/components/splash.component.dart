@@ -1,5 +1,5 @@
 import 'package:client/core/widgets/appbar.widget.dart';
-import 'package:client/layout/providers/splash.notifier.dart';
+import 'package:client/layout/notifiers/splash.notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -3,26 +3,57 @@ from typing import List
 from fastapi import HTTPException, Header
 from core import TokenGenerator, ServerSettings, AuthString, EncryptionUtility
 from data import UserCreate, UserLogin, UserModel
-from repository.models.auth_response import AuthResponse
+from repository.models.auth_response import AuthResponse, GetUser
 
 setting = ServerSettings()
 
 
 class AuthenticationMiddleware:
     @staticmethod
-    def auth_middleware(x_auth_token=Header(), token=TokenGenerator()):
+    def auth_middleware(
+        data: UserModel | None,
+        x_auth_token: str | None = Header(default=None, alias="X-Auth-Token"),
+    ):
+        token = TokenGenerator()
+
         try:
-            verify_token = token.verify_token(setting.JWT_SECRET_KEY, x_auth_token)
+            if data is None:
+                raise HTTPException(
+                    status_code=401,
+                    detail=AuthString.USER_NOT_FOUND,
+                )
+
             if not x_auth_token:
-                raise HTTPException(401, AuthString.NO_TOKEN.value)
+                raise HTTPException(
+                    status_code=401,
+                    detail=AuthString.NO_TOKEN.value,
+                )
+
+            verify_token = token.verify_token(
+                setting.JWT_SECRET_KEY,
+                x_auth_token,
+            )
+
             if not verify_token:
-                raise HTTPException(401, AuthString.TOKEN_VERIFICATION.value)
-            return {
-                "uid": verify_token.get("id"),
-                "token": x_auth_token,
-            }
+                raise HTTPException(
+                    status_code=401,
+                    detail=AuthString.TOKEN_VERIFICATION.value,
+                )
+
+            return AuthResponse(
+                token=x_auth_token,
+                id=str(data.id),
+                name=str(data.name),
+                email=str(data.email),
+                mobnum=str(data.mobnum),
+                password=str(data.password),
+            )
+
         except jwt.PyJWTError:
-            raise HTTPException(401, AuthString.FAILED_AUTHORIZATION.value)
+            raise HTTPException(
+                status_code=401,
+                detail=AuthString.FAILED_AUTHORIZATION.value,
+            )
 
     @staticmethod
     def register_middleware(response: List[UserModel], schema: UserCreate):
@@ -37,11 +68,9 @@ class AuthenticationMiddleware:
             raise Exception(f"{AuthString.MIDDLEWARE_ERROR.value} {e}")
 
     @staticmethod
-    def login_middleware(
-        result: UserModel | None,
-        schema: UserLogin,
-        token: TokenGenerator = TokenGenerator(),
-    ) -> AuthResponse:
+    def login_middleware(result: UserModel | None, schema: UserLogin) -> AuthResponse:
+        token: TokenGenerator = TokenGenerator()
+
         try:
             if not schema.email or not schema.password:
                 raise HTTPException(401, AuthString.FIELD_EMPTY.value)
@@ -56,11 +85,11 @@ class AuthenticationMiddleware:
             )
             return AuthResponse(
                 token=gen_token,
-                id=result.id,
-                name=result.name,
-                email=result.email,
-                mobnum=result.mobnum,
-                password=result.password,
+                id=str(result.id),
+                name=str(result.name),
+                email=str(result.email),
+                mobnum=str(result.mobnum),
+                password=str(result.password),
             )
 
         except Exception as e:

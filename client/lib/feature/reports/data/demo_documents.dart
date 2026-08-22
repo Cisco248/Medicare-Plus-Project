@@ -1,7 +1,5 @@
 import 'package:client/feature/reports/models/document.model.dart';
 
-/// Sample documents used only when the document API is unreachable.
-/// These are clearly marked as demo records and contain no real patient data.
 class DemoDocuments {
   const DemoDocuments._();
 

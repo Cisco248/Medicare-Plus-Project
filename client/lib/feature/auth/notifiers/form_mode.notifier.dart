@@ -1,4 +1,4 @@
-import 'package:client/feature/auth/models/form.model.dart';
+import 'package:client/feature/auth/models/auth.state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'form_mode.notifier.g.dart';
@@ -6,8 +6,8 @@ part 'form_mode.notifier.g.dart';
 @riverpod
 class FormStateNotifier extends _$FormStateNotifier {
   @override
-  FormStatus build() {
-    return FormStatus(state: FormMode.signIn);
+  FormStates build() {
+    return FormStates(state: FormMode.signIn);
   }
 
   void toggle() {

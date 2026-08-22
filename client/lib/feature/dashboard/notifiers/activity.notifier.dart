@@ -1,24 +1,34 @@
 import 'package:client/core/exceptions/base.exception.dart';
+import 'package:client/core/network/dio_client.dart';
 import 'package:client/feature/auth/notifiers/authentication.notifier.dart';
+import 'package:client/feature/dashboard/models/activity.model.dart';
 import 'package:client/feature/dashboard/models/knowledge.state.model.dart';
 import 'package:client/feature/dashboard/repository/activity_repository.dart';
 import 'package:client/feature/dashboard/repository/knowledge.repository.dart';
+import 'package:client/feature/dashboard/services/health_connect.service.dart';
+import 'package:client/feature/dashboard/services/rag.service.dart';
 import 'package:flutter_health_connect/app.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'activity.notifier.g.dart';
 
-List<Permission> _stepsPermission = [Permission.steps.read];
+final List<Permission> _stepsPermission = [Permission.steps.read];
+final List<Permission> _burnCaloryPermission = [
+  Permission.totalCaloriesBurned.read,
+];
+final List<Permission> _heightPermission = [Permission.height.read];
+final List<Permission> _sleepPermission = [Permission.steps.read];
 
-List<Permission> _burnCaloryPermission = [Permission.totalCaloriesBurned.read];
+final _activityRepository = ActivityRepository(service: HealthConnectService());
+final _knowledgeRepository = KnowledgeRepository(
+  ragService: RagService(client: ragClient()),
+);
 
 @riverpod
 class StepsActivityNotifier extends _$StepsActivityNotifier {
   @override
   Future<int> build() async {
-    final records = await ref
-        .watch(activityRepositoryProvider)
-        .footStep(_stepsPermission);
+    final records = await _activityRepository.footStep(_stepsPermission);
     return records.fold<int>(0, (count, record) => count + record.count);
   }
 }
@@ -27,40 +37,48 @@ class StepsActivityNotifier extends _$StepsActivityNotifier {
 class BurnCaloriesActivityNotifier extends _$BurnCaloriesActivityNotifier {
   @override
   Future<double> build() async {
-    final records = await ref
-        .watch(activityRepositoryProvider)
-        .burnCalories(_burnCaloryPermission);
+    final records = await _activityRepository.burnCalories(
+      _burnCaloryPermission,
+    );
     return records.fold<double>(
       0.0,
-      (count, record) => count + record.energyKilocalories,
+      (total, record) => total + record.energyKilocalories,
     );
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class DailyActivityNotifier extends _$DailyActivityNotifier {
   @override
   Future<DailySummary> build() async {
-    return ref.watch(activityRepositoryProvider).dailySummary();
+    final res = await _activityRepository.dailySummary();
+    print(res.toString());
+    return res;
   }
 }
 
-/// Coordinates the Knowledge (health-summary) flow:
-///
-/// Health Connect → normalize → [ActivityModel] → summary request →
-/// RAG API → AI summary → [KnowledgeState] consumed by `KnowledgeWidget`.
-///
-/// Kept alive so a generated summary is cached across widget rebuilds and
-/// navigation; it is only regenerated on explicit request or when the
-/// underlying health data changes.
+@riverpod
+class BodyHeightNotifier extends _$BodyHeightNotifier {
+  @override
+  Future<double> build() async {
+    final records = await _activityRepository.bodyHeight(_heightPermission);
+    return records.isEmpty ? 0.0 : records.last.heightMeters;
+  }
+}
+
+@riverpod
+class SleepHoursNotifier extends _$SleepHoursNotifier {
+  @override
+  Future<double> build() async {
+    final records = await _activityRepository.sleepHour(_sleepPermission);
+    return records.isEmpty
+        ? 0.0
+        : double.parse(records.last.duration.toString());
+  }
+}
+
 @Riverpod(keepAlive: true)
 class ActivityNotifier extends _$ActivityNotifier {
-  ActivityRepository get _activityRepository =>
-      ref.read(activityRepositoryProvider);
-
-  KnowledgeRepository get _knowledgeRepository =>
-      ref.read(knowledgeRepositoryProvider);
-
   @override
   KnowledgeState build() {
     final now = DateTime.now();
@@ -73,7 +91,6 @@ class ActivityNotifier extends _$ActivityNotifier {
     );
   }
 
-  /// Collects and normalizes health data for the current period.
   Future<void> loadHealthData() async {
     state = state.copyWith(
       phase: KnowledgePhase.loadingHealthData,
@@ -121,17 +138,11 @@ class ActivityNotifier extends _$ActivityNotifier {
     }
   }
 
-  /// Re-collects health data and invalidates the cached summary.
   Future<void> refresh() async {
     state = state.copyWith(summary: null, summarySource: null);
     await loadHealthData();
   }
 
-  /// Sends the collected health data to the RAG backend and stores the
-  /// generated summary.
-  ///
-  /// Uses the cached summary when the health data has not changed, unless
-  /// [force] is `true`.
   Future<void> generateSummary({bool force = false}) async {
     final activity = state.activity;
     if (activity == null || !activity.hasAnyData) return;
@@ -152,7 +163,7 @@ class ActivityNotifier extends _$ActivityNotifier {
         startTime: state.periodStart,
         endTime: state.periodEnd,
         userId: auth?.data?.email,
-        token: auth?.token,
+        token: auth?.data?.token,
       );
       state = state.copyWith(
         phase: KnowledgePhase.summaryReady,
@@ -172,7 +183,6 @@ class ActivityNotifier extends _$ActivityNotifier {
     }
   }
 
-  /// Launches the Health Connect permission flow and reloads afterwards.
   Future<void> requestPermissions() async {
     state = state.copyWith(
       phase: KnowledgePhase.loadingHealthData,
@@ -196,7 +206,6 @@ class ActivityNotifier extends _$ActivityNotifier {
     await loadHealthData();
   }
 
-  /// Changes the collection period and re-collects, invalidating the cache.
   Future<void> changePeriod(DateTime startTime, DateTime endTime) async {
     state = state.copyWith(
       periodStart: startTime,
@@ -207,7 +216,6 @@ class ActivityNotifier extends _$ActivityNotifier {
     await loadHealthData();
   }
 
-  /// Retries whichever step failed last.
   Future<void> retry() async {
     if (state.hasHealthData) {
       await generateSummary(force: true);

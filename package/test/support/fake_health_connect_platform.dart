@@ -5,6 +5,7 @@ import 'package:flutter_health_connect/app.dart';
 /// In-memory fake used by Dart unit tests.
 class FakeHealthConnectPlatform extends HealthConnectPlatform {
   int initializeCount = 0;
+  bool failInitialize = false;
   Availability availability = Availability.available;
   Set<Permission> grantedPermissions = {};
   bool grantAllOnRequest = true;
@@ -18,6 +19,12 @@ class FakeHealthConnectPlatform extends HealthConnectPlatform {
 
   @override
   Future<void> initialize({required bool enableLogging}) async {
+    if (failInitialize) {
+      throw const HealthConnectOperationException(
+        'platform channel unavailable',
+        code: 'operation_failed',
+      );
+    }
     initializeCount += 1;
   }
 
@@ -46,11 +53,19 @@ class FakeHealthConnectPlatform extends HealthConnectPlatform {
   @override
   Future<Set<Permission>> getGrantedPermissions() async => grantedPermissions;
 
-  @override
-  Future<void> openHealthConnectSettings() async {}
+  int openSettingsCount = 0;
+  int openAppPermissionsCount = 0;
+  int openDataManagementCount = 0;
 
   @override
-  Future<void> openAppPermissions() async {}
+  Future<void> openHealthConnectSettings() async => openSettingsCount += 1;
+
+  @override
+  Future<void> openAppPermissions() async => openAppPermissionsCount += 1;
+
+  @override
+  Future<void> openHealthConnectDataManagement() async =>
+      openDataManagementCount += 1;
 
   @override
   Future<List<BaseRecord>> readRecords({

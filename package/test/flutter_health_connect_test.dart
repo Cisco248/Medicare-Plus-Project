@@ -15,11 +15,19 @@ void main() {
   });
 
   group('initialization', () {
-    test('requires initialize before use', () async {
-      expect(
-        () => healthConnect.getAvailability(),
-        throwsA(isA<HealthConnectUnavailableException>()),
+    // Calling too early is a caller lifecycle error. Reporting it as
+    // "unavailable" made the app tell users Health Connect was missing from a
+    // device where it was installed and reported Availability.available.
+    test('using the SDK before initialize is not an availability failure', () async {
+      final error = await healthConnect.getAvailability().then<Object?>(
+        (_) => null,
+        onError: (Object e) => e,
       );
+
+      expect(error, isA<HealthConnectNotInitializedException>());
+      expect((error as HealthConnectException).code, 'not_initialized');
+      expect(error, isNot(isA<HealthConnectUnavailableException>()));
+      expect(error, isNot(isA<HealthConnectNotInstalledException>()));
     });
 
     test('initialize is idempotent', () async {
@@ -27,6 +35,49 @@ void main() {
       await healthConnect.initialize();
       expect(healthConnect.isInitialized, isTrue);
       expect(fake.initializeCount, 1);
+    });
+
+    test('concurrent initialize shares one platform call', () async {
+      await Future.wait([
+        healthConnect.initialize(),
+        healthConnect.initialize(),
+        healthConnect.initialize(),
+      ]);
+      expect(fake.initializeCount, 1);
+      expect(healthConnect.isInitialized, isTrue);
+    });
+
+    test('a failed initialize can be retried', () async {
+      fake.failInitialize = true;
+      await expectLater(healthConnect.initialize(), throwsA(isA<Exception>()));
+      expect(healthConnect.isInitialized, isFalse);
+
+      fake.failInitialize = false;
+      await healthConnect.initialize();
+      expect(healthConnect.isInitialized, isTrue);
+    });
+  });
+
+  group('availability', () {
+    test('reports each platform state without reinterpreting it', () async {
+      for (final state in Availability.values) {
+        fake.availability = state;
+        final sdk = FlutterHealthConnect(platform: fake);
+        await sdk.initialize();
+        expect(await sdk.getAvailability(), state);
+      }
+    });
+  });
+
+  group('navigation', () {
+    test('exposes settings, app permissions and data management separately', () async {
+      await healthConnect.initialize();
+      await healthConnect.openHealthConnectSettings();
+      await healthConnect.openAppPermissions();
+      await healthConnect.openHealthConnectDataManagement();
+      expect(fake.openSettingsCount, 1);
+      expect(fake.openAppPermissionsCount, 1);
+      expect(fake.openDataManagementCount, 1);
     });
   });
 

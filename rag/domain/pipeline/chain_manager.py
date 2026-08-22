@@ -51,7 +51,7 @@ class RAGPipeline:
             ChatOpenAI(
                 model=settings.LLM_MODEL_NAME,
                 temperature=settings.LLM_TEMPERATURE,
-                max_tokens=settings.MAX_OUTPUT_TOKENS,
+                max_completion_tokens=settings.MAX_OUTPUT_TOKENS,
                 api_key=SecretStr(settings.OPENAI_API_KEY),
             )
             if settings.OPENAI_API_KEY

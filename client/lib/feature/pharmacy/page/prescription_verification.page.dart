@@ -14,28 +14,50 @@ class PrescriptionVerificationPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final record = ref.watch(prescriptionProvider)[product.id] ??
+    final prescriptionRecord = ref.watch(prescriptionProvider);
+    final record =
+        prescriptionRecord.whenData((cb) => cb).value![product.id] ??
         PrescriptionRecord(productId: product.id);
+
     final documents = ref.watch(reportsProvider).value ?? const [];
     final prescriptions = documents
-        .where((document) => document.docType.toLowerCase().contains('prescription'))
+        .where(
+          (document) => document.docType.toLowerCase().contains('prescription'),
+        )
         .toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Prescription required', style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.w600)),
+        title: const Text(
+          'Prescription required',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           children: [
-            Text(product.name, style: const TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600, fontSize: 16)),
+            Text(
+              product.name,
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+            ),
             const SizedBox(height: 8),
             const Text(
               'This item cannot be purchased freely. Upload or select a prescription, then complete demo verification. This is a university simulation, not a real pharmacy check.',
             ),
             const SizedBox(height: 16),
-            Text('Status: ${record.status.label}', style: const TextStyle(fontWeight: FontWeight.w600)),
+            Text(
+              'Status: ${record.status!.label}',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
             if (record.fileName != null) Text('Attached: ${record.fileName}'),
             const SizedBox(height: 16),
             if (prescriptions.isNotEmpty) ...[
@@ -45,11 +67,13 @@ class PrescriptionVerificationPage extends ConsumerWidget {
                   contentPadding: EdgeInsets.zero,
                   title: Text(document.title),
                   subtitle: Text(document.docType),
-                  onTap: () => ref.read(prescriptionRecordsProvider.notifier).submit(
-                    productId: product.id,
-                    documentId: document.id,
-                    fileName: document.fileName,
-                  ),
+                  onTap: () => ref
+                      .read(prescriptionProvider.notifier)
+                      .submit(
+                        productId: product.id,
+                        documentId: document.id,
+                        fileName: document.fileName,
+                      ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -62,22 +86,25 @@ class PrescriptionVerificationPage extends ConsumerWidget {
                 );
                 final file = result?.files.firstOrNull;
                 if (file == null) return;
-                await ref.read(prescriptionRecordsProvider.notifier).submit(
-                  productId: product.id,
-                  fileName: file.name,
-                );
+                await ref
+                    .read(prescriptionProvider.notifier)
+                    .submit(productId: product.id, fileName: file.name);
               },
               child: const Text('Upload a prescription file'),
             ),
             const SizedBox(height: 12),
             if (record.status == PrescriptionStatus.pendingVerification) ...[
               FilledButton.tonal(
-                onPressed: () => ref.read(prescriptionRecordsProvider.notifier).simulateDecision(product.id, approve: true),
+                onPressed: () => ref
+                    .read(prescriptionProvider.notifier)
+                    .simulateDecision(product.id, approve: true),
                 child: const Text('Demo: approve'),
               ),
               const SizedBox(height: 8),
               OutlinedButton(
-                onPressed: () => ref.read(prescriptionRecordsProvider.notifier).simulateDecision(product.id, approve: false),
+                onPressed: () => ref
+                    .read(prescriptionProvider.notifier)
+                    .simulateDecision(product.id, approve: false),
                 child: const Text('Demo: reject'),
               ),
             ],
@@ -85,10 +112,14 @@ class PrescriptionVerificationPage extends ConsumerWidget {
               const SizedBox(height: 12),
               FilledButton(
                 onPressed: () async {
-                  final error = await ref.read(cartProvider.notifier).add(product);
+                  final error = await ref
+                      .read(cartProvider.notifier)
+                      .add(product);
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(error ?? '${product.name} added to cart')),
+                    SnackBar(
+                      content: Text(error ?? '${product.name} added to cart'),
+                    ),
                   );
                   if (error == null) Navigator.of(context).pop();
                 },
@@ -98,7 +129,9 @@ class PrescriptionVerificationPage extends ConsumerWidget {
             if (record.status == PrescriptionStatus.rejected)
               const Padding(
                 padding: EdgeInsets.only(top: 12),
-                child: Text('This demo prescription was rejected. Upload a different file to try again.'),
+                child: Text(
+                  'This demo prescription was rejected. Upload a different file to try again.',
+                ),
               ),
           ],
         ),

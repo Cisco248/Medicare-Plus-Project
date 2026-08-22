@@ -1,26 +1,22 @@
-import 'package:client/feature/e_doc/notifiers/chat.dart';
+import 'package:client/feature/e_doc/models/doc.state.dart';
+import 'package:client/feature/e_doc/notifiers/doc.state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class GenerateWidget extends ConsumerStatefulWidget {
+class GenerateWidget extends ConsumerWidget {
   const GenerateWidget({super.key});
 
   @override
-  ConsumerState<GenerateWidget> createState() => _GenerateWidgetState();
-}
-
-class _GenerateWidgetState extends ConsumerState<GenerateWidget> {
-  @override
-  Widget build(BuildContext context) {
-    final provider = ref.watch(chatBotNotifyProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(docStateProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
-        shape: BoxShape.rectangle,
+        color: colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -29,36 +25,94 @@ class _GenerateWidgetState extends ConsumerState<GenerateWidget> {
           Row(
             children: [
               Text(
-                'Generative Answer',
-                textAlign: TextAlign.start,
+                'Health Result',
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary.withAlpha(50),
+                  color: colorScheme.onSurface,
                   fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                   fontFamily: 'Poppins',
                 ),
               ),
-              SizedBox(width: 8),
-              Icon(
-                FaIcon(FontAwesomeIcons.solidCircleQuestion, size: 16).icon,
-                size: 16,
-                color: Theme.of(context).colorScheme.onPrimary.withAlpha(50),
+              const SizedBox(width: 8),
+              FaIcon(
+                FontAwesomeIcons.solidCircleQuestion,
+                size: 14,
+                color: colorScheme.onSurface.withAlpha(120),
               ),
             ],
           ),
-          SizedBox(height: 16),
-          Text(
-            provider.body!['prediction'].toString(),
-            textAlign: TextAlign.justify,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimary.withAlpha(190),
-              fontStyle: FontStyle.italic,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'Poppins',
-              fontVariations: [FontVariation.opticalSize(14)],
+          const SizedBox(height: 12),
+          switch (state.phase) {
+            DocPhase.idle => Text(
+              'Submit an assessment to generate a personalized explanation.',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 13,
+                color: colorScheme.onSurface.withAlpha(180),
+              ),
             ),
-          ),
+            DocPhase.loading => const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            DocPhase.error => Text(
+              state.errorMessage ??
+                  'Unable to generate the assessment. Please try again.',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 13,
+                color: colorScheme.error,
+              ),
+            ),
+            DocPhase.empty => Text(
+              state.errorMessage ??
+                  'No personalized result is available for this assessment yet.',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 13,
+                color: colorScheme.onSurface.withAlpha(180),
+              ),
+            ),
+            DocPhase.success => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (state.model != null)
+                  Text(
+                    state.model!.label,
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 11,
+                      color: colorScheme.onSurface.withAlpha(150),
+                    ),
+                  ),
+                if (state.prediction != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    state.prediction!,
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+                if (state.explanation != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    state.explanation!,
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 13,
+                      height: 1.4,
+                      color: colorScheme.onSurface.withAlpha(200),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          },
         ],
       ),
     );
