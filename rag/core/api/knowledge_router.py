@@ -1,14 +1,20 @@
 import logging
 from datetime import datetime, timezone
+
 from fastapi import APIRouter, HTTPException, Request as FastAPIRequest, status
+from langchain_core.prompts import ChatPromptTemplate
 
 from core.configs.configuration import RAGSettings
-from data import HealthActivities, HealthSummaryRequest, HealthSummaryResponse
+from data import HealthSummaryRequest, HealthSummaryResponse
+from data.model.request import KNOWLEDGE_SYSTEM_TEMPLATE, compose_knowledge_question
+from data import load_knowledge_urls
 from domain import setup_rag_system
+from domain.pipeline.chain_manager import RAGPipeline
 
 logger = logging.getLogger(__name__)
-knowledge_router = APIRouter()
 settings = RAGSettings()
+
+knowledge_router = APIRouter()
 
 DISCLAIMER = (
     "This is an AI-generated informational summary based on your recorded "
@@ -16,163 +22,52 @@ DISCLAIMER = (
     "healthcare professional for medical concerns."
 )
 
-_RECOMMENDATION_HEADINGS = ("recommendations:", "recommendation:")
+_SECTION_HEADINGS = (
+    "recommendations:",
+    "recommendation:",
+    "insights:",
+)
 
-
-def _describe_activities(activities: HealthActivities) -> tuple[list[str], list[str]]:
-    """Splits the metrics into factual statements and unavailable metrics."""
-    facts: list[str] = []
-    unavailable: list[str] = []
-
-    def add(label: str, value: str | None) -> None:
-        if value is None:
-            unavailable.append(label)
-        else:
-            facts.append(f"- {label}: {value}")
-
-    add("Steps", f"{activities.steps}" if activities.steps is not None else None)
-    add(
-        "Distance",
+_HEALTH_SUMMARY_PROMPT = ChatPromptTemplate.from_messages(
+    [
+        ("system", KNOWLEDGE_SYSTEM_TEMPLATE),
         (
-            f"{activities.distance_meters:.0f} meters"
-            if activities.distance_meters is not None
-            else None
+            "human",
+            "Recorded patient data and generation question:\n{question}\n\n"
+            "Medical knowledge context:\n{context}",
         ),
-    )
-    add(
-        "Active calories burned",
-        (
-            f"{activities.active_calories:.0f} kcal"
-            if activities.active_calories is not None
-            else None
-        ),
-    )
-    add(
-        "Total calories burned",
-        (
-            f"{activities.total_calories:.0f} kcal"
-            if activities.total_calories is not None
-            else None
-        ),
-    )
-
-    heart_rate = activities.heart_rate
-    if heart_rate is None:
-        unavailable.append("Heart rate")
-    else:
-        parts = []
-        if heart_rate.average_bpm is not None:
-            parts.append(f"average {heart_rate.average_bpm:.0f} bpm")
-        if heart_rate.min_bpm is not None and heart_rate.max_bpm is not None:
-            parts.append(f"range {heart_rate.min_bpm}-{heart_rate.max_bpm} bpm")
-        if heart_rate.resting_bpm is not None:
-            parts.append(f"resting {heart_rate.resting_bpm:.0f} bpm")
-        facts.append(f"- Heart rate: {', '.join(parts) if parts else 'measured'}")
-
-    sleep = activities.sleep
-    if sleep is None:
-        unavailable.append("Sleep")
-    else:
-        hours, minutes = divmod(sleep.total_minutes, 60)
-        facts.append(
-            f"- Sleep: {hours}h {minutes}m across {sleep.session_count} session(s)"
-        )
-
-    if activities.workouts:
-        sessions = "; ".join(
-            f"{workout.type.lower().replace('_', ' ')} for "
-            f"{workout.duration_minutes} minute(s)"
-            for workout in activities.workouts
-        )
-        facts.append(f"- Workouts: {sessions}")
-    else:
-        unavailable.append("Workouts")
-
-    add(
-        "Weight",
-        (
-            f"{activities.weight_kilograms:.1f} kg"
-            if activities.weight_kilograms is not None
-            else None
-        ),
-    )
-    add(
-        "Height",
-        (
-            f"{activities.height_meters:.2f} m"
-            if activities.height_meters is not None
-            else None
-        ),
-    )
-
-    blood_pressure = activities.blood_pressure
-    add(
-        "Blood pressure",
-        (
-            f"{blood_pressure.systolic_mm_hg:.0f}/{blood_pressure.diastolic_mm_hg:.0f} mmHg"
-            if blood_pressure is not None
-            else None
-        ),
-    )
-    add(
-        "Blood glucose",
-        (
-            f"{activities.blood_glucose_mmol_per_liter:.1f} mmol/L"
-            if activities.blood_glucose_mmol_per_liter is not None
-            else None
-        ),
-    )
-    add(
-        "Oxygen saturation",
-        (
-            f"{activities.oxygen_saturation_percent:.0f}%"
-            if activities.oxygen_saturation_percent is not None
-            else None
-        ),
-    )
-
-    return facts, unavailable
-
-
-def _build_question(payload: HealthSummaryRequest) -> str:
-    facts, unavailable = _describe_activities(payload.activities)
-    period = payload.period
-    lines = [
-        "You are given a patient's recorded health data from "
-        f"{period.start.isoformat()} to {period.end.isoformat()}.",
-        "Recorded data:",
-        *facts,
     ]
-    if unavailable:
-        lines.append(
-            "The following metrics were NOT recorded and are unknown "
-            "(do not assume they are zero and do not invent values): "
-            + ", ".join(unavailable)
-            + "."
-        )
-    lines.append(
-        "Write a short informational summary of the patient's health and "
-        "activity based only on the recorded data above and the medical "
-        "context. Do not provide a diagnosis. Do not invent measurements."
-    )
-    return "\n".join(lines)
+)
 
 
 def _split_recommendations(text: str) -> tuple[str, list[str]]:
-    """Extracts an optional 'Recommendations:' section from the LLM output."""
     lower = text.lower()
-    for heading in _RECOMMENDATION_HEADINGS:
-        index = lower.find(heading)
-        if index == -1:
-            continue
-        summary = text[:index].strip()
-        recommendations = [
-            line.strip().lstrip("-*\u2022 ").strip()
-            for line in text[index + len(heading) :].splitlines()
-            if line.strip().lstrip("-*\u2022 ").strip()
-        ]
-        return summary or text.strip(), recommendations
-    return text.strip(), []
+    rec_index = lower.find("recommendations:")
+    if rec_index == -1:
+        rec_index = lower.find("recommendation:")
+    if rec_index == -1:
+        return text.strip(), []
+
+    summary = text[:rec_index].strip()
+    remainder = text[rec_index:]
+    insight_index = remainder.lower().find("\ninsights:")
+    rec_block = remainder if insight_index == -1 else remainder[:insight_index]
+    lines = [
+        line.strip().lstrip("-*\u2022 ").strip()
+        for line in rec_block.splitlines()[1:]
+        if line.strip().lstrip("-*\u2022 ").strip()
+        and not line.strip().lower().startswith(_SECTION_HEADINGS)
+    ]
+    if insight_index != -1:
+        summary = f"{summary}\n\n{remainder[insight_index:].strip()}".strip()
+    return summary or text.strip(), lines
+
+
+def _generate(pipeline: RAGPipeline, question: str) -> str:
+    generate = getattr(pipeline, "invoke_health_summary", None)
+    if callable(generate):
+        return str(generate(question, prompt=_HEALTH_SUMMARY_PROMPT))
+    return str(pipeline.invoke(question))
 
 
 @knowledge_router.post(
@@ -180,6 +75,7 @@ def _split_recommendations(text: str) -> tuple[str, list[str]]:
     status_code=status.HTTP_200_OK,
     response_model=HealthSummaryResponse,
     tags=["Knowledge"],
+    summary="Generate a daily health summary from the mobile generationQuestion",
 )
 async def generate_health_summary(
     payload: HealthSummaryRequest,
@@ -187,7 +83,10 @@ async def generate_health_summary(
 ) -> HealthSummaryResponse:
     rag = getattr(request.app.state, "rag", None)
     if rag is None:
-        rag = setup_rag_system([settings.FILE_LOCATION])
+        rag = setup_rag_system(
+            [settings.FILE_LOCATION],
+            urls=load_knowledge_urls(settings.KNOWLEDGE_URLS_FILE),
+        )
         request.app.state.rag = rag
     if not getattr(rag, "ready", False):
         raise HTTPException(
@@ -195,9 +94,13 @@ async def generate_health_summary(
             detail="The RAG knowledge index is not ready.",
         )
 
-    question = _build_question(payload)
+    question = compose_knowledge_question(payload)
+    if payload.user_id:
+        logger.info("Generating patient-scoped health summary for a single user")
     try:
-        generated = rag.invoke(question)
+        generated = _generate(rag, question)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
     except Exception:
         logger.exception("RAG health-summary generation failed")
         raise HTTPException(

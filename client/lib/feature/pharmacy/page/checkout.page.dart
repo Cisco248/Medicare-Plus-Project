@@ -62,7 +62,14 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Checkout', style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.w600)),
+        title: const Text(
+          'Checkout',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
       body: SafeArea(
         child: Form(
@@ -70,68 +77,105 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
             children: [
-              const Text('Delivery address', style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600)),
+              const Text(
+                'Delivery address',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _name,
-                decoration: const InputDecoration(labelText: 'Full name', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'Full name',
+                  border: OutlineInputBorder(),
+                ),
                 validator: _required,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _phone,
-                decoration: const InputDecoration(labelText: 'Contact number', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'Contact number',
+                  border: OutlineInputBorder(),
+                ),
                 keyboardType: TextInputType.phone,
                 validator: _required,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _line1,
-                decoration: const InputDecoration(labelText: 'Address line 1', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'Address line 1',
+                  border: OutlineInputBorder(),
+                ),
                 validator: _required,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _line2,
-                decoration: const InputDecoration(labelText: 'Address line 2 (optional)', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'Address line 2 (optional)',
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _city,
-                decoration: const InputDecoration(labelText: 'City', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'City',
+                  border: OutlineInputBorder(),
+                ),
                 validator: _required,
               ),
               const SizedBox(height: 16),
-              const Text('Delivery method', style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600)),
+              const Text(
+                'Delivery method',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               Wrap(
                 spacing: 8,
                 children: [
                   ChoiceChip(
                     label: const Text('Standard (2-4 days)'),
                     selected: _delivery == 'Standard (2-4 days)',
-                    onSelected: (_) => setState(() => _delivery = 'Standard (2-4 days)'),
+                    onSelected: (_) =>
+                        setState(() => _delivery = 'Standard (2-4 days)'),
                   ),
                   ChoiceChip(
                     label: const Text('Express (1-2 days)'),
                     selected: _delivery == 'Express (1-2 days)',
-                    onSelected: (_) => setState(() => _delivery = 'Express (1-2 days)'),
+                    onSelected: (_) =>
+                        setState(() => _delivery = 'Express (1-2 days)'),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
-              const Text('Payment method', style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600)),
+              const Text(
+                'Payment method',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               Wrap(
                 spacing: 8,
                 children: [
                   ChoiceChip(
                     label: Text(PaymentMethod.cashOnDelivery.label),
                     selected: _method == PaymentMethod.cashOnDelivery,
-                    onSelected: (_) => setState(() => _method = PaymentMethod.cashOnDelivery),
+                    onSelected: (_) =>
+                        setState(() => _method = PaymentMethod.cashOnDelivery),
                   ),
                   ChoiceChip(
                     label: Text(PaymentMethod.demoCard.label),
                     selected: _method == PaymentMethod.demoCard,
-                    onSelected: (_) => setState(() => _method = PaymentMethod.demoCard),
+                    onSelected: (_) =>
+                        setState(() => _method = PaymentMethod.demoCard),
                   ),
                 ],
               ),
@@ -165,9 +209,19 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Text(label, style: TextStyle(fontWeight: bold ? FontWeight.w600 : FontWeight.w400)),
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
+            ),
+          ),
           const Spacer(),
-          Text(value, style: TextStyle(fontWeight: bold ? FontWeight.w600 : FontWeight.w400)),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
+            ),
+          ),
         ],
       ),
     );
@@ -196,12 +250,14 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     }
 
     setState(() => _busy = true);
-    final order = await ref.read(orderProvider.notifier).placeOrder(
-      cart: cart,
-      address: address,
-      method: PaymentMethod.cashOnDelivery,
-      paymentStatus: PaymentStatus.successful,
-    );
+    final order = await ref
+        .read(orderProvider.notifier)
+        .placeOrder(
+          cart: cart,
+          address: address,
+          method: PaymentMethod.cashOnDelivery,
+          paymentStatus: PaymentStatus.successful,
+        );
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => OrderConfirmationPage(order: order)),

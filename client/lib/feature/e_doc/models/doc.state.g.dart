@@ -33,5 +33,5 @@ const _$DocPhaseEnumMap = {
 const _$DocModelEnumMap = {
   DocModel.diabetes: 'diabetes',
   DocModel.hypertension: 'hypertension',
-  DocModel.bloodPressure: 'bloodPressure',
+  DocModel.heartDisease: 'heartDisease',
 };

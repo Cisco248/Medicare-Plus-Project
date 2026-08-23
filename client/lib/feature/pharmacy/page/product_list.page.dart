@@ -18,13 +18,18 @@ class ProductListPage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text(
           'Products',
-          style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: SafeArea(
         child: catalog.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (_, _) => const Center(child: Text('Unable to load products.')),
+          error: (_, _) =>
+              const Center(child: Text('Unable to load products.')),
           data: (products) {
             final visible = query.apply(products);
             return Column(
@@ -63,10 +68,22 @@ class ProductListPage extends ConsumerWidget {
                           if (value != null) notifier.setSort(value);
                         },
                         items: const [
-                          DropdownMenuItem(value: ProductSort.popularity, child: Text('Popularity')),
-                          DropdownMenuItem(value: ProductSort.priceLow, child: Text('Price: low to high')),
-                          DropdownMenuItem(value: ProductSort.priceHigh, child: Text('Price: high to low')),
-                          DropdownMenuItem(value: ProductSort.name, child: Text('Name')),
+                          DropdownMenuItem(
+                            value: ProductSort.popularity,
+                            child: Text('Popularity'),
+                          ),
+                          DropdownMenuItem(
+                            value: ProductSort.priceLow,
+                            child: Text('Price: low to high'),
+                          ),
+                          DropdownMenuItem(
+                            value: ProductSort.priceHigh,
+                            child: Text('Price: high to low'),
+                          ),
+                          DropdownMenuItem(
+                            value: ProductSort.name,
+                            child: Text('Name'),
+                          ),
                         ],
                       ),
                       const Spacer(),
@@ -79,7 +96,9 @@ class ProductListPage extends ConsumerWidget {
                 ),
                 Expanded(
                   child: visible.isEmpty
-                      ? const Center(child: Text('No products match these filters.'))
+                      ? const Center(
+                          child: Text('No products match these filters.'),
+                        )
                       : ListView.builder(
                           padding: const EdgeInsets.symmetric(horizontal: 32),
                           itemCount: visible.length,
@@ -105,10 +124,22 @@ class ProductListPage extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(title: const Text('Any price'), onTap: () => Navigator.pop(context, 'any')),
-            ListTile(title: const Text('Under LKR 1000'), onTap: () => Navigator.pop(context, '1000')),
-            ListTile(title: const Text('LKR 1000 - 3000'), onTap: () => Navigator.pop(context, '1000-3000')),
-            ListTile(title: const Text('Over LKR 3000'), onTap: () => Navigator.pop(context, '3000+')),
+            ListTile(
+              title: const Text('Any price'),
+              onTap: () => Navigator.pop(context, 'any'),
+            ),
+            ListTile(
+              title: const Text('Under LKR 1000'),
+              onTap: () => Navigator.pop(context, '1000'),
+            ),
+            ListTile(
+              title: const Text('LKR 1000 - 3000'),
+              onTap: () => Navigator.pop(context, '1000-3000'),
+            ),
+            ListTile(
+              title: const Text('Over LKR 3000'),
+              onTap: () => Navigator.pop(context, '3000+'),
+            ),
           ],
         ),
       ),

@@ -10,7 +10,6 @@ logger = logging.getLogger("E-Doc-Ask")
 
 @e_doc_router.post("/e-doc", status_code=status.HTTP_200_OK)
 def generate(model: EDocRequest, request: FastAPIRequest):
-    """Answer an E-Doc question using the already initialized knowledge index."""
     pipeline = require_ready(request)
     try:
         question = compose_edoc_question(model)

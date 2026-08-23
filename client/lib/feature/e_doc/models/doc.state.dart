@@ -6,7 +6,7 @@ part 'doc.state.g.dart';
 enum DocModel {
   diabetes('Diabetes'),
   hypertension('Hypertension'),
-  bloodPressure('Blood Pressure');
+  heartDisease('Heart Disease');
 
   const DocModel(this.label);
 
@@ -45,11 +45,12 @@ abstract class DocState with _$DocState {
     if (data is Map) {
       final map = Map<String, Object?>.from(data);
       final prediction = _stringOf(
-        map['prediction'] ?? map['status'] ?? map['label'],
+        map['diagnosis'] ?? map['prediction'] ?? map['status'] ?? map['label'],
       );
       final explanation = _stringOf(
         map['answer'] ??
             map['explanation'] ??
+            map['recommendations'] ??
             map['summary'] ??
             map['message'] ??
             map['body'],
@@ -85,7 +86,16 @@ abstract class DocState with _$DocState {
       final text = value.trim();
       return text.isEmpty ? null : text;
     }
-    if (value is Map || value is List) return null;
+    if (value is Map) {
+      return _stringOf(
+        value['answer'] ??
+            value['explanation'] ??
+            value['summary'] ??
+            value['message'] ??
+            value['body'],
+      );
+    }
+    if (value is List) return null;
     final text = value.toString().trim();
     return text.isEmpty ? null : text;
   }

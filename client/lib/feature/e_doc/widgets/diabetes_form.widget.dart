@@ -1,9 +1,13 @@
+import 'package:client/core/utils/body_metrics.dart';
 import 'package:client/core/utils/notification.utils.dart';
 import 'package:client/core/widgets/button.widget.dart';
 import 'package:client/core/widgets/textfield.widget.dart';
+import 'package:client/feature/dashboard/notifiers/clinical_snapshot.notifier.dart';
 import 'package:client/feature/e_doc/models/doc.state.dart';
 import 'package:client/feature/e_doc/models/diabetes.model.dart';
 import 'package:client/feature/e_doc/notifiers/doc.state.dart';
+import 'package:client/feature/e_doc/utils/clinical_parameter_mapper.dart';
+import 'package:client/feature/e_doc/utils/diabetes_payload.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,9 +25,10 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
   final _bp = TextEditingController();
   final _glucose = TextEditingController();
   final _bmi = TextEditingController();
-  String _gender = 'male';
+  String? _gender;
   bool _familyDiabetes = false;
   bool _hypertensive = false;
+  DiabetesPrefill _prefill = const DiabetesPrefill();
 
   @override
   void dispose() {
@@ -35,9 +40,37 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
     super.dispose();
   }
 
+  void _apply(DiabetesPrefill prefill) {
+    _prefill = prefill;
+    if (_age.text.isEmpty && prefill.age != null) {
+      _age.text = '${prefill.age}';
+    }
+    if (_bmi.text.isEmpty && prefill.bmi != null) {
+      _bmi.text = BodyMetrics.formatBmi(prefill.bmi)!;
+    }
+    if (_bp.text.isEmpty && prefill.bpReading != null) {
+      _bp.text = prefill.bpReading!;
+    }
+    if (_glucose.text.isEmpty && prefill.glucose != null) {
+      _glucose.text = prefill.glucose!.toStringAsFixed(1);
+    }
+    if (_pulse.text.isEmpty && prefill.pulseRate != null) {
+      _pulse.text = prefill.pulseRate!.toStringAsFixed(0);
+    }
+    _gender ??= prefill.gender;
+    if (prefill.hypertensive != null) {
+      _hypertensive = prefill.hypertensive!;
+    }
+    if (mounted) setState(() {});
+  }
+
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) {
       NotificationUtils.error(context, 'Please complete the required fields.');
+      return;
+    }
+    if (_gender == null) {
+      NotificationUtils.error(context, 'Please select a gender.');
       return;
     }
 
@@ -55,7 +88,7 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
         .submitDiabetes(
           DiabetesModel(
             age: age,
-            gender: _gender,
+            gender: _gender!,
             pulseRate: pulse,
             bpReading: _bp.text.trim(),
             glucose: glucose,
@@ -68,6 +101,16 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final snapshot = ref.watch(clinicalSnapshotProvider);
+    ref.listen(clinicalSnapshotProvider, (_, next) {
+      _apply(ClinicalParameterMapper(next).diabetes());
+    });
+    if (_age.text.isEmpty && snapshot.age.isAvailable) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _apply(ClinicalParameterMapper(snapshot).diabetes());
+      });
+    }
+
     final assessment = ref.watch(docStateProvider);
     final submitting =
         assessment.phase == DocPhase.loading &&
@@ -85,15 +128,20 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
           children: [
             ZintraTextField(
               label: 'Age',
-              hint: 'e.g. 45',
+              hint: 'From your profile if available',
+              helperText: snapshot.sourceLabel(_prefill.ageSource),
               controller: _age,
               keyboardType: TextInputType.number,
               validator: _requiredNumber,
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              key: ValueKey('diabetes-gender-$_gender'),
               initialValue: _gender,
-              decoration: const InputDecoration(labelText: 'Gender'),
+              decoration: InputDecoration(
+                labelText: 'Gender',
+                helperText: snapshot.sourceLabel(_prefill.genderSource),
+              ),
               items: const [
                 DropdownMenuItem(value: 'male', child: Text('Male')),
                 DropdownMenuItem(value: 'female', child: Text('Female')),
@@ -101,11 +149,14 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
               onChanged: (value) {
                 if (value != null) setState(() => _gender = value);
               },
+              validator: (value) =>
+                  value == null ? 'Please select a gender.' : null,
             ),
             const SizedBox(height: 8),
             ZintraTextField(
               label: 'Pulse rate',
-              hint: 'e.g. 78',
+              hint: 'Beats per minute',
+              helperText: snapshot.sourceLabel(_prefill.pulseSource),
               controller: _pulse,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
@@ -116,15 +167,15 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
             ZintraTextField(
               label: 'Blood pressure',
               hint: 'e.g. 120/80',
+              helperText: snapshot.sourceLabel(_prefill.bpSource),
               controller: _bp,
-              validator: (value) => (value == null || value.trim().isEmpty)
-                  ? 'This field is required.'
-                  : null,
+              validator: _requiredBloodPressure,
             ),
             const SizedBox(height: 8),
             ZintraTextField(
               label: 'Glucose',
-              hint: 'e.g. 110',
+              hint: 'mmol/L if known',
+              helperText: snapshot.sourceLabel(_prefill.glucoseSource),
               controller: _glucose,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
@@ -134,7 +185,8 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
             const SizedBox(height: 8),
             ZintraTextField(
               label: 'BMI',
-              hint: 'e.g. 24.5',
+              hint: 'Calculated when height and weight exist',
+              helperText: snapshot.sourceLabel(_prefill.bmiSource),
               controller: _bmi,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
@@ -160,6 +212,12 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
                 'Hypertensive',
                 style: TextStyle(fontFamily: 'Inter', fontSize: 13),
               ),
+              subtitle: _prefill.hypertensive != null
+                  ? const Text(
+                      'From recorded conditions',
+                      style: TextStyle(fontFamily: 'Inter', fontSize: 11),
+                    )
+                  : null,
             ),
             const SizedBox(height: 16),
             ZintraButton(
@@ -178,5 +236,13 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
 String? _requiredNumber(String? value) {
   if (value == null || value.trim().isEmpty) return 'This field is required.';
   if (num.tryParse(value.trim()) == null) return 'Enter a valid number.';
+  return null;
+}
+
+String? _requiredBloodPressure(String? value) {
+  if (value == null || value.trim().isEmpty) return 'This field is required.';
+  if (parseBloodPressure(value) == null) {
+    return 'Enter blood pressure as 120/80.';
+  }
   return null;
 }

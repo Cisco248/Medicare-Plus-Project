@@ -78,7 +78,9 @@ class EPharmacy extends ConsumerWidget {
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 11,
-                              color: colorScheme.onPrimaryContainer.withAlpha(180),
+                              color: colorScheme.onPrimaryContainer.withAlpha(
+                                180,
+                              ),
                             ),
                           ),
                         ],
@@ -91,7 +93,10 @@ class EPharmacy extends ConsumerWidget {
                       icon: Badge(
                         isLabelVisible: cartCount > 0,
                         label: Text('$cartCount'),
-                        child: const FaIcon(FontAwesomeIcons.cartShopping, size: 16),
+                        child: const FaIcon(
+                          FontAwesomeIcons.cartShopping,
+                          size: 16,
+                        ),
                       ),
                     ),
                     IconButton.filledTonal(
@@ -125,9 +130,13 @@ class EPharmacy extends ConsumerWidget {
                     (category) => ActionChip(
                       label: Text(category.label),
                       onPressed: () {
-                        ref.read(pharmacyQueryProvider.notifier).setCategory(category);
+                        ref
+                            .read(pharmacyQueryProvider.notifier)
+                            .setCategory(category);
                         Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const ProductListPage()),
+                          MaterialPageRoute(
+                            builder: (_) => const ProductListPage(),
+                          ),
                         );
                       },
                     ),
@@ -142,35 +151,62 @@ class EPharmacy extends ConsumerWidget {
                   MaterialPageRoute(builder: (_) => const ProductListPage()),
                 ),
               ),
-              ...visible.take(4).map((product) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: ProductCard(product: product),
-              )),
+              ...visible
+                  .take(4)
+                  .map(
+                    (product) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: ProductCard(product: product),
+                    ),
+                  ),
             ] else ...[
-              _SectionHeader(title: 'Featured', onSeeAll: () => _openList(context)),
-              ...featured.take(3).map((product) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: ProductCard(product: product),
-              )),
-              _SectionHeader(title: 'Popular', onSeeAll: () {
-                ref.read(pharmacyQueryProvider.notifier).setSort(ProductSort.popularity);
-                _openList(context);
-              }),
-              ...popular.take(3).map((product) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: ProductCard(product: product),
-              )),
-              _SectionHeader(title: 'Recommended', onSeeAll: () => _openList(context)),
-              ...recommended.map((product) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: ProductCard(product: product),
-              )),
+              _SectionHeader(
+                title: 'Featured',
+                onSeeAll: () => _openList(context),
+              ),
+              ...featured
+                  .take(3)
+                  .map(
+                    (product) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: ProductCard(product: product),
+                    ),
+                  ),
+              _SectionHeader(
+                title: 'Popular',
+                onSeeAll: () {
+                  ref
+                      .read(pharmacyQueryProvider.notifier)
+                      .setSort(ProductSort.popularity);
+                  _openList(context);
+                },
+              ),
+              ...popular
+                  .take(3)
+                  .map(
+                    (product) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: ProductCard(product: product),
+                    ),
+                  ),
+              _SectionHeader(
+                title: 'Recommended',
+                onSeeAll: () => _openList(context),
+              ),
+              ...recommended.map(
+                (product) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: ProductCard(product: product),
+                ),
+              ),
               if (recent.isNotEmpty) ...[
                 const _SectionHeader(title: 'Recently viewed'),
-                ...recent.map((product) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: ProductCard(product: product, compact: true),
-                )),
+                ...recent.map(
+                  (product) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: ProductCard(product: product, compact: true),
+                  ),
+                ),
               ],
             ],
           ],
@@ -180,9 +216,9 @@ class EPharmacy extends ConsumerWidget {
   }
 
   void _openList(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const ProductListPage()),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const ProductListPage()));
   }
 }
 

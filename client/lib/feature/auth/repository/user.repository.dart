@@ -18,15 +18,19 @@ class UserRepository {
       );
       if (res.statusCode == 200) {
         return AuthResponseModel(
-          token: res.data['token'],
-          id: res.data['id'],
-          name: res.data['name'],
-          email: res.data['email'],
-          mobnum: res.data['mobnum'],
-          password: res.data['password'],
+          token: res.data['token'] ?? '',
+          id: res.data['id'] ?? '',
+          name: res.data['name'] ?? '',
+          email: res.data['email'] ?? '',
+          mobnum: res.data['mobnum'] ?? '',
+          password: '',
         );
       }
       throw AppException.fromCode(res);
+    } on AppException {
+      rethrow;
+    } on DioException catch (error) {
+      throw AppException.fromDioException(error);
     } on SocketException catch (e) {
       throw UnknownException(code: e.address.hashCode, details: e.message);
     } on WebSocketException catch (e) {
@@ -36,12 +40,18 @@ class UserRepository {
 
   Future<RequestStatus> addOne(AuthRequestModel data) async {
     try {
-      final res = await _client.post('/api/register', data: data.toJson());
+      final res = await _client.post(
+        '/api/register',
+        data: data.toRegisterJson(),
+      );
       if (res.statusCode == 200 || res.statusCode == 201) {
         return RequestStatus.successful;
       }
-      AppException.fromCode(res);
-      return RequestStatus.failed;
+      throw AppException.fromCode(res);
+    } on AppException {
+      rethrow;
+    } on DioException catch (error) {
+      throw AppException.fromDioException(error);
     } on SocketException catch (e) {
       throw UnknownException(code: e.address.hashCode, details: e.message);
     } on WebSocketException catch (e) {
@@ -51,22 +61,25 @@ class UserRepository {
 
   Future<AuthResponseModel> profile(String userId, String token) async {
     try {
-      final res = await _client.post(
-        "/api/profile",
-        queryParameters: {"userId": userId},
-        options: Options(headers: {"X-Auth-Token": token}),
+      final res = await _client.get(
+        '/api/profile',
+        options: Options(headers: {'X-Auth-Token': token}),
       );
       if (res.statusCode == 200) {
         return AuthResponseModel(
-          token: res.data['token'],
-          id: res.data["id"],
-          name: res.data["name"],
-          email: res.data["email"],
-          mobnum: res.data["mobnum"],
-          password: res.data["password"],
+          token: token,
+          id: res.data['id'] ?? userId,
+          name: res.data['name'] ?? '',
+          email: res.data['email'] ?? '',
+          mobnum: res.data['mobnum'] ?? '',
+          password: '',
         );
       }
       throw AppException.fromCode(res);
+    } on AppException {
+      rethrow;
+    } on DioException catch (error) {
+      throw AppException.fromDioException(error);
     } on SocketException catch (e) {
       throw UnknownException(code: e.address.hashCode, details: e.message);
     } on WebSocketException catch (e) {

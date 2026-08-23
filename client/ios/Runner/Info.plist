@@ -47,6 +47,8 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSMotionUsageDescription</key>
+	<string>MediCare Plus uses the accelerometer and gyroscope to recognize your activity and store the last 12 hours of motion for your account.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

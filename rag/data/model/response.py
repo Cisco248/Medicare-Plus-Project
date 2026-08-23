@@ -10,13 +10,6 @@ class Response(BaseModel):
 
 
 class HealthSummaryResponse(BaseModel):
-    """Response of ``POST /api/knowledge``.
-
-    The summary is an AI-generated informational text grounded in the
-    submitted health data and the retrieved medical knowledge. It is not a
-    medical diagnosis, which the disclaimer states explicitly.
-    """
-
     model_config = ConfigDict(populate_by_name=True, ser_json_by_alias=True)
 
     summary: str

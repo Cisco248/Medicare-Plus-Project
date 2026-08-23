@@ -16,6 +16,7 @@ class RAGSettings(BaseSettings):
     APP_NAME: str = os.getenv("APP_NAME", "Medicare Plus RAG")
     APP_VERSION: str = os.getenv("APP_VERSION", "0.1.0")
     FILE_LOCATION: str = f"{BASE_DIR}/docs/knowledge"
+    KNOWLEDGE_URLS_FILE: Path = BASE_DIR / "docs" / "knowledge_urls.txt"
     ARTIFACT_PATH: Path = BASE_DIR / "temp"
 
     # OpenAI Configurations

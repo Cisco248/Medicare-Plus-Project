@@ -92,10 +92,10 @@ abstract class AppException implements Exception {
   /// (FastAPI convention) which already contains a user-friendly message.
   factory AppException._fromResponse(Response response) {
     final data = response.data;
-    final detail = (data is Map && data['detail'] is String)
-        ? data['detail'] as String
-        : null;
-    if (detail == null || detail.isEmpty) return AppException.fromCode(response);
+    final detail = _detailMessage(data);
+    if (detail == null || detail.isEmpty) {
+      return AppException.fromCode(response);
+    }
 
     switch (response.statusCode) {
       case 400:
@@ -118,6 +118,29 @@ abstract class AppException implements Exception {
           details: data,
         );
     }
+  }
+
+  static String? _detailMessage(dynamic data) {
+    if (data is! Map) return null;
+    final detail = data['detail'];
+    if (detail is String && detail.isNotEmpty) return detail;
+    if (detail is List && detail.isNotEmpty) {
+      final parts = <String>[];
+      for (final item in detail) {
+        if (item is! Map) continue;
+        final loc = (item['loc'] as List?)
+            ?.skipWhile((value) => value == 'body')
+            .join('.');
+        final msg = item['msg']?.toString();
+        if (loc != null && loc.isNotEmpty && msg != null && msg.isNotEmpty) {
+          parts.add('$loc: $msg');
+        } else if (msg != null && msg.isNotEmpty) {
+          parts.add(msg);
+        }
+      }
+      if (parts.isNotEmpty) return parts.join(' ');
+    }
+    return null;
   }
 
   @override

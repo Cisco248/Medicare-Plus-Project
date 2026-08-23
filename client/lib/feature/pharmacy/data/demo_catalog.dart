@@ -44,7 +44,8 @@ class DemoCatalog {
       price: 1200,
       discount: 0.15,
       imgPath: 'assets/images/image_2.png',
-      usage: 'Adults: one tablet daily with food unless a clinician advises otherwise.',
+      usage:
+          'Adults: one tablet daily with food unless a clinician advises otherwise.',
       warnings: 'Dietary supplements are not medicines.',
       popularity: 88,
     ),
@@ -57,7 +58,8 @@ class DemoCatalog {
       price: 950,
       imgPath: 'assets/images/image_3.png',
       usage: 'Take with a meal. Follow the label.',
-      warnings: 'Ask a clinician before use if you are pregnant or on other medicines.',
+      warnings:
+          'Ask a clinician before use if you are pregnant or on other medicines.',
       popularity: 76,
     ),
     PharmacyProduct(

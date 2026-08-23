@@ -1,4 +1,9 @@
-from .ingestion import DocumentLoader, DocumentTextSplitters, DocumentEmbeddor
+from .ingestion import (
+    DocumentLoader,
+    DocumentTextSplitters,
+    DocumentEmbeddor,
+    load_knowledge_urls,
+)
 from .model import (
     EDocRequest,
     HealthActivities,
@@ -8,6 +13,7 @@ from .model import (
     SimilaritySearchRequest,
     Response,
     compose_edoc_question,
+    compose_knowledge_question,
 )
 from .storage import VectorStoreManager, LocalClient, RemoteClient, ClientFactory
 
@@ -16,6 +22,7 @@ __all__ = [
     "DocumentEmbeddor",
     "DocumentLoader",
     "DocumentTextSplitters",
+    "load_knowledge_urls",
     "HealthActivities",
     "HealthSummaryRequest",
     "HealthSummaryResponse",
@@ -23,6 +30,7 @@ __all__ = [
     "SimilaritySearchRequest",
     "Response",
     "compose_edoc_question",
+    "compose_knowledge_question",
     "VectorStoreManager",
     "LocalClient",
     "RemoteClient",

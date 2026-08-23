@@ -2,16 +2,19 @@
 
 ## Purpose
 
-This directory contains general, evidence-based source material for a university healthcare retrieval-augmented generation (RAG) project. It covers diabetes, hypertension, cholesterol, physical activity, sleep, and safety. It is not a clinical record, diagnostic tool, or substitute for professional care.
+This directory contains general, evidence-based source material for a university healthcare retrieval-augmented generation (RAG) project. It covers diabetes, hypertension, cholesterol, physical activity, sleep, safety, and real-world daily-summary use cases (steps, heart rate, calories, BMI, home blood pressure, self-checked glucose, and consumer wearables). It is not a clinical record, diagnostic tool, or substitute for professional care. Sample patient files and demo datasets are not part of this collection.
 
 ## Folder map
 
 - `diabetes/`, `hypertension/`, and `cholesterol/`: condition definitions, risk factors, symptoms, lifestyle relationships, monitoring, and warning signs.
 - `physical_activity/`: cross-condition activity concepts, sedentary behavior, and population guidelines.
-- `sleep/`: sleep and chronic disease.
+- `daily_use_cases/`: interpreting one recorded day, steps, calories, and workout intensity.
+- `heart_rate/`, `body_metrics/`, `monitoring/`, `wearables/`: daily-summary fields people actually record.
+- `sleep/`: sleep and chronic disease, plus daily sleep tracking.
 - `safety/`: emergency escalation and the medical disclaimer.
-- `SOURCES.md`: governed source register.
+- `SOURCES.md`: governed source register (not ingested as knowledge).
 - `VERSION.md`: scope and release history.
+- `../knowledge_urls.txt`: live pages fetched at RAG startup.
 
 ## Intended RAG behavior
 
@@ -41,7 +44,8 @@ RAG output should identify the measurement, unit, time period, source, and wheth
 
 ## Ingestion notes
 
-- Ingest recursively as plain Markdown.
+- Ingest recursively as plain Markdown. Skip `README.md`, `SOURCES.md`, and `VERSION.md`.
+- Also fetch live pages from `docs/knowledge_urls.txt`. A failed URL must not block local Markdown.
 - Preserve headings and source URLs in chunks.
 - Keep filename or relative path as metadata so condition and safety scope remain available at retrieval time.
 - Prefer heading-aware overlap so interpretation rules remain near the facts they qualify.

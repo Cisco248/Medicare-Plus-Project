@@ -14,24 +14,18 @@ class AppbarWidget extends ConsumerWidget implements PreferredSizeWidget {
     return AppBar(
       leading: IconButton(
         tooltip: 'Menu',
-        style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.transparent)),
-        onPressed: () => Scaffold.of(context).openDrawer(),
-        icon: FaIcon(
-          FontAwesomeIcons.bars,
-          size: 16,
-          color: theme.primary,
+        style: ButtonStyle(
+          backgroundColor: WidgetStatePropertyAll(Colors.transparent),
         ),
+        onPressed: () => Scaffold.of(context).openDrawer(),
+        icon: FaIcon(FontAwesomeIcons.bars, size: 16, color: theme.primary),
       ),
       centerTitle: true,
       backgroundColor: theme.surfaceContainer,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.health_and_safety_rounded,
-            size: 24,
-            color: theme.primary,
-          ),
+          Icon(Icons.health_and_safety_rounded, size: 24, color: theme.primary),
           const SizedBox(width: 8),
           Text(
             "MediCare Plus",

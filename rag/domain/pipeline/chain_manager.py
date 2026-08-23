@@ -104,6 +104,12 @@ class RAGPipeline:
         return self.retriever.search(question, metadata_filter=metadata_filter, k=k)
 
     def invoke(self, question: str) -> str:
+        return self._generate(question, self._prompt)
+
+    def invoke_health_summary(self, question: str, prompt: ChatPromptTemplate) -> str:
+        return self._generate(question, prompt)
+
+    def _generate(self, question: str, prompt: ChatPromptTemplate) -> str:
         documents = self.search(question)
         if not documents:
             return "I don't know based on the available documents."
@@ -119,7 +125,7 @@ class RAGPipeline:
         if self._llm is None:
             raise ValueError("OPENAI_API_KEY is required for answer generation.")
 
-        messages = self._prompt.format_messages(
+        messages = prompt.format_messages(
             context=context.text,
             question=question.strip(),
         )

@@ -1,3 +1,4 @@
+import 'package:client/core/exceptions/base.exception.dart';
 import 'package:client/core/exceptions/basic.exception.dart';
 import 'package:client/core/exceptions/response.exception.dart';
 import 'package:client/core/network/dio_client.dart';
@@ -11,18 +12,19 @@ class UserService {
   Future<AuthResponseModel> loginService(String email, String password) async {
     try {
       final result = await _repo.getOne(email, password);
-      final token = result.token;
-      if (token == '') {
-        throw NotFoundException(details: token.toString());
+      if (result.token.isEmpty) {
+        throw const NotFoundException(message: 'Unable to sign in.');
       }
       return AuthResponseModel(
-        token: token,
+        token: result.token,
         id: result.id,
         name: result.name,
         email: result.email,
         mobnum: result.mobnum,
-        password: result.password,
+        password: '',
       );
+    } on AppException {
+      rethrow;
     } catch (e) {
       throw UnknownException(details: e);
     }
@@ -31,8 +33,9 @@ class UserService {
   Future<bool> registerService(AuthRequestModel data) async {
     try {
       final result = await _repo.addOne(data);
-      if (result == RequestStatus.successful) return true;
-      return false;
+      return result == RequestStatus.successful;
+    } on AppException {
+      rethrow;
     } catch (e) {
       throw UnknownException(details: e);
     }
@@ -40,8 +43,9 @@ class UserService {
 
   Future<AuthResponseModel> profileService(String userId, String token) async {
     try {
-      final result = await _repo.profile(userId, token);
-      return result;
+      return await _repo.profile(userId, token);
+    } on AppException {
+      rethrow;
     } catch (e) {
       throw UnknownException(details: e);
     }

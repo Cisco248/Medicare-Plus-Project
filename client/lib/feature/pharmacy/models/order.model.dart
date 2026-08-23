@@ -50,7 +50,7 @@ abstract class DeliveryAddress with _$DeliveryAddress {
     return '$line1, $second, $city';
   }
 
-   factory DeliveryAddress.fromJson(Map<String, dynamic> json) =>
+  factory DeliveryAddress.fromJson(Map<String, dynamic> json) =>
       _$DeliveryAddressFromJson(json);
 }
 

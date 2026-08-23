@@ -5,7 +5,12 @@ from langchain_core.messages import AIMessage
 
 from data.ingestion.loaders import DocumentLoader
 from data.ingestion.splitters import DocumentTextSplitters
-from data.model.request import EDocRequest, compose_edoc_question
+from data.model.request import (
+    EDocRequest,
+    HealthSummaryRequest,
+    compose_edoc_question,
+    compose_knowledge_question,
+)
 from data.storage.store_manager import VectorStoreManager
 from domain.pipeline.chain_manager import RAGPipeline
 from domain.pipeline.setup import setup_rag_system
@@ -325,3 +330,79 @@ def test_compose_edoc_question_from_prediction_fields():
     assert "Age: 45" in question
     assert "Cholesterol: 180" in question
     assert "normal" in question
+
+
+def test_health_summary_request_accepts_camel_and_snake_case():
+    snake = HealthSummaryRequest.model_validate(
+        {
+            "user_id": "u1",
+            "period": {
+                "start": "2026-08-23T00:00:00Z",
+                "end": "2026-08-24T00:00:00Z",
+                "timezone_offset": "+05:30",
+            },
+            "activities": {
+                "steps": 4200,
+                "distance_meters": 3100,
+                "sleep": {"total_minutes": 390, "session_count": 1},
+                "blood_pressure": {"systolic_mm_hg": 128, "diastolic_mm_hg": 82},
+            },
+        }
+    )
+    camel = HealthSummaryRequest.model_validate(
+        {
+            "userId": "u1",
+            "period": {
+                "start": "2026-08-23T00:00:00Z",
+                "end": "2026-08-24T00:00:00Z",
+                "timezoneOffset": "+05:30",
+            },
+            "activities": {
+                "steps": 4200,
+                "distanceMeters": 3100,
+                "sleep": {"totalMinutes": 390, "sessionCount": 1},
+                "bloodPressure": {"systolicMmHg": 128, "diastolicMmHg": 82},
+            },
+        }
+    )
+    assert snake.activities.sleep.total_minutes == 390
+    assert camel.activities.sleep.total_minutes == 390
+    assert camel.activities.blood_pressure.systolic_mm_hg == 128
+    assert camel.period.timezone_offset == "+05:30"
+
+
+def test_knowledge_question_string_is_accepted():
+    payload = HealthSummaryRequest.model_validate(
+        {
+            "question": (
+                "Generate a health summary\n"
+                "- Age: 44 years\n"
+                "- Steps: 4200 steps\n"
+                "- Heart Rate: N/A"
+            )
+        }
+    )
+    question = compose_knowledge_question(payload)
+    assert "4200 steps" in question
+    assert "N/A" in question
+
+
+def test_compose_knowledge_question_keeps_missing_values_as_na():
+    payload = HealthSummaryRequest.model_validate(
+        {
+            "age": 44,
+            "gender": "female",
+            "height_cm": 162,
+            "activities": {
+                "steps": 4200,
+                "heart_rate": {"average_bpm": 72},
+            },
+        }
+    )
+    question = compose_knowledge_question(payload)
+    assert "Age: 44 years" in question
+    assert "Gender: Female" in question
+    assert "Height: 162 cm" in question
+    assert "Heart Rate: 72 bpm" in question
+    assert "Blood Pressure: N/A" in question
+    assert "Blood Sugar: N/A" in question

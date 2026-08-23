@@ -1,4 +1,5 @@
 import 'package:client/feature/dashboard/models/activity.model.dart';
+import 'package:client/feature/dashboard/models/patient_profile.model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'health_summary.model.freezed.dart';
@@ -51,6 +52,35 @@ abstract class HealthSummaryRequest with _$HealthSummaryRequest {
       activities: activity,
     );
   }
+}
+
+/// RAG ``POST /api/knowledge`` body. Missing measurements are omitted.
+Map<String, dynamic> knowledgeSummaryJson(
+  HealthSummaryRequest request, {
+  PatientProfile? user,
+  String? question,
+}) {
+  final activity = request.activities;
+  final heightCm = user?.heightCm ??
+      (activity.heightMeters == null ? null : activity.heightMeters! * 100);
+  final weightKg = activity.weightKilograms ?? user?.weightKg;
+  return {
+    if (question != null && question.trim().isNotEmpty) 'question': question,
+    if (request.userId != null && request.userId!.isNotEmpty)
+      'user_id': request.userId,
+    'period': {
+      'start': request.period.start.toUtc().toIso8601String(),
+      'end': request.period.end.toUtc().toIso8601String(),
+      if (request.period.timezoneOffset != null)
+        'timezone_offset': request.period.timezoneOffset,
+    },
+    'activities': activity.toKnowledgeJson(),
+    if (user?.age != null) 'age': user!.age,
+    if (user?.gender != null && user!.gender!.trim().isNotEmpty)
+      'gender': user.gender!.trim().toLowerCase(),
+    if (heightCm != null && heightCm > 0) 'height_cm': heightCm,
+    if (weightKg != null && weightKg > 0) 'weight_kg': weightKg,
+  };
 }
 
 String _formatOffset(Duration offset) {

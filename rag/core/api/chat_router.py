@@ -19,7 +19,6 @@ async def ask_question(req: AskRequest, request: FastAPIRequest):
 
 @router.post("/search", status_code=200, tags=["RAG System"])
 async def similarity_search(req: SimilaritySearchRequest, request: FastAPIRequest):
-    """Inspect retrieval quality without paying for an LLM generation call."""
     pipeline = require_ready(request)
     try:
         documents = pipeline.search(

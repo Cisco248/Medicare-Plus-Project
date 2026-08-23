@@ -83,8 +83,10 @@ class DocumentQuery {
     }).toList();
 
     filtered.sort((a, b) {
-      final aDate = a.createdAt ?? a.reportDate ?? DateTime.fromMillisecondsSinceEpoch(0);
-      final bDate = b.createdAt ?? b.reportDate ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final aDate =
+          a.createdAt ?? a.reportDate ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bDate =
+          b.createdAt ?? b.reportDate ?? DateTime.fromMillisecondsSinceEpoch(0);
       return sort == DocumentSort.newest
           ? bDate.compareTo(aDate)
           : aDate.compareTo(bDate);
@@ -92,7 +94,8 @@ class DocumentQuery {
     return filtered;
   }
 
-  DateTime _dateOnly(DateTime date) => DateTime(date.year, date.month, date.day);
+  DateTime _dateOnly(DateTime date) =>
+      DateTime(date.year, date.month, date.day);
 
   DateTime _endOfDay(DateTime date) =>
       DateTime(date.year, date.month, date.day, 23, 59, 59);

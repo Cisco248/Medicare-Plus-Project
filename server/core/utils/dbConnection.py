@@ -17,7 +17,6 @@ class DBConnection:
         pool_pre_ping=setting.Pool_Pre_Ping,
     )
     SESSION_LOACAL = sessionmaker(autocommit=False, autoflush=False, bind=ENGINE)
-    BASE.metadata.create_all(bind=ENGINE, checkfirst=True)
 
 
 def get_db():
@@ -29,4 +28,3 @@ def get_db():
         yield db_conn
     finally:
         db_conn.close()
-        db.ENGINE.dispose()

@@ -15,7 +15,14 @@ class CartPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cart', style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.w600)),
+        title: const Text(
+          'Cart',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => ref.read(cartProvider.notifier).clear(),
@@ -26,14 +33,18 @@ class CartPage extends ConsumerWidget {
       body: SafeArea(
         child: cart.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (_, _) => const Center(child: Text('Unable to load the cart.')),
+          error: (_, _) =>
+              const Center(child: Text('Unable to load the cart.')),
           data: (state) {
             if (state.isEmpty) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    FaIcon(FontAwesomeIcons.cartShopping, color: colorScheme.onSurface.withAlpha(80)),
+                    FaIcon(
+                      FontAwesomeIcons.cartShopping,
+                      color: colorScheme.onSurface.withAlpha(80),
+                    ),
                     const SizedBox(height: 12),
                     const Text('Your cart is empty'),
                   ],
@@ -44,28 +55,45 @@ class CartPage extends ConsumerWidget {
               children: [
                 Expanded(
                   child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 8,
+                    ),
                     itemCount: state.items.length,
                     itemBuilder: (context, index) {
                       final item = state.items[index];
                       return Card(
                         child: ListTile(
                           title: Text(item.product.name),
-                          subtitle: Text('${formatLkr(item.lineTotal)} • ${item.product.category.label}'),
+                          subtitle: Text(
+                            '${formatLkr(item.lineTotal)} • ${item.product.category.label}',
+                          ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                onPressed: () => ref.read(cartProvider.notifier).setQuantity(item.product.id, item.quantity - 1),
+                                onPressed: () => ref
+                                    .read(cartProvider.notifier)
+                                    .setQuantity(
+                                      item.product.id,
+                                      item.quantity - 1,
+                                    ),
                                 icon: const Icon(Icons.remove),
                               ),
                               Text('${item.quantity}'),
                               IconButton(
-                                onPressed: () => ref.read(cartProvider.notifier).setQuantity(item.product.id, item.quantity + 1),
+                                onPressed: () => ref
+                                    .read(cartProvider.notifier)
+                                    .setQuantity(
+                                      item.product.id,
+                                      item.quantity + 1,
+                                    ),
                                 icon: const Icon(Icons.add),
                               ),
                               IconButton(
-                                onPressed: () => ref.read(cartProvider.notifier).remove(item.product.id),
+                                onPressed: () => ref
+                                    .read(cartProvider.notifier)
+                                    .remove(item.product.id),
                                 icon: const Icon(Icons.delete_outline),
                               ),
                             ],
@@ -81,14 +109,21 @@ class CartPage extends ConsumerWidget {
                     children: [
                       _line('Subtotal', formatLkr(state.subtotal)),
                       _line('Discount', '- ${formatLkr(state.discount)}'),
-                      _line('Delivery', state.deliveryFee == 0 ? 'Free' : formatLkr(state.deliveryFee)),
+                      _line(
+                        'Delivery',
+                        state.deliveryFee == 0
+                            ? 'Free'
+                            : formatLkr(state.deliveryFee),
+                      ),
                       _line('Total', formatLkr(state.total), bold: true),
                       const SizedBox(height: 12),
                       SizedBox(
                         width: double.infinity,
                         child: FilledButton(
                           onPressed: () => Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const CheckoutPage()),
+                            MaterialPageRoute(
+                              builder: (_) => const CheckoutPage(),
+                            ),
                           ),
                           child: const Text('Checkout'),
                         ),
@@ -109,9 +144,19 @@ class CartPage extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Text(label, style: TextStyle(fontWeight: bold ? FontWeight.w600 : FontWeight.w400)),
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
+            ),
+          ),
           const Spacer(),
-          Text(value, style: TextStyle(fontWeight: bold ? FontWeight.w600 : FontWeight.w400)),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
+            ),
+          ),
         ],
       ),
     );

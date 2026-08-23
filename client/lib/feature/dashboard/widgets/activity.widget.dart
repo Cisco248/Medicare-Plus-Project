@@ -23,21 +23,6 @@ class ActivityCardWidget extends ConsumerStatefulWidget {
 }
 
 class _ActivityCardWidgetState extends ConsumerState<ActivityCardWidget> {
-  String value = "";
-
-  @override
-  void initState() {
-    setState(() {
-      value = widget.value;
-    });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
@@ -91,7 +76,7 @@ class _ActivityCardWidgetState extends ConsumerState<ActivityCardWidget> {
                   ),
                   SizedBox(height: 12),
                   Text(
-                    value,
+                    widget.value,
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w600,

@@ -3,79 +3,21 @@ import 'package:client/core/network/dio_client.dart';
 import 'package:client/feature/auth/notifiers/authentication.notifier.dart';
 import 'package:client/feature/dashboard/models/activity.model.dart';
 import 'package:client/feature/dashboard/models/knowledge.state.model.dart';
+import 'package:client/feature/dashboard/models/patient_profile.model.dart';
+import 'package:client/feature/dashboard/notifiers/clinical_snapshot.notifier.dart';
 import 'package:client/feature/dashboard/repository/activity_repository.dart';
+import 'package:client/feature/dashboard/notifiers/server_health.notifier.dart';
 import 'package:client/feature/dashboard/repository/knowledge.repository.dart';
 import 'package:client/feature/dashboard/services/health_connect.service.dart';
 import 'package:client/feature/dashboard/services/rag.service.dart';
-import 'package:flutter_health_connect/app.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'activity.notifier.g.dart';
-
-final List<Permission> _stepsPermission = [Permission.steps.read];
-final List<Permission> _burnCaloryPermission = [
-  Permission.totalCaloriesBurned.read,
-];
-final List<Permission> _heightPermission = [Permission.height.read];
-final List<Permission> _sleepPermission = [Permission.steps.read];
 
 final _activityRepository = ActivityRepository(service: HealthConnectService());
 final _knowledgeRepository = KnowledgeRepository(
   ragService: RagService(client: ragClient()),
 );
-
-@riverpod
-class StepsActivityNotifier extends _$StepsActivityNotifier {
-  @override
-  Future<int> build() async {
-    final records = await _activityRepository.footStep(_stepsPermission);
-    return records.fold<int>(0, (count, record) => count + record.count);
-  }
-}
-
-@riverpod
-class BurnCaloriesActivityNotifier extends _$BurnCaloriesActivityNotifier {
-  @override
-  Future<double> build() async {
-    final records = await _activityRepository.burnCalories(
-      _burnCaloryPermission,
-    );
-    return records.fold<double>(
-      0.0,
-      (total, record) => total + record.energyKilocalories,
-    );
-  }
-}
-
-@Riverpod(keepAlive: true)
-class DailyActivityNotifier extends _$DailyActivityNotifier {
-  @override
-  Future<DailySummary> build() async {
-    final res = await _activityRepository.dailySummary();
-    print(res.toString());
-    return res;
-  }
-}
-
-@riverpod
-class BodyHeightNotifier extends _$BodyHeightNotifier {
-  @override
-  Future<double> build() async {
-    final records = await _activityRepository.bodyHeight(_heightPermission);
-    return records.isEmpty ? 0.0 : records.last.heightMeters;
-  }
-}
-
-@riverpod
-class SleepHoursNotifier extends _$SleepHoursNotifier {
-  @override
-  Future<double> build() async {
-    final records = await _activityRepository.sleepHour(_sleepPermission);
-    return records.isEmpty
-        ? 0.0
-        : double.parse(records.last.duration.toString());
-  }
-}
 
 @Riverpod(keepAlive: true)
 class ActivityNotifier extends _$ActivityNotifier {
@@ -124,6 +66,19 @@ class ActivityNotifier extends _$ActivityNotifier {
             activity: activity,
             unavailableMetrics: result.deniedMetrics,
           );
+          if (hasData) {
+            final auth = ref.read(authenticationProvider).value?.data;
+            await HarSyncService(
+              ref.read(harRepositoryProvider),
+            ).syncIfPossible(
+              token: auth?.token,
+              userId: auth?.id,
+              activity: activity,
+            );
+            ref.invalidate(serverDailySummaryProvider);
+            ref.invalidate(serverPredictionProvider);
+            ref.invalidate(stepsTrendProvider);
+          }
       }
     } on AppException catch (e) {
       state = state.copyWith(
@@ -158,11 +113,19 @@ class ActivityNotifier extends _$ActivityNotifier {
     );
     try {
       final auth = ref.read(authenticationProvider).value;
+      final profile = ref.read(patientProfileProvider).asData?.value;
       final summary = await _knowledgeRepository.generateSummary(
         activity: activity,
+        user:
+            profile ??
+            PatientProfile(
+              id: auth?.data?.id ?? '',
+              name: auth?.data?.name ?? '',
+              email: auth?.data?.email ?? '',
+            ),
         startTime: state.periodStart,
         endTime: state.periodEnd,
-        userId: auth?.data?.email,
+        userId: auth?.data?.id,
         token: auth?.data?.token,
       );
       state = state.copyWith(

@@ -14,7 +14,11 @@ class AboutPage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text(
           'About',
-          style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: Center(
@@ -24,11 +28,19 @@ class AboutPage extends ConsumerWidget {
           data: (value) => Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.health_and_safety_rounded, size: 48, color: colorScheme.primary),
+              Icon(
+                Icons.health_and_safety_rounded,
+                size: 48,
+                color: colorScheme.primary,
+              ),
               const SizedBox(height: 12),
               Text(
                 value.appName.isEmpty ? 'MediCare Plus' : value.appName,
-                style: const TextStyle(fontFamily: 'Poppins', fontSize: 18, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 8),
               Text(value.versionLabel),

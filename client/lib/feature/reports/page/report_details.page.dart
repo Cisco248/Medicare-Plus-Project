@@ -66,7 +66,9 @@ class _ReportDetailsPageState extends ConsumerState<ReportDetailsPage> {
     setState(() => _isBusy = true);
     try {
       await ref.read(reportsProvider.notifier).deleteDocument(document.id);
-      messenger.showSnackBar(const SnackBar(content: Text('Document deleted.')));
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Document deleted.')),
+      );
       navigator.pop();
     } on AppException catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(e.message)));

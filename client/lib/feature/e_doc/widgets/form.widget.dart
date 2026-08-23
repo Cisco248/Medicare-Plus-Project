@@ -49,7 +49,7 @@ class EDocAssessmentForm extends ConsumerWidget {
         switch (model) {
           DocModel.diabetes => const DiabetesFormWidget(),
           DocModel.hypertension => const HypertensionFormWidget(),
-          DocModel.bloodPressure => const BloodPressureFormWidget(),
+          DocModel.heartDisease => const HeartDiseaseFormWidget(),
         },
       ],
     );

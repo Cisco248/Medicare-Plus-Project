@@ -1,3 +1,6 @@
+from data import HypertensionScehema
+
+
 class HypertensionMiddleware:
     def __init__(self):
         pass
@@ -21,3 +24,17 @@ class HypertensionMiddleware:
             "diabetic": 2.0,
         }
         return diabetes_mapping.get(diabete_ordinal.lower(), 0)
+
+    def compose_question(
+        self, schema: HypertensionScehema, prediction: str, bmi: float
+    ) -> str:
+        return f"""
+            Explain this hypertension risk assessment for a patient using only the medical knowledge context. Do not diagnose and do not invent facts.
+    
+            Predicted status: {prediction}
+            Age: {schema.age}. Gender: {schema.gender}
+            Height: {schema.height} cm. Weight: {schema.weight} kg
+            BMI: {bmi:.1f}. HbA1c: {schema.hba1c}%
+            Cholesterol: {schema.cholesterol_mgdl} mg/dL
+            Diabetes status: {schema.diabetes_ordinal}
+        """

@@ -1,0 +1,61 @@
+# Real-world knowledge URLs ingested at RAG startup.
+# Official public-health pages, clinical organizations, and reputable health blogs.
+# Comments and blank lines are ignored. Sample or demo sources are not listed.
+
+# World Health Organization
+https://www.who.int/news-room/fact-sheets/detail/physical-activity
+https://www.who.int/news-room/fact-sheets/detail/diabetes
+https://www.who.int/news-room/fact-sheets/detail/hypertension
+https://www.who.int/news-room/fact-sheets/detail/obesity-and-overweight
+https://www.who.int/news-room/fact-sheets/detail/healthy-diet
+https://www.who.int/news-room/fact-sheets/detail/sodium-reduction
+
+# US Centers for Disease Control and Prevention
+https://www.cdc.gov/physical-activity-basics/guidelines/adults.html
+https://www.cdc.gov/physical-activity-basics/adding-adults/what-counts.html
+https://www.cdc.gov/sleep/about/index.html
+https://www.cdc.gov/bmi/about/index.html
+https://www.cdc.gov/bmi/adult-calculator/bmi-categories.html
+https://www.cdc.gov/diabetes/about/index.html
+https://www.cdc.gov/diabetes/signs-symptoms/index.html
+https://www.cdc.gov/high-blood-pressure/risk-factors/index.html
+https://www.cdc.gov/cholesterol/about/index.html
+
+# National Health Service
+https://www.nhs.uk/live-well/exercise/exercise-guidelines/physical-activity-guidelines-for-adults-aged-19-to-64/
+https://www.nhs.uk/conditions/high-blood-pressure-hypertension/
+https://www.nhs.uk/conditions/type-2-diabetes/
+https://www.nhs.uk/conditions/low-blood-sugar-hypoglycaemia/
+https://www.nhs.uk/conditions/high-cholesterol/
+https://www.nhs.uk/conditions/insomnia/
+https://www.nhs.uk/conditions/sleep-apnoea/
+
+# American Heart Association
+https://www.heart.org/en/health-topics/high-blood-pressure/the-facts-about-high-blood-pressure/all-about-heart-rate-pulse
+https://www.heart.org/en/healthy-living/exercise-and-physical-activity/fitness-basics/target-heart-rates
+https://www.heart.org/en/health-topics/high-blood-pressure/understanding-blood-pressure-readings
+https://www.heart.org/en/health-topics/high-blood-pressure/understanding-blood-pressure-readings/monitoring-your-blood-pressure-at-home
+https://www.heart.org/en/health-topics/cholesterol/about-cholesterol
+https://www.heart.org/en/healthy-living/healthy-eating/eat-smart/nutrition-basics/aha-diet-and-lifestyle-recommendations
+
+# American Diabetes Association
+https://diabetes.org/about-diabetes/diagnosis
+https://diabetes.org/health-wellness/medication/blood-glucose-testing-and-control/checking-your-blood-sugar
+https://diabetes.org/living-with-diabetes/treatment-care/hypoglycemia
+https://diabetes.org/health-wellness/fitness
+
+# NIH / NHLBI
+https://www.nhlbi.nih.gov/health/sleep/how-much-sleep
+
+# Mayo Clinic patient education
+https://www.mayoclinic.org/healthy-lifestyle/fitness/in-depth/exercise-intensity/art-20046887
+https://www.mayoclinic.org/diseases-conditions/high-blood-pressure/in-depth/high-blood-pressure/art-20045206
+https://www.mayoclinic.org/healthy-lifestyle/fitness/in-depth/fitness/art-20046433
+
+# Harvard Health Publishing blogs and explainers
+https://www.health.harvard.edu/blog/10000-steps-a-day-or-fewer-2019071117305
+https://www.health.harvard.edu/blog/how-much-sleep-do-you-actually-need-202310302986
+https://www.health.harvard.edu/heart-health/how-accurate-are-wearable-heart-rate-monitors
+https://www.health.harvard.edu/heart-health/smarter-safer-workouts-with-a-wearable-fitness-tracker
+https://www.health.harvard.edu/blog/counting-steps-is-good-is-combining-steps-and-heart-rate-better-202504173095
+https://www.health.harvard.edu/healthy-aging-and-longevity/sleep-hygiene-simple-practices-for-better-rest

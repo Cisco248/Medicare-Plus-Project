@@ -1,9 +1,11 @@
 import 'package:client/core/utils/notification.utils.dart';
 import 'package:client/core/widgets/button.widget.dart';
 import 'package:client/core/widgets/textfield.widget.dart';
+import 'package:client/feature/dashboard/notifiers/clinical_snapshot.notifier.dart';
 import 'package:client/feature/e_doc/models/doc.state.dart';
 import 'package:client/feature/e_doc/models/hypertension.model.dart';
 import 'package:client/feature/e_doc/notifiers/doc.state.dart';
+import 'package:client/feature/e_doc/utils/clinical_parameter_mapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -24,7 +26,26 @@ class _HypertensionFormWidgetState
   final _hba1c = TextEditingController();
   final _cholesterol = TextEditingController();
   Gender? _gender;
-  DiabetesOrdinal _diabetes = DiabetesOrdinal.normal;
+  DiabetesOrdinal? _diabetes;
+  HypertensionPrefill _prefill = const HypertensionPrefill();
+
+  void _apply(HypertensionPrefill prefill) {
+    _prefill = prefill;
+    if (_age.text.isEmpty && prefill.age != null) {
+      _age.text = '${prefill.age}';
+    }
+    if (_height.text.isEmpty && prefill.heightCm != null) {
+      _height.text = prefill.heightCm!.toStringAsFixed(1);
+    }
+    if (_weight.text.isEmpty && prefill.weightKg != null) {
+      _weight.text = prefill.weightKg!.toStringAsFixed(1);
+    }
+    _gender ??= prefill.gender;
+    if (prefill.diabetes != null) {
+      _diabetes = prefill.diabetes!;
+    }
+    if (mounted) setState(() {});
+  }
 
   @override
   void dispose() {
@@ -41,8 +62,11 @@ class _HypertensionFormWidgetState
       NotificationUtils.error(context, 'Please complete the required fields.');
       return;
     }
-    if (_gender == null) {
-      NotificationUtils.error(context, 'Please select a gender.');
+    if (_gender == null || _diabetes == null) {
+      NotificationUtils.error(
+        context,
+        'Please select gender and diabetes status.',
+      );
       return;
     }
 
@@ -69,7 +93,7 @@ class _HypertensionFormWidgetState
             weight: weight,
             hba1c: hba1c,
             cholesterolMgdl: cholesterol,
-            diabetesOrdinal: _diabetes,
+            diabetesOrdinal: _diabetes!,
             gender: _gender!,
           ),
         );
@@ -77,6 +101,18 @@ class _HypertensionFormWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final snapshot = ref.watch(clinicalSnapshotProvider);
+    ref.listen(clinicalSnapshotProvider, (_, next) {
+      _apply(ClinicalParameterMapper(next).hypertension());
+    });
+    if ((_age.text.isEmpty && snapshot.age.isAvailable) ||
+        (_height.text.isEmpty && snapshot.heightCm.isAvailable) ||
+        (_weight.text.isEmpty && snapshot.weightKg.isAvailable)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _apply(ClinicalParameterMapper(snapshot).hypertension());
+      });
+    }
+
     final assessment = ref.watch(docStateProvider);
     final submitting =
         assessment.phase == DocPhase.loading &&
@@ -94,7 +130,8 @@ class _HypertensionFormWidgetState
           children: [
             ZintraTextField(
               label: 'Age',
-              hint: 'e.g. 45',
+              hint: 'From your profile if available',
+              helperText: snapshot.sourceLabel(_prefill.ageSource),
               controller: _age,
               keyboardType: TextInputType.number,
               validator: _requiredNumber,
@@ -102,7 +139,8 @@ class _HypertensionFormWidgetState
             const SizedBox(height: 8),
             ZintraTextField(
               label: 'Height (cm)',
-              hint: 'e.g. 170',
+              hint: 'From profile or Health Connect',
+              helperText: snapshot.sourceLabel(_prefill.heightSource),
               controller: _height,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
@@ -112,7 +150,8 @@ class _HypertensionFormWidgetState
             const SizedBox(height: 8),
             ZintraTextField(
               label: 'Weight (kg)',
-              hint: 'e.g. 70',
+              hint: 'From profile or Health Connect',
+              helperText: snapshot.sourceLabel(_prefill.weightSource),
               controller: _weight,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
@@ -141,8 +180,12 @@ class _HypertensionFormWidgetState
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<DiabetesOrdinal>(
+              key: ValueKey('htn-diabetes-$_diabetes'),
               initialValue: _diabetes,
-              decoration: const InputDecoration(labelText: 'Diabetes status'),
+              decoration: const InputDecoration(
+                labelText: 'Diabetes status',
+                helperText: 'From recorded conditions when available',
+              ),
               items: const [
                 DropdownMenuItem(
                   value: DiabetesOrdinal.normal,
@@ -157,14 +200,19 @@ class _HypertensionFormWidgetState
                   child: Text('Diabetic'),
                 ),
               ],
+              validator: (value) => value == null ? 'Required' : null,
               onChanged: (value) {
                 if (value != null) setState(() => _diabetes = value);
               },
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<Gender>(
+              key: ValueKey('htn-gender-$_gender'),
               initialValue: _gender,
-              decoration: const InputDecoration(labelText: 'Gender'),
+              decoration: InputDecoration(
+                labelText: 'Gender',
+                helperText: snapshot.sourceLabel(_prefill.genderSource),
+              ),
               items: const [
                 DropdownMenuItem(value: Gender.male, child: Text('Male')),
                 DropdownMenuItem(value: Gender.female, child: Text('Female')),

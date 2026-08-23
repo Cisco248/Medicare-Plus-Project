@@ -1,3 +1,6 @@
+from data import DiabetesSchema
+
+
 class DiabetesMiddleware:
     def __init__(self):
         pass
@@ -15,27 +18,7 @@ class DiabetesMiddleware:
     def risk_label(self, pred_code: int) -> str:
         return "Diabetic / High Risk" if pred_code == 1 else "Non-Diabetic / Low Risk"
 
-    def build_rag_question(
-        self,
-        diagnosis: str,
-        age: int,
-        gender: str,
-        glucose: float,
-        bmi: float,
-        systolic_bp: float,
-        diastolic_bp: float,
-        family_diabetes: str,
-        hypertensive: str,
-    ) -> str:
-        """Turns the diabetes prediction + patient inputs into a natural
-        language question for the RAG /e-doc endpoint, so it can generate
-        a short patient-friendly explanation and recommendations."""
-        return (
-            f"A {age}-year-old {gender} patient has been screened for diabetes risk "
-            f"with the result: {diagnosis}. "
-            f"Their glucose level is {glucose} mmol/L, BMI is {bmi}, blood pressure is "
-            f"{systolic_bp}/{diastolic_bp} mmHg, family history of diabetes: {family_diabetes}, "
-            f"existing hypertension: {hypertensive}. "
-            "Based on this, explain what this risk level means in simple terms and give "
-            "clear, practical lifestyle and follow-up recommendations for this patient."
-        )
+    def build_rag_question(self, schema: DiabetesSchema, diagnosis: str) -> str:
+        return f"""
+        A {schema.age}-year-old {schema.gender} patient has been screened for diabetes risk with the result: {diagnosis}. Their glucose level is {schema.glucose} mmol/L, BMI is {schema.bmi}, blood pressure is {schema.systolic_bp}/{schema.diastolic_bp} mmHg, family history of diabetes: {schema.family_diabetes}, existing hypertension: {schema.hypertensive}. Based on this, explain what this risk level means in simple terms and give clear, practical lifestyle and follow-up recommendations for this patient.
+        """

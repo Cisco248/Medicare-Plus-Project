@@ -3,6 +3,7 @@ import 'package:client/core/exceptions/basic.exception.dart';
 import 'package:client/feature/e_doc/models/doc.state.dart';
 import 'package:client/feature/e_doc/models/diabetes.model.dart';
 import 'package:client/feature/e_doc/repository/edoc_client.dart';
+import 'package:client/feature/e_doc/utils/diabetes_payload.dart';
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -21,7 +22,7 @@ class DiabetesRepository {
     try {
       final response = await _client.post<dynamic>(
         '/diabetes',
-        data: request.toJson(),
+        data: diabetesToApiJson(request),
       );
       return DocState.fromResponse(response.data, model: DocModel.diabetes);
     } on DioException catch (e) {

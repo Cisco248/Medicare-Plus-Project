@@ -5,6 +5,7 @@ from .request import (
     Request,
     SimilaritySearchRequest,
     compose_edoc_question,
+    compose_knowledge_question,
 )
 from .response import HealthSummaryResponse, Response
 
@@ -17,4 +18,5 @@ __all__ = [
     "SimilaritySearchRequest",
     "Response",
     "compose_edoc_question",
+    "compose_knowledge_question",
 ]

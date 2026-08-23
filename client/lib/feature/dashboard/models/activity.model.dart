@@ -80,6 +80,54 @@ abstract class ActivityModel with _$ActivityModel {
   Map<String, dynamic> toJson() =>
       _$ActivityModelToJson(this as _ActivityModel);
 
+  /// Snake_case payload expected by ``POST /api/knowledge``.
+  Map<String, dynamic> toKnowledgeJson() {
+    return {
+      'date': date.toUtc().toIso8601String(),
+      if (steps != null) 'steps': steps,
+      if (distanceMeters != null) 'distance_meters': distanceMeters,
+      if (activeCalories != null) 'active_calories': activeCalories,
+      if (totalCalories != null) 'total_calories': totalCalories,
+      if (heartRate != null)
+        'heart_rate': {
+          if (heartRate!.averageBpm != null) 'average_bpm': heartRate!.averageBpm,
+          if (heartRate!.minBpm != null) 'min_bpm': heartRate!.minBpm,
+          if (heartRate!.maxBpm != null) 'max_bpm': heartRate!.maxBpm,
+          if (heartRate!.restingBpm != null)
+            'resting_bpm': heartRate!.restingBpm,
+        },
+      if (sleep != null)
+        'sleep': {
+          'total_minutes': sleep!.totalMinutes,
+          'session_count': sleep!.sessionCount,
+        },
+      if (workouts.isNotEmpty)
+        'workouts': [
+          for (final workout in workouts)
+            {
+              'type': workout.type,
+              if (workout.title != null) 'title': workout.title,
+              'start_time': workout.startTime.toUtc().toIso8601String(),
+              'end_time': workout.endTime.toUtc().toIso8601String(),
+              'duration_minutes': workout.durationMinutes,
+            },
+        ],
+      if (weightKilograms != null) 'weight_kilograms': weightKilograms,
+      if (heightMeters != null) 'height_meters': heightMeters,
+      if (bloodPressure != null)
+        'blood_pressure': {
+          'systolic_mm_hg': bloodPressure!.systolicMmHg,
+          'diastolic_mm_hg': bloodPressure!.diastolicMmHg,
+          if (bloodPressure!.measuredAt != null)
+            'measured_at': bloodPressure!.measuredAt!.toUtc().toIso8601String(),
+        },
+      if (bloodGlucoseMmolPerLiter != null)
+        'blood_glucose_mmol_per_liter': bloodGlucoseMmolPerLiter,
+      if (oxygenSaturationPercent != null)
+        'oxygen_saturation_percent': oxygenSaturationPercent,
+    };
+  }
+
   bool get hasAnyData =>
       steps != null ||
       distanceMeters != null ||

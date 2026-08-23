@@ -15,6 +15,7 @@ class RagClientMiddleware:
         self.data = data
 
     async def build(self):
-        async with httpx.AsyncClient() as client:
-            respone = await client.post(self.url, data=self.data)
-            return respone
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            if isinstance(self.data, (dict, list)):
+                return await client.post(self.url, json=self.data)
+            return await client.post(self.url, data=self.data)

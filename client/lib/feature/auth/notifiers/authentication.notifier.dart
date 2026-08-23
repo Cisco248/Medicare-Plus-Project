@@ -1,4 +1,5 @@
 import 'package:client/core/configs/config.dart';
+import 'package:client/core/exceptions/basic.exception.dart';
 import 'package:client/feature/auth/models/auth.model.dart';
 import 'package:client/feature/auth/models/auth.state.dart';
 import 'package:client/feature/auth/notifiers/form_mode.notifier.dart';
@@ -34,22 +35,6 @@ class AuthenticationNotifier extends _$AuthenticationNotifier {
     } catch (e) {
       return const AuthStates(state: AuthMode.unauthenticated);
     }
-    // final name = await _setupKey.getKey(userNameKey);
-    // final email = await _setupKey.getKey(userEmailKey);
-    // final mobile = await _setupKey.getKey(userMobileKey);
-    // final password = await _setupKey.getKey(userPasswordKey);
-
-    // return AuthStates(
-    //   state: AuthMode.authenticated,
-    //   data: AuthResponseModel(
-    //     token: tokenKey,
-    //     id: id,
-    //     name: name,
-    //     email: email,
-    //     mobnum: mobile,
-    //     password: password,
-    //   ),
-    // );
   }
 
   Future<AuthStates> splash() async {
@@ -67,23 +52,12 @@ class AuthenticationNotifier extends _$AuthenticationNotifier {
     state = const AsyncValue.loading();
     try {
       final result = await _service.loginService(email, password);
-      state = await AsyncValue.guard(() async {
-        if (isRemember == true) {
-          await _tokenKey.setTokenKey(userTokenKey, result.token);
-          await _setupKey.setKey(userIDKey, result.id);
-          return AuthStates(
-            state: AuthMode.authenticated,
-            data: AuthResponseModel(
-              token: result.token,
-              id: result.id,
-              name: result.name,
-              email: result.email,
-              mobnum: result.mobnum,
-              password: result.password,
-            ),
-          );
-        }
-        return AuthStates(
+      if (isRemember) {
+        await _tokenKey.setTokenKey(userTokenKey, result.token);
+        await _setupKey.setKey(userIDKey, result.id);
+      }
+      state = AsyncValue.data(
+        AuthStates(
           state: AuthMode.authenticated,
           data: AuthResponseModel(
             token: result.token,
@@ -91,42 +65,37 @@ class AuthenticationNotifier extends _$AuthenticationNotifier {
             name: result.name,
             email: result.email,
             mobnum: result.mobnum,
-            password: result.password,
+            password: '',
           ),
-        );
-      });
-    } catch (_) {
-      state = AsyncValue.data(AuthStates(state: AuthMode.unauthenticated));
+        ),
+      );
+    } catch (error) {
+      state = const AsyncValue.data(
+        AuthStates(state: AuthMode.unauthenticated),
+      );
+      rethrow;
     }
   }
 
   Future<void> register(AuthRequestModel data) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
-      try {
-        final result = await _service.registerService(data);
-        if (result) {
-          await _setupKey.setupKey();
-          ref.read(formStateProvider.notifier).toggle();
-          return const AuthStates(state: AuthMode.unauthenticated);
-        }
-        return const AuthStates(state: AuthMode.setup);
-      } catch (_) {
-        return const AuthStates(state: AuthMode.unauthenticated);
+    try {
+      final created = await _service.registerService(data);
+      if (!created) {
+        throw const UnknownException(message: 'Unable to create your account.');
       }
-    });
+      await _setupKey.setupKey();
+      ref.read(formStateProvider.notifier).toggle();
+      state = const AsyncValue.data(
+        AuthStates(state: AuthMode.unauthenticated),
+      );
+    } catch (error) {
+      state = const AsyncValue.data(
+        AuthStates(state: AuthMode.unauthenticated),
+      );
+      rethrow;
+    }
   }
-
-  //   Future<AuthStates> profile(String userId) async {
-  //     const AsyncValue.loading();
-  //     try {
-  //       final res = await _service.profileService(userId);
-  //       return AuthStates(state: AuthMode.authenticated, data: res);
-  //     } catch (e) {
-  //       return const AuthStates(state: AuthMode.unauthenticated);
-  //     }
-  //   }
-  // }
 
   Future<void> logout() async {
     state = const AsyncValue.loading();

@@ -1,6 +1,7 @@
 import 'package:client/core/exceptions/response.exception.dart';
 import 'package:client/feature/dashboard/models/activity.model.dart';
 import 'package:client/feature/dashboard/models/health_summary.model.dart';
+import 'package:client/feature/dashboard/models/patient_profile.model.dart';
 import 'package:client/feature/dashboard/services/rag.service.dart';
 
 class KnowledgeRepository {
@@ -12,6 +13,7 @@ class KnowledgeRepository {
     required ActivityModel activity,
     required DateTime startTime,
     required DateTime endTime,
+    required PatientProfile user,
     String? userId,
     String? token,
   }) async {
@@ -27,6 +29,6 @@ class KnowledgeRepository {
       endTime: endTime,
       userId: userId,
     );
-    return _ragService.generateHealthSummary(request, token: token);
+    return _ragService.generateHealthSummary(request, token: token, user: user);
   }
 }
