@@ -3,14 +3,17 @@ import 'package:client/feature/pharmacy/models/cart.model.dart';
 import 'package:client/feature/pharmacy/models/order.model.dart';
 import 'package:client/feature/pharmacy/notifiers/cart.notifier.dart';
 import 'package:client/feature/pharmacy/repositories/pharmacy_store.repository.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
 
-class OrderNotifier extends AsyncNotifier<List<PharmacyOrder>> {
+part 'order.notifier.g.dart';
+
+@riverpod
+class OrderNotifier extends _$OrderNotifier {
+  final _store = PharmacyStoreRepository();
+
   @override
-  Future<List<PharmacyOrder>> build() {
-    return ref.read(pharmacyStoreProvider).loadOrders();
-  }
+  Future<List<PharmacyOrder>> build() async => await _store.loadOrders();
 
   Future<PharmacyOrder> placeOrder({
     required CartState cart,
@@ -38,8 +41,8 @@ class OrderNotifier extends AsyncNotifier<List<PharmacyOrder>> {
     final current = List<PharmacyOrder>.from(state.value ?? const []);
     current.insert(0, order);
     state = AsyncData(current);
-    await ref.read(pharmacyStoreProvider).saveOrders(current);
-    await ref.read(pharmacyStoreProvider).saveAddress(address);
+    await _store.saveOrders(current);
+    await _store.saveAddress(address);
     if (paymentStatus == PaymentStatus.successful) {
       await ref.read(cartProvider.notifier).clear();
     }
@@ -47,10 +50,10 @@ class OrderNotifier extends AsyncNotifier<List<PharmacyOrder>> {
   }
 }
 
-final orderProvider = AsyncNotifierProvider<OrderNotifier, List<PharmacyOrder>>(
-  OrderNotifier.new,
-);
+@riverpod
+class LastAddress extends _$LastAddress {
+  final _store = PharmacyStoreRepository();
 
-final lastAddressProvider = FutureProvider<DeliveryAddress?>((ref) {
-  return ref.read(pharmacyStoreProvider).loadAddress();
-});
+  @override
+  Future<DeliveryAddress?> build() async => await _store.loadAddress();
+}

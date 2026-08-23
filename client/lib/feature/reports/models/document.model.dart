@@ -1,12 +1,8 @@
-// @JsonSerializable on freezed factory constructors is the documented way to
-// configure json_serializable for freezed classes.
-// ignore_for_file: invalid_annotation_target
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'document.model.freezed.dart';
 part 'document.model.g.dart';
 
-/// Statuses a medical document can be in on the backend.
 enum DocumentStatus {
   uploaded('uploaded', 'Uploaded'),
   processing('processing', 'Processing'),
@@ -15,10 +11,8 @@ enum DocumentStatus {
 
   const DocumentStatus(this.value, this.label);
 
-  /// The raw status string stored by the backend.
   final String value;
 
-  /// User-facing label.
   final String label;
 
   static DocumentStatus fromValue(String value) =>
@@ -28,12 +22,10 @@ enum DocumentStatus {
       );
 }
 
-/// A patient's uploaded medical report/document as returned by the backend.
 @freezed
 abstract class DocumentModel with _$DocumentModel {
   const DocumentModel._();
 
-  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory DocumentModel({
     required String id,
     required String userId,

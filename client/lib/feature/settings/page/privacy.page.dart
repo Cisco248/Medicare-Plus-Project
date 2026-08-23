@@ -9,7 +9,11 @@ class PrivacyStatementPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'Privacy statement',
-          style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: const SafeArea(
@@ -94,9 +98,22 @@ class _Section extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600)),
+          Text(
+            title,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: 6),
-          Text(body, style: const TextStyle(fontFamily: 'Inter', fontSize: 13, height: 1.4)),
+          Text(
+            body,
+            style: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 13,
+              height: 1.4,
+            ),
+          ),
         ],
       ),
     );

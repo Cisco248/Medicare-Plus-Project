@@ -1,11 +1,11 @@
-import 'package:client/feature/dashboard/notifiers/activity.notifier.dart';
-import 'package:client/feature/dashboard/widgets/activity.widget.dart';
+import 'package:client/feature/dashboard/notifiers/clinical_snapshot.notifier.dart';
+import 'package:client/feature/dashboard/notifiers/server_health.notifier.dart';
+import 'package:client/feature/dashboard/widgets/health_summary_cards.dart';
 import 'package:client/feature/dashboard/widgets/knowledge.widget.dart';
 import 'package:client/feature/dashboard/widgets/patient.widget.dart';
 import 'package:client/feature/dashboard/widgets/remainder.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Dashboard extends ConsumerStatefulWidget {
   const Dashboard({super.key});
@@ -23,100 +23,53 @@ class _DashboardState extends ConsumerState<Dashboard> {
     super.dispose();
   }
 
+  Future<void> _refresh() async {
+    ref.invalidate(patientProfileProvider);
+    ref.invalidate(serverPredictionProvider);
+    await ref.read(clinicalSnapshotProvider.notifier).refreshDailyActivity();
+  }
+
   @override
   Widget build(BuildContext context) {
-    ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final trend = ref.watch(stepsTrendProvider);
 
-    final steps = ref.watch(stepsActivityProvider);
-    final summary = ref.watch(dailyActivityProvider);
-
-    return SingleChildScrollView(
-      controller: _scrollController,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
+    return RefreshIndicator(
+      onRefresh: _refresh,
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const PatientCard(),
-            const SizedBox(height: 16),
-            const RemainderCard(),
-            const SizedBox(height: 16),
-            steps.when(
-              data: (value) => ActivityCardWidget(
-                value: value.toString(),
-                valueName: "Foot Steps",
-                icon: FontAwesomeIcons.shoePrints,
-                iconColor: Colors.red,
-              ),
-              loading: () => const CircularProgressIndicator(),
-              error: (error, stackTrace) => Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadiusDirectional.all(
-                    Radius.circular(16),
-                  ),
-                  gradient: LinearGradient(
-                    colors: [
-                      colorScheme.onSurface.withAlpha(10),
-                      colorScheme.surfaceContainer.withAlpha(100),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.width / 2,
-                child: Center(child: Text('Unable to load steps')),
-              ),
-            ),
-            const SizedBox(height: 8),
-            summary.when(
-              data: (value) => Column(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  ActivityCardWidget(
-                    value: value.totalCalories?.toStringAsFixed(1) ?? '0',
-                    valueName: "Burn Calaries",
-                    icon: FontAwesomeIcons.fire,
-                    iconColor: Colors.orange,
+                  const SizedBox(height: 16),
+                  const RemainderCard(),
+                  const SizedBox(height: 16),
+                  const TodayHealthGrid(),
+                  const SizedBox(height: 12),
+                  const VitalSignsCard(),
+                  const SizedBox(height: 12),
+                  const AiHealthSummaryCard(),
+                  const SizedBox(height: 12),
+                  const RiskIndicatorCard(),
+                  const SizedBox(height: 12),
+                  trend.when(
+                    data: (value) => value == null
+                        ? const SizedBox.shrink()
+                        : HealthTrendChart(trend: value),
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, _) => const SizedBox.shrink(),
                   ),
-                  SizedBox(height: 8),
-                  ActivityCardWidget(
-                    value: value.distanceMeters?.toStringAsFixed(1) ?? '0',
-                    valueName: "Distance",
-                    icon: FontAwesomeIcons.road,
-                    iconColor: Colors.blue,
-                  ),
-                  SizedBox(height: 8),
-                  ActivityCardWidget(
-                    value: "${value.weight?.toStringAsFixed(1) ?? 0} KG",
-                    valueName: "Weight",
-                    icon: FontAwesomeIcons.dumbbell,
-                    iconColor: Colors.green,
-                  ),
+                  const SizedBox(height: 16),
+                  const KnowledgeWidget(),
+                  const SizedBox(height: 32),
                 ],
               ),
-              loading: () => const CircularProgressIndicator(),
-              error: (error, stackTrace) => Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadiusDirectional.all(
-                    Radius.circular(16),
-                  ),
-                  gradient: LinearGradient(
-                    colors: [
-                      colorScheme.onSurface.withAlpha(10),
-                      colorScheme.surfaceContainer.withAlpha(100),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.width / 2,
-                child: Center(child: Text('Unable to load calories')),
-              ),
             ),
-            const SizedBox(height: 16),
-            const KnowledgeWidget(),
-            const SizedBox(height: 32),
           ],
         ),
       ),

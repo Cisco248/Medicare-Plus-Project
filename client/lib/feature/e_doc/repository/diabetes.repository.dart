@@ -1,0 +1,36 @@
+import 'package:client/core/exceptions/base.exception.dart';
+import 'package:client/core/exceptions/basic.exception.dart';
+import 'package:client/feature/e_doc/models/doc.state.dart';
+import 'package:client/feature/e_doc/models/diabetes.model.dart';
+import 'package:client/feature/e_doc/repository/edoc_client.dart';
+import 'package:client/feature/e_doc/utils/diabetes_payload.dart';
+import 'package:dio/dio.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'diabetes.repository.g.dart';
+
+@riverpod
+DiabetesRepository diabetesRepository(Ref ref) =>
+    DiabetesRepository(eDocBaseModelClient());
+
+class DiabetesRepository {
+  DiabetesRepository(this._client);
+
+  final Dio _client;
+
+  Future<DocState> predict(DiabetesModel request) async {
+    try {
+      final response = await _client.post<dynamic>(
+        '/diabetes',
+        data: diabetesToApiJson(request),
+      );
+      return DocState.fromResponse(response.data, model: DocModel.diabetes);
+    } on DioException catch (e) {
+      throw AppException.fromDioException(e);
+    } on FormatException {
+      throw const UnknownException(
+        message: 'The server returned an unexpected response.',
+      );
+    }
+  }
+}

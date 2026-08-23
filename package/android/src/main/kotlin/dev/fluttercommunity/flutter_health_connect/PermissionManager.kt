@@ -24,7 +24,7 @@ internal class PermissionManager(
     fun detachActivity(retainPending: Boolean = false) {
         activity = null
         if (!retainPending) {
-            pendingResult?.invoke(Result.failure(IllegalStateException("Activity detached")))
+            pendingResult?.invoke(Result.failure(NoActivityException("requestPermissions")))
             pendingResult = null
         }
     }
@@ -34,6 +34,7 @@ internal class PermissionManager(
             clientProvider().permissionController.getGrantedPermissions()
         }
 
+    /** Returns the subset of [requested] that Health Connect currently grants. */
     suspend fun checkPermissions(requested: List<Map<String, Any?>>): List<Map<String, String>> {
         val granted = getGrantedPermissions()
         return requested.mapNotNull { item ->
@@ -48,65 +49,74 @@ internal class PermissionManager(
         }
     }
 
+    /**
+     * Launches the Health Connect permission UI.
+     *
+     * The result is delivered through [onActivityResult]. [callback] reports
+     * whether *all* requested permissions ended up granted; partial grants are
+     * reported as `false` and the caller can re-read the granted set.
+     */
     fun requestPermissions(
         requested: List<Map<String, Any?>>,
         callback: (Result<Boolean>) -> Unit,
     ) {
         val activity = this.activity
         if (activity == null) {
-            callback(Result.failure(IllegalStateException("No Activity available for permission request")))
+            callback(Result.failure(NoActivityException("requestPermissions")))
             return
         }
         if (pendingResult != null) {
-            callback(Result.failure(IllegalStateException("Another permission request is in progress")))
+            callback(Result.failure(PermissionRequestInProgressException()))
             return
         }
 
-        try {
-            val permissionStrings =
+        val permissionStrings =
+            try {
                 requested
                     .mapNotNull {
                         val type = it["recordType"] as? String
                         val access = it["access"] as? String
                         if (type != null && access != null) {
                             RecordTypeMapper.permissionString(type, access)
-                        } else null
+                        } else {
+                            null
+                        }
                     }.toSet()
-
-            if (permissionStrings.isEmpty()) {
-                callback(Result.success(true))
+            } catch (error: Exception) {
+                callback(Result.failure(error))
                 return
             }
 
-            pendingResult = { result ->
-                result
-                    .onSuccess { granted ->
-                        callback(Result.success(granted.containsAll(permissionStrings)))
-                    }.onFailure { error ->
-                        callback(Result.failure(error))
-                    }
-            }
-
-            val intent = contract.createIntent(activity, permissionStrings)
-            activity.startActivityForResult(intent, REQUEST_CODE)
-
-        } catch (e: ActivityNotFoundException) {
-            pendingResult = null
-            callback(Result.failure(ActivityNotFoundException("Health Connect app is not installed or available on this device.")))
-        } catch (e: Exception) {
-            pendingResult = null
-            callback(Result.failure(e))
+        if (permissionStrings.isEmpty()) {
+            callback(Result.success(true))
+            return
         }
-    }
 
-    suspend fun getGrantedPermissionMaps(): List<Map<String, String>> {
-        val granted = getGrantedPermissions()
+        pendingResult = { result ->
+            result
+                .onSuccess { granted -> callback(Result.success(granted.containsAll(permissionStrings))) }
+                .onFailure { error -> callback(Result.failure(error)) }
+        }
+
         try {
-            return granted.mapNotNull { RecordTypeMapper.permissionMap(it) }
-        } catch (e: ActivityNotFoundException) {
-            return granted.mapNotNull { RecordTypeMapper.permissionMap(it) }
+            activity.startActivityForResult(contract.createIntent(activity, permissionStrings), REQUEST_CODE)
+        } catch (error: ActivityNotFoundException) {
+            pendingResult = null
+            callback(
+                Result.failure(
+                    IntentUnavailableException(
+                        "The Health Connect permission screen could not be opened.",
+                    ),
+                ),
+            )
+        } catch (error: Exception) {
+            pendingResult = null
+            callback(Result.failure(error))
         }
     }
+
+    suspend fun getGrantedPermissionMaps(): List<Map<String, String>> =
+        getGrantedPermissions().mapNotNull { RecordTypeMapper.permissionMap(it) }
 
     override fun onActivityResult(
         requestCode: Int,
@@ -118,15 +128,14 @@ internal class PermissionManager(
         pendingResult = null
 
         try {
-            val granted = contract.parseResult(resultCode, data)
-            callback(Result.success(granted))
-        } catch (e: Exception) {
-            callback(Result.failure(e))
+            callback(Result.success(contract.parseResult(resultCode, data)))
+        } catch (error: Exception) {
+            callback(Result.failure(error))
         }
         return true
     }
 
-    companion object {
-        private const val REQUEST_CODE = 99147
+    private companion object {
+        const val REQUEST_CODE = 99147
     }
 }

@@ -1,6 +1,8 @@
 package dev.fluttercommunity.flutter_health_connect
 
 import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.aggregate.AggregateMetric
+import androidx.health.connect.client.aggregate.AggregationResult
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.FloorsClimbedRecord
@@ -16,9 +18,13 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import dev.fluttercommunity.flutter_health_connect.converters.TimeConverters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.Duration
+import java.time.Instant
 import java.time.ZoneId
 
-internal class AggregationManager( private val clientProvider: () -> HealthConnectClient) {
+internal class AggregationManager(
+    private val clientProvider: () -> HealthConnectClient,
+) {
     suspend fun result(
         metric: String,
         startTimeMillis: Long,
@@ -28,216 +34,200 @@ internal class AggregationManager( private val clientProvider: () -> HealthConne
             if (endTimeMillis <= startTimeMillis) {
                 throw IllegalArgumentException("endTime must be after startTime")
             }
+            val descriptor =
+                METRICS[metric] ?: throw IllegalArgumentException("Unsupported metric: $metric")
             val start = TimeConverters.toInstant(startTimeMillis)
             val end = TimeConverters.toInstant(endTimeMillis)
-            val client = clientProvider()
-            
-            val value: Double? =
-                when (metric) {
-                    "stepsTotal" -> {
-                        val response =
-                            client.aggregate(
-                                AggregateRequest(
-                                    metrics = setOf(StepsRecord.COUNT_TOTAL),
-                                    timeRangeFilter = TimeRangeFilter.between(start, end),
-                                ),
-                            )
-                        response[StepsRecord.COUNT_TOTAL]?.toDouble()
-                    }
-                    "distanceTotal" -> {
-                        val response =
-                            client.aggregate(
-                                AggregateRequest(
-                                    metrics = setOf(DistanceRecord.DISTANCE_TOTAL),
-                                    timeRangeFilter = TimeRangeFilter.between(start, end),
-                                ),
-                            )
-                        response[DistanceRecord.DISTANCE_TOTAL]?.inMeters
-                    }
-                    "activeCaloriesTotal" -> {
-                        val response =
-                            client.aggregate(
-                                AggregateRequest(
-                                    metrics = setOf(ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL),
-                                    timeRangeFilter = TimeRangeFilter.between(start, end),
-                                ),
-                            )
-                        response[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]?.inKilocalories
-                    }
-                    "totalCaloriesTotal" -> {
-                        val response =
-                            client.aggregate(
-                                AggregateRequest(
-                                    metrics = setOf(TotalCaloriesBurnedRecord.ENERGY_TOTAL),
-                                    timeRangeFilter = TimeRangeFilter.between(start, end),
-                                ),
-                            )
-                        response[TotalCaloriesBurnedRecord.ENERGY_TOTAL]?.inKilocalories
-                    }
-                    "floorsClimbedTotal" -> {
-                        val response =
-                            client.aggregate(
-                                AggregateRequest(
-                                    metrics = setOf(FloorsClimbedRecord.FLOORS_CLIMBED_TOTAL),
-                                    timeRangeFilter = TimeRangeFilter.between(start, end),
-                                ),
-                            )
-                        response[FloorsClimbedRecord.FLOORS_CLIMBED_TOTAL]
-                    }
-                    "heartRateAvg" -> {
-                        val response =
-                            client.aggregate(
-                                AggregateRequest(
-                                    metrics = setOf(HeartRateRecord.BPM_AVG),
-                                    timeRangeFilter = TimeRangeFilter.between(start, end),
-                                ),
-                            )
-                        response[HeartRateRecord.BPM_AVG]?.toDouble()
-                    }
-                    "heartRateMin" -> {
-                        val response =
-                            client.aggregate(
-                                AggregateRequest(
-                                    metrics = setOf(HeartRateRecord.BPM_MIN),
-                                    timeRangeFilter = TimeRangeFilter.between(start, end),
-                                ),
-                            )
-                        response[HeartRateRecord.BPM_MIN]?.toDouble()
-                    }
-                    "heartRateMax" -> {
-                        val response =
-                            client.aggregate(
-                                AggregateRequest(
-                                    metrics = setOf(HeartRateRecord.BPM_MAX),
-                                    timeRangeFilter = TimeRangeFilter.between(start, end),
-                                ),
-                            )
-                        response[HeartRateRecord.BPM_MAX]?.toDouble()
-                    }
-                    "restingHeartRateAvg" -> {
-                        val response =
-                            client.aggregate(
-                                AggregateRequest(
-                                    metrics = setOf(RestingHeartRateRecord.BPM_AVG),
-                                    timeRangeFilter = TimeRangeFilter.between(start, end),
-                                ),
-                            )
-                        response[RestingHeartRateRecord.BPM_AVG]?.toDouble()
-                    }
-                    "weightAvg" -> {
-                        val response =
-                            client.aggregate(
-                                AggregateRequest(
-                                    metrics = setOf(WeightRecord.WEIGHT_AVG),
-                                    timeRangeFilter = TimeRangeFilter.between(start, end),
-                                ),
-                            )
-                        response[WeightRecord.WEIGHT_AVG]?.inKilograms
-                    }
-                    else -> throw IllegalArgumentException("Unsupported metric: $metric")
-                }
+
+            val response =
+                clientProvider().aggregate(
+                    AggregateRequest(
+                        metrics = setOf(descriptor.metric),
+                        timeRangeFilter = TimeRangeFilter.between(start, end),
+                    ),
+                )
 
             mapOf(
                 "metric" to metric,
                 "startTimeMillis" to startTimeMillis,
                 "endTimeMillis" to endTimeMillis,
-                "value" to value,
+                "value" to descriptor.read(response),
             )
         }
 
+    /**
+     * Builds a summary for the local calendar day containing [dateMillis].
+     *
+     * All numeric metrics are requested in a single [AggregateRequest]. Health
+     * Connect rate-limits foreground calls, so issuing one binder call instead of
+     * one per metric matters. If the app is missing a read permission for any
+     * metric in the batch the provider rejects the whole request, so that case
+     * falls back to per-metric requests and reports the metrics it may read.
+     */
     suspend fun getDailyHealthSummary(dateMillis: Long): Map<String, Any?> =
         withContext(Dispatchers.IO) {
-
             val zone = ZoneId.systemDefault()
-            val localDate = InstantOf(dateMillis).atZone(zone).toLocalDate()
+            val localDate = TimeConverters.toInstant(dateMillis).atZone(zone).toLocalDate()
             val dayStart = localDate.atStartOfDay(zone).toInstant()
             val dayEnd = localDate.plusDays(1).atStartOfDay(zone).toInstant()
-            val startMillis = dayStart.toEpochMilli()
-            val endMillis = dayEnd.toEpochMilli()
+            val range = TimeRangeFilter.between(dayStart, dayEnd)
 
-            val steps = result("stepsTotal", startMillis, endMillis)["value"] as Double?
-            val distance = result("distanceTotal", startMillis, endMillis)["value"] as Double?
-            val activeCalories =
-                result("activeCaloriesTotal", startMillis, endMillis)["value"] as Double?
-            val totalCalories =
-                result("totalCaloriesTotal", startMillis, endMillis)["value"] as Double?
-            val avgHr = result("heartRateAvg", startMillis, endMillis)["value"] as Double?
-            val restingHr =
-                result("restingHeartRateAvg", startMillis, endMillis)["value"] as Double?
-            val weight = result("weightAvg", startMillis, endMillis)["value"] as Double?
-            val sleepMillis = readSleepDurationMillis(dayStart.toEpochMilli(), dayEnd.toEpochMilli())
+            val values = aggregateSummaryMetrics(range)
 
             mapOf(
-                "dateMillis" to localDate.atStartOfDay(zone).toInstant().toEpochMilli(),
-                "steps" to steps?.toLong(),
-                "distanceMeters" to distance,
-                "activeCalories" to activeCalories,
-                "totalCalories" to totalCalories,
-                "averageHeartRate" to avgHr,
-                "restingHeartRate" to restingHr,
-                "sleepDurationMillis" to sleepMillis,
-                "weight" to weight,
+                "dateMillis" to dayStart.toEpochMilli(),
+                "steps" to values[SUMMARY_STEPS]?.toLong(),
+                "distanceMeters" to values[SUMMARY_DISTANCE],
+                "activeCalories" to values[SUMMARY_ACTIVE_CALORIES],
+                "totalCalories" to values[SUMMARY_TOTAL_CALORIES],
+                "averageHeartRate" to values[SUMMARY_HEART_RATE],
+                "restingHeartRate" to values[SUMMARY_RESTING_HEART_RATE],
+                "sleepDurationMillis" to readSleepDurationMillis(dayStart, dayEnd),
+                "weight" to values[SUMMARY_WEIGHT],
             )
         }
 
-    // Need to Fix
-
-    // Issue 6 — 🟡 Daily summary: 8 IPC round-trips and incorrect sleep totals
-    // Root cause. getDailyHealthSummary calls aggregate(...) seven times sequentially — each is a separate binder call to the Health Connect provider, which rate-limits foreground calls. Health Connect's AggregateRequest natively accepts multiple metrics.
-
-    // ❌ Current Code
-
-    // AggregationManager.kt
-    // Lines 158-167
-    // val steps = aggregate("stepsTotal", startMillis, endMillis)["value"] as Double?
-    // val distance = aggregate("distanceTotal", startMillis, endMillis)["value"] as Double?
-    // val activeCalories = aggregate("activeCaloriesTotal", startMillis, endMillis)["value"] as Double?
-    // ...
-    // ✅ Corrected Code
-    // val response = clientProvider().aggregate(
-        // AggregateRequest(
-           // metrics = setOf(
-                // StepsRecord.COUNT_TOTAL,
-                // DistanceRecord.DISTANCE_TOTAL,
-                // ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL,
-                // TotalCaloriesBurnedRecord.ENERGY_TOTAL,
-                // HeartRateRecord.BPM_AVG,
-                // RestingHeartRateRecord.BPM_AVG,
-                // WeightRecord.WEIGHT_AVG,
-            // ),
-            // timeRangeFilter = TimeRangeFilter.between(dayStart, dayEnd),
-        // ),
-    // )
-    // val steps = response[StepsRecord.COUNT_TOTAL]?.toDouble()
-    // val distance = response[DistanceRecord.DISTANCE_TOTAL]?.inMeters
-
-    // ... etc., one IPC call instead of seven
-    //Separately, readSleepDurationMillis sums the full duration of every session that merely overlaps the day (a 23:00→07:00 session adds 8h to both days) and ignores pageToken. Clip to the window and paginate:
-
-    // val clippedStart = maxOf(record.startTime, dayStart)
-    // val clippedEnd = minOf(record.endTime, dayEnd)
-    // java.time.Duration.between(clippedStart, clippedEnd).coerceAtLeast(java.time.Duration.ZERO).toMillis()
-
-    private suspend fun readSleepDurationMillis(
-        startMillis: Long,
-        endMillis: Long,
-    ): Long? {
-        val start = TimeConverters.toInstant(startMillis)
-        val end = TimeConverters.toInstant(endMillis)
-        val response =
-            clientProvider().readRecords(
-                ReadRecordsRequest(
-                    recordType = SleepSessionRecord::class,
-                    timeRangeFilter = TimeRangeFilter.between(start, end),
-                ),
-            )
-        if (response.records.isEmpty()) return null
-        val total =
-            response.records.sumOf { record ->
-                java.time.Duration.between(record.startTime, record.endTime).toMillis()
+    private suspend fun aggregateSummaryMetrics(range: TimeRangeFilter): Map<String, Double?> {
+        val descriptors =
+            SUMMARY_METRICS.mapNotNull { name ->
+                METRICS[name]?.let { descriptor -> name to descriptor }
             }
-        return total
+        val client = clientProvider()
+
+        return try {
+            val response =
+                client.aggregate(
+                    AggregateRequest(
+                        metrics = descriptors.map { it.second.metric }.toSet(),
+                        timeRangeFilter = range,
+                    ),
+                )
+            descriptors.associate { (name, descriptor) -> name to descriptor.read(response) }
+        } catch (error: SecurityException) {
+            // Partial permissions: keep the metrics the user did grant instead of
+            // failing the whole summary.
+            descriptors.associate { (name, descriptor) ->
+                name to
+                    try {
+                        descriptor.read(
+                            client.aggregate(
+                                AggregateRequest(
+                                    metrics = setOf(descriptor.metric),
+                                    timeRangeFilter = range,
+                                ),
+                            ),
+                        )
+                    } catch (denied: SecurityException) {
+                        null
+                    }
+            }
+        }
     }
 
-    private fun InstantOf(millis: Long) = TimeConverters.toInstant(millis)
+    /**
+     * Total time asleep inside the day window.
+     *
+     * Sessions are clipped to the window so an overnight session is not counted
+     * in full against both days, and the reader pages through results because
+     * Health Connect caps the number of records per response.
+     *
+     * Sleep is the one summary field read through the records API rather than
+     * aggregation, so it needs the same permission tolerance as
+     * [aggregateSummaryMetrics]: a missing sleep grant leaves this field empty
+     * instead of failing the whole summary.
+     */
+    private suspend fun readSleepDurationMillis(
+        dayStart: Instant,
+        dayEnd: Instant,
+    ): Long? {
+        val client = clientProvider()
+        var pageToken: String? = null
+        var total = 0L
+        var found = false
+
+        try {
+            do {
+                val response =
+                    client.readRecords(
+                        ReadRecordsRequest(
+                            recordType = SleepSessionRecord::class,
+                            timeRangeFilter = TimeRangeFilter.between(dayStart, dayEnd),
+                            pageToken = pageToken,
+                        ),
+                    )
+                for (record in response.records) {
+                    found = true
+                    val clippedStart = maxOf(record.startTime, dayStart)
+                    val clippedEnd = minOf(record.endTime, dayEnd)
+                    val duration = Duration.between(clippedStart, clippedEnd)
+                    if (!duration.isNegative) total += duration.toMillis()
+                }
+                pageToken = response.pageToken?.takeIf { it.isNotEmpty() }
+            } while (pageToken != null)
+        } catch (denied: SecurityException) {
+            return null
+        }
+
+        return if (found) total else null
+    }
+
+    private class MetricDescriptor(
+        val metric: AggregateMetric<*>,
+        val read: (AggregationResult) -> Double?,
+    )
+
+    private companion object {
+        const val SUMMARY_STEPS = "stepsTotal"
+        const val SUMMARY_DISTANCE = "distanceTotal"
+        const val SUMMARY_ACTIVE_CALORIES = "activeCaloriesTotal"
+        const val SUMMARY_TOTAL_CALORIES = "totalCaloriesTotal"
+        const val SUMMARY_HEART_RATE = "heartRateAvg"
+        const val SUMMARY_RESTING_HEART_RATE = "restingHeartRateAvg"
+        const val SUMMARY_WEIGHT = "weightAvg"
+
+        val SUMMARY_METRICS =
+            listOf(
+                SUMMARY_STEPS,
+                SUMMARY_DISTANCE,
+                SUMMARY_ACTIVE_CALORIES,
+                SUMMARY_TOTAL_CALORIES,
+                SUMMARY_HEART_RATE,
+                SUMMARY_RESTING_HEART_RATE,
+                SUMMARY_WEIGHT,
+            )
+
+        val METRICS: Map<String, MetricDescriptor> =
+            mapOf(
+                SUMMARY_STEPS to
+                    MetricDescriptor(StepsRecord.COUNT_TOTAL) { it[StepsRecord.COUNT_TOTAL]?.toDouble() },
+                SUMMARY_DISTANCE to
+                    MetricDescriptor(DistanceRecord.DISTANCE_TOTAL) {
+                        it[DistanceRecord.DISTANCE_TOTAL]?.inMeters
+                    },
+                SUMMARY_ACTIVE_CALORIES to
+                    MetricDescriptor(ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL) {
+                        it[ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL]?.inKilocalories
+                    },
+                SUMMARY_TOTAL_CALORIES to
+                    MetricDescriptor(TotalCaloriesBurnedRecord.ENERGY_TOTAL) {
+                        it[TotalCaloriesBurnedRecord.ENERGY_TOTAL]?.inKilocalories
+                    },
+                "floorsClimbedTotal" to
+                    MetricDescriptor(FloorsClimbedRecord.FLOORS_CLIMBED_TOTAL) {
+                        it[FloorsClimbedRecord.FLOORS_CLIMBED_TOTAL]
+                    },
+                SUMMARY_HEART_RATE to
+                    MetricDescriptor(HeartRateRecord.BPM_AVG) { it[HeartRateRecord.BPM_AVG]?.toDouble() },
+                "heartRateMin" to
+                    MetricDescriptor(HeartRateRecord.BPM_MIN) { it[HeartRateRecord.BPM_MIN]?.toDouble() },
+                "heartRateMax" to
+                    MetricDescriptor(HeartRateRecord.BPM_MAX) { it[HeartRateRecord.BPM_MAX]?.toDouble() },
+                SUMMARY_RESTING_HEART_RATE to
+                    MetricDescriptor(RestingHeartRateRecord.BPM_AVG) {
+                        it[RestingHeartRateRecord.BPM_AVG]?.toDouble()
+                    },
+                SUMMARY_WEIGHT to
+                    MetricDescriptor(WeightRecord.WEIGHT_AVG) { it[WeightRecord.WEIGHT_AVG]?.inKilograms },
+            )
+    }
 }

@@ -19,7 +19,11 @@ class SettingsPage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text(
           'Settings',
-          style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: ListView(
@@ -56,7 +60,9 @@ class SettingsPage extends ConsumerWidget {
           const Divider(),
           ListTile(
             title: const Text('Notifications'),
-            subtitle: const Text('Push notifications are not available in this version.'),
+            subtitle: const Text(
+              'Push notifications are not available in this version.',
+            ),
             enabled: false,
           ),
           ListTile(

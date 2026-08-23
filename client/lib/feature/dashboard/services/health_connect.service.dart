@@ -1,17 +1,5 @@
 import 'package:flutter_health_connect/app.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'health_connect.service.g.dart';
-
-@riverpod
-HealthConnectService healthConnectService(Ref ref) => HealthConnectService();
-
-/// Thin, typed wrapper around the `flutter_health_connect` SDK.
-///
-/// Guarantees the SDK is initialized before any call and exposes only the
-/// operations the dashboard feature needs. Errors are surfaced as
-/// [HealthConnectException]s and mapped to domain exceptions by the
-/// repository layer.
 class HealthConnectService {
   HealthConnectService({FlutterHealthConnect? sdk})
     : _sdk = sdk ?? FlutterHealthConnect();

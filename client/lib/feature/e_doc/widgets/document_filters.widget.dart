@@ -96,9 +96,7 @@ class DocumentFilters extends ConsumerWidget {
                 ),
               ),
               _FilterChip(
-                label: query.sort == DocumentSort.newest
-                    ? 'Newest'
-                    : 'Oldest',
+                label: query.sort == DocumentSort.newest ? 'Newest' : 'Oldest',
                 selected: true,
                 onTap: () => notifier.setSort(
                   query.sort == DocumentSort.newest
@@ -122,7 +120,11 @@ class DocumentFilters extends ConsumerWidget {
   }
 
   List<String> _unique(Iterable<String?> values) =>
-      values.whereType<String>().where((v) => v.trim().isNotEmpty).toSet().toList()
+      values
+          .whereType<String>()
+          .where((v) => v.trim().isNotEmpty)
+          .toSet()
+          .toList()
         ..sort();
 
   Future<void> _pick(

@@ -14,7 +14,14 @@ class OrdersPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Orders', style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.w600)),
+        title: const Text(
+          'Orders',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
       body: SafeArea(
         child: orders.when(
@@ -37,7 +44,9 @@ class OrdersPage extends ConsumerWidget {
                     ),
                     isThreeLine: true,
                     onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => OrderDetailsPage(order: order)),
+                      MaterialPageRoute(
+                        builder: (_) => OrderDetailsPage(order: order),
+                      ),
                     ),
                   ),
                 );

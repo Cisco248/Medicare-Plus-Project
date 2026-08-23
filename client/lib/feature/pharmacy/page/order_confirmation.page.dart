@@ -14,7 +14,14 @@ class OrderConfirmationPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order confirmation', style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.w600)),
+        title: const Text(
+          'Order confirmation',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
       body: SafeArea(
         child: Padding(
@@ -24,27 +31,38 @@ class OrderConfirmationPage extends StatelessWidget {
               Icon(
                 success ? Icons.check_circle_outline : Icons.error_outline,
                 size: 56,
-                color: success ? Colors.green : Theme.of(context).colorScheme.error,
+                color: success
+                    ? Colors.green
+                    : Theme.of(context).colorScheme.error,
               ),
               const SizedBox(height: 16),
               Text(
                 success ? 'Order placed' : 'Payment was not completed',
-                style: const TextStyle(fontFamily: 'Poppins', fontSize: 18, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 8),
               Text('Order ${order.orderId}'),
               Text('Total ${formatLkr(order.total)}'),
-              Text('Status: ${order.orderStatus.label} • ${order.paymentStatus.label}'),
+              Text(
+                'Status: ${order.orderStatus.label} • ${order.paymentStatus.label}',
+              ),
               const SizedBox(height: 24),
               FilledButton(
                 onPressed: () => Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => OrderDetailsPage(order: order)),
+                  MaterialPageRoute(
+                    builder: (_) => OrderDetailsPage(order: order),
+                  ),
                 ),
                 child: const Text('View order details'),
               ),
               const SizedBox(height: 8),
               TextButton(
-                onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+                onPressed: () =>
+                    Navigator.of(context).popUntil((route) => route.isFirst),
                 child: const Text('Back to pharmacy'),
               ),
             ],

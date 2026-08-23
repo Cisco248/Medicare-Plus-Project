@@ -1,4 +1,4 @@
-import 'package:client/layout/providers/navigation.notifier.dart';
+import 'package:client/layout/notifiers/navigation.notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

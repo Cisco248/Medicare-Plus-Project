@@ -5,57 +5,12 @@ import 'package:client/feature/dashboard/models/activity.model.dart';
 import 'package:client/feature/dashboard/services/health_aggregator.dart';
 import 'package:client/feature/dashboard/services/health_connect.service.dart';
 import 'package:flutter_health_connect/app.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'activity_repository.g.dart';
-
-@riverpod
-ActivityRepository activityRepository(Ref ref) =>
-    ActivityRepository(service: ref.watch(healthConnectServiceProvider));
-
-/// Health Connect access level determined while collecting data.
-enum HealthAccessStatus {
-  /// Health Connect is not supported or not installed on this device.
-  unavailable,
-
-  /// None of the requested read permissions are granted.
-  denied,
-
-  /// Some read permissions are granted; missing metrics are `null`.
-  partial,
-
-  /// All requested read permissions are granted.
-  granted,
-}
-
-/// Result of a Health Connect collection run.
-class HealthDataResult {
-  const HealthDataResult({
-    required this.status,
-    this.activity,
-    this.deniedMetrics = const <String>[],
-  });
-
-  final HealthAccessStatus status;
-
-  /// Normalized data; `null` unless at least collection was attempted.
-  final ActivityModel? activity;
-
-  /// Record-type names the user has not granted read access to.
-  final List<String> deniedMetrics;
-}
-
-/// Coordinates Health Connect data collection and normalization.
-///
-/// Reads only record types the user granted access to, aggregates raw
-/// records via [HealthAggregator], and maps SDK exceptions into the
-/// application's [AppException] hierarchy.
 class ActivityRepository {
   ActivityRepository({required this._service});
 
   final HealthConnectService _service;
 
-  /// All read permissions this feature can take advantage of.
   static final List<Permission> readPermissions = List.unmodifiable([
     Permission.steps.read,
     Permission.distance.read,
@@ -72,10 +27,14 @@ class ActivityRepository {
     Permission.oxygenSaturation.read,
   ]);
 
-  /// Collects and normalizes all permitted health data for `[start, end)`.
-  ///
-  /// Metrics without permission or without records are `null` in the
-  /// resulting [ActivityModel]; they must never be interpreted as zero.
+  Future<Availability> getAvailability() async {
+    try {
+      return await _service.availability();
+    } catch (e) {
+      throw UnknownException(details: e);
+    }
+  }
+
   Future<HealthDataResult> collectActivity({
     required DateTime startTime,
     required DateTime endTime,
@@ -101,6 +60,7 @@ class ActivityRepository {
       }
 
       final activity = await _readActivity(granted, startTime, endTime);
+
       return HealthDataResult(
         status: permissionStatus.allGranted
             ? HealthAccessStatus.granted
@@ -126,7 +86,6 @@ class ActivityRepository {
       try {
         return await read(start, end);
       } on HealthConnectPermissionException {
-        // Permission was revoked between the check and the read.
         return const [];
       } on HealthConnectSecurityException {
         return const [];
@@ -219,7 +178,6 @@ class ActivityRepository {
     );
   }
 
-  /// Opens the system Health Connect permission flow.
   Future<bool> requestPermissions() async {
     try {
       return await _service.requestPermissions(readPermissions);
@@ -228,7 +186,6 @@ class ActivityRepository {
     }
   }
 
-  /// Opens this app's Health Connect permission management screen.
   Future<void> openPermissionSettings() async {
     try {
       await _service.openAppPermissions();
@@ -237,6 +194,14 @@ class ActivityRepository {
     }
   }
 
+  /// Translates SDK failures into the app's exception vocabulary.
+  ///
+  /// Only [HealthConnectUnavailableException] and
+  /// [HealthConnectNotInstalledException] describe a device that cannot serve
+  /// Health Connect at all; the SDK raises those two exclusively from an
+  /// explicit availability check. Every other failure keeps its own meaning, so
+  /// a denied permission or a failed provider call is no longer reported to the
+  /// user as "Health Connect is not available on this device".
   AppException _mapHealthConnectException(HealthConnectException exception) {
     return switch (exception) {
       HealthConnectUnavailableException() ||
@@ -250,55 +215,23 @@ class ActivityRepository {
       HealthConnectInvalidTimeRangeException() => const ValidationException(
         message: 'The selected period is invalid.',
       ),
+      HealthConnectInvalidRequestException() ||
+      HealthConnectUnsupportedRecordException() => const ValidationException(
+        message: 'This health data type is not supported on your device.',
+      ),
+      HealthConnectNavigationException() => const UnknownException(
+        message: 'Health Connect could not be opened on this device.',
+      ),
+      HealthConnectNotInitializedException() => const UnknownException(
+        message: 'Health Connect is still starting up. Please try again.',
+      ),
+      HealthConnectOperationException() => const UnknownException(
+        message: 'Health Connect did not respond. Please try again.',
+      ),
       _ => UnknownException(
         message: 'Reading your health data failed. Please try again.',
         details: exception.code,
       ),
     };
-  }
-
-  // ---------------------------------------------------------------------
-  // Legacy per-metric reads used by the existing dashboard activity cards.
-  // ---------------------------------------------------------------------
-
-  Future<List<StepsRecord>> footStep(List<Permission> permissions) async {
-    try {
-      await _service.checkPermissions(permissions);
-      final start = _startOfToday();
-      return await _service.readSteps(
-        start,
-        start.add(const Duration(days: 1)),
-      );
-    } on HealthConnectException catch (e) {
-      throw _mapHealthConnectException(e);
-    }
-  }
-
-  Future<List<TotalCaloriesBurnedRecord>> burnCalories(
-    List<Permission> permissions,
-  ) async {
-    try {
-      await _service.checkPermissions(permissions);
-      final start = _startOfToday();
-      return await _service.readTotalCaloriesBurned(
-        start,
-        start.add(const Duration(days: 1)),
-      );
-    } on HealthConnectException catch (e) {
-      throw _mapHealthConnectException(e);
-    }
-  }
-
-  Future<DailySummary> dailySummary() async {
-    try {
-      return await _service.getDailyHealthSummary(_startOfToday());
-    } on HealthConnectException catch (e) {
-      throw _mapHealthConnectException(e);
-    }
-  }
-
-  DateTime _startOfToday() {
-    final now = DateTime.now();
-    return DateTime(now.year, now.month, now.day);
   }
 }

@@ -1,63 +1,56 @@
+import 'package:client/feature/e_doc/models/doc.state.dart';
+import 'package:client/feature/e_doc/notifiers/doc.state.dart';
 import 'package:client/feature/e_doc/notifiers/form.notifier.dart';
-import 'package:client/feature/e_doc/widgets/blood_pres.widget.dart';
+// import 'package:client/feature/e_doc/notifiers/form.notifier.dart';
 import 'package:client/feature/e_doc/widgets/diabetes_form.widget.dart';
+import 'package:client/feature/e_doc/widgets/heart_disease.widget.dart';
 import 'package:client/feature/e_doc/widgets/hypertension_form.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MeditationFormWidget extends ConsumerStatefulWidget {
-  const MeditationFormWidget({super.key});
+class EDocAssessmentForm extends ConsumerWidget {
+  const EDocAssessmentForm({super.key});
 
   @override
-  ConsumerState<MeditationFormWidget> createState() =>
-      _MeditationFormWidgetState();
-}
-
-class _MeditationFormWidgetState extends ConsumerState<MeditationFormWidget> {
-  final List<String> list = <String>[
-    'Diabetes',
-    'Hypertension',
-    'Blood Pressure',
-  ];
-  late String dropdownValue = list.first;
-
-  @override
-  Widget build(BuildContext context) {
-    final formState = ref.watch(formStateProvider);
-    ColorScheme theme = Theme.of(context).colorScheme;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final model = ref.watch(eDocModelProvider);
+    final theme = Theme.of(context).colorScheme;
 
     return Column(
       children: [
         Container(
-          width: MediaQuery.of(context).size.width,
+          width: double.infinity,
           height: 50,
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
             color: theme.surfaceContainer,
             borderRadius: BorderRadius.circular(16),
           ),
           alignment: Alignment.center,
-          child: DropdownButton(
-            menuWidth: MediaQuery.of(context).size.width,
-            value: formState,
-            icon: const Icon(Icons.arrow_downward),
-            iconSize: 16,
-            elevation: 16,
-            style: TextStyle(color: theme.onSurface),
-            onChanged: (String? value) {
-              setState(() => dropdownValue = value!);
-              ref.read(formStateProvider.notifier).changeStatus(value!);
+          child: DropdownButton<DocModel>(
+            value: model,
+            isExpanded: true,
+            underline: const SizedBox.shrink(),
+            icon: const Icon(Icons.arrow_downward, size: 16),
+            style: TextStyle(color: theme.onSurface, fontSize: 14),
+            onChanged: (value) {
+              if (value != null) {
+                ref.read(eDocModelProvider.notifier).select(value);
+                ref.read(docStateProvider.notifier).clear();
+              }
             },
-            items: list.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(value: value, child: Text(value));
-            }).toList(),
+            items: [
+              for (final item in DocModel.values)
+                DropdownMenuItem(value: item, child: Text(item.label)),
+            ],
           ),
         ),
-
-        SizedBox(height: 16),
-        if (formState == 'Diabetes') DiabetesFormWidget(),
-        if (formState == 'Hypertension') HypertensionFormWidget(),
-        if (formState == 'Blood Pressure') BloodPressureFormWidget(),
+        const SizedBox(height: 16),
+        switch (model) {
+          DocModel.diabetes => const DiabetesFormWidget(),
+          DocModel.hypertension => const HypertensionFormWidget(),
+          DocModel.heartDisease => const HeartDiseaseFormWidget(),
+        },
       ],
     );
   }

@@ -12,24 +12,48 @@ class OrderDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order details', style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.w600)),
+        title: const Text(
+          'Order details',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           children: [
-            Text(order.orderId, style: const TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600, fontSize: 16)),
+            Text(
+              order.orderId,
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+            ),
             Text('Placed ${formatDocumentDate(order.createdAt)}'),
             const SizedBox(height: 8),
             Text('Order status: ${order.orderStatus.label}'),
-            Text('Payment: ${order.paymentMethod.label} • ${order.paymentStatus.label}'),
+            Text(
+              'Payment: ${order.paymentMethod.label} • ${order.paymentStatus.label}',
+            ),
             const SizedBox(height: 16),
-            const Text('Items', style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600)),
+            const Text(
+              'Items',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             ...order.items.map(
               (item) => ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(item.product.name),
-                subtitle: Text('${item.quantity} × ${formatLkr(item.product.discountedPrice)}'),
+                subtitle: Text(
+                  '${item.quantity} × ${formatLkr(item.product.discountedPrice)}',
+                ),
                 trailing: Text(formatLkr(item.lineTotal)),
               ),
             ),
@@ -39,7 +63,13 @@ class OrderDetailsPage extends StatelessWidget {
             _row('Delivery fee', formatLkr(order.deliveryFee)),
             _row('Total', formatLkr(order.total), bold: true),
             const SizedBox(height: 16),
-            const Text('Delivery address', style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600)),
+            const Text(
+              'Delivery address',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             Text(order.deliveryAddress.fullName),
             Text(order.deliveryAddress.phone),
             Text(order.deliveryAddress.formatted),
@@ -54,9 +84,19 @@ class OrderDetailsPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Text(label, style: TextStyle(fontWeight: bold ? FontWeight.w600 : FontWeight.w400)),
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
+            ),
+          ),
           const Spacer(),
-          Text(value, style: TextStyle(fontWeight: bold ? FontWeight.w600 : FontWeight.w400)),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
+            ),
+          ),
         ],
       ),
     );

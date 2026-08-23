@@ -34,19 +34,28 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final wished = ref.watch(wishlistProvider).value?.contains(product.id) ?? false;
-    final rx = ref.watch(prescriptionProvider)[product.id];
+    final wished =
+        ref.watch(wishlistProvider).value?.contains(product.id) ?? false;
+    final rx = ref.watch(prescriptionProvider).value![product.id];
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           'Product details',
-          style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         actions: [
           IconButton(
-            onPressed: () => ref.read(wishlistProvider.notifier).toggle(product.id),
-            icon: Icon(wished ? Icons.favorite : Icons.favorite_border, color: wished ? Colors.red : null),
+            onPressed: () =>
+                ref.read(wishlistProvider.notifier).toggle(product.id),
+            icon: Icon(
+              wished ? Icons.favorite : Icons.favorite_border,
+              color: wished ? Colors.red : null,
+            ),
           ),
         ],
       ),
@@ -63,56 +72,127 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                 fit: BoxFit.cover,
                 errorBuilder: (_, _, _) => const SizedBox(
                   height: 180,
-                  child: Center(child: Icon(Icons.medical_services_outlined, size: 48)),
+                  child: Center(
+                    child: Icon(Icons.medical_services_outlined, size: 48),
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 16),
-            Text(product.name, style: const TextStyle(fontFamily: 'Poppins', fontSize: 18, fontWeight: FontWeight.w600)),
-            Text(product.brand, style: TextStyle(fontFamily: 'Inter', color: colorScheme.onSurface.withAlpha(150))),
+            Text(
+              product.name,
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Text(
+              product.brand,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                color: colorScheme.onSurface.withAlpha(150),
+              ),
+            ),
             const SizedBox(height: 8),
-            Text(product.category.label, style: const TextStyle(fontFamily: 'Inter', fontSize: 12)),
+            Text(
+              product.category.label,
+              style: const TextStyle(fontFamily: 'Inter', fontSize: 12),
+            ),
             const SizedBox(height: 8),
             Row(
               children: [
-                Text(formatLkr(product.discountedPrice), style: TextStyle(fontFamily: 'Poppins', fontSize: 18, color: colorScheme.primary, fontWeight: FontWeight.w600)),
+                Text(
+                  formatLkr(product.discountedPrice),
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 18,
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 if (product.hasDiscount) ...[
                   const SizedBox(width: 8),
-                  Text(formatLkr(product.price), style: const TextStyle(decoration: TextDecoration.lineThrough)),
+                  Text(
+                    formatLkr(product.price),
+                    style: const TextStyle(
+                      decoration: TextDecoration.lineThrough,
+                    ),
+                  ),
                   const SizedBox(width: 8),
                   Text('${(product.discount * 100).round()}% off'),
                 ],
               ],
             ),
             const SizedBox(height: 8),
-            Text(product.inStock ? 'Available (${product.stockCount} in stock)' : 'Currently unavailable'),
+            Text(
+              product.inStock
+                  ? 'Available (${product.stockCount} in stock)'
+                  : 'Currently unavailable',
+            ),
             if (product.prescriptionRequired) ...[
               const SizedBox(height: 8),
               Text(
-                'Prescription required • ${rx?.status.label ?? 'Not Submitted'}',
-                style: TextStyle(color: colorScheme.error, fontWeight: FontWeight.w600),
+                'Prescription required • ${rx?.status!.label ?? 'Not Submitted'}',
+                style: TextStyle(
+                  color: colorScheme.error,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
             const SizedBox(height: 16),
-            Text(product.description, style: const TextStyle(fontFamily: 'Inter', fontSize: 13, height: 1.4)),
+            Text(
+              product.description,
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 13,
+                height: 1.4,
+              ),
+            ),
             if (product.usage.isNotEmpty) ...[
               const SizedBox(height: 16),
-              const Text('Usage', style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600)),
-              Text(product.usage, style: const TextStyle(fontFamily: 'Inter', fontSize: 12)),
+              const Text(
+                'Usage',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                product.usage,
+                style: const TextStyle(fontFamily: 'Inter', fontSize: 12),
+              ),
             ],
             if (product.warnings.isNotEmpty) ...[
               const SizedBox(height: 12),
-              const Text('Important', style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600)),
-              Text(product.warnings, style: const TextStyle(fontFamily: 'Inter', fontSize: 12)),
+              const Text(
+                'Important',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                product.warnings,
+                style: const TextStyle(fontFamily: 'Inter', fontSize: 12),
+              ),
             ],
             const SizedBox(height: 16),
             Row(
               children: [
                 IconButton(
-                  onPressed: _quantity > 1 ? () => setState(() => _quantity--) : null,
+                  onPressed: _quantity > 1
+                      ? () => setState(() => _quantity--)
+                      : null,
                   icon: const Icon(Icons.remove_circle_outline),
                 ),
-                Text('$_quantity', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                Text(
+                  '$_quantity',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 IconButton(
                   onPressed: () => setState(() => _quantity++),
                   icon: const Icon(Icons.add_circle_outline),
@@ -137,27 +217,37 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
 
   Future<void> _add({required bool buyNow}) async {
     if (product.prescriptionRequired) {
-      final approved = ref.read(prescriptionProvider)[product.id]?.canPurchase == true;
+      final approved =
+          ref.read(prescriptionProvider).value![product.id]?.canPurchase ==
+          true;
       if (!approved) {
         if (!mounted) return;
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => PrescriptionVerificationPage(product: product)),
+          MaterialPageRoute(
+            builder: (_) => PrescriptionVerificationPage(product: product),
+          ),
         );
         return;
       }
     }
-    final error = await ref.read(cartProvider.notifier).add(product, quantity: _quantity);
+    final error = await ref
+        .read(cartProvider.notifier)
+        .add(product, quantity: _quantity);
     if (!mounted) return;
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
       return;
     }
     if (buyNow) {
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CartPage()));
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const CartPage()));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${product.name} added to cart')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('${product.name} added to cart')));
     }
   }
 }

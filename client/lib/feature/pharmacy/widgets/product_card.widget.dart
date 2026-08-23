@@ -18,7 +18,8 @@ class ProductCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
-    final wished = ref.watch(wishlistProvider).value?.contains(product.id) ?? false;
+    final wished =
+        ref.watch(wishlistProvider).value?.contains(product.id) ?? false;
 
     return GestureDetector(
       onTap: () => Navigator.of(context).push(
@@ -52,7 +53,10 @@ class ProductCard extends ConsumerWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 4,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -107,7 +111,9 @@ class ProductCard extends ConsumerWidget {
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 10,
-                        color: product.inStock ? Colors.green : colorScheme.error,
+                        color: product.inStock
+                            ? Colors.green
+                            : colorScheme.error,
                       ),
                     ),
                     if (product.prescriptionRequired)
@@ -124,8 +130,9 @@ class ProductCard extends ConsumerWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.only(right: 8),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IconButton(
                     onPressed: () =>
@@ -133,12 +140,15 @@ class ProductCard extends ConsumerWidget {
                     icon: Icon(
                       wished ? Icons.favorite : Icons.favorite_border,
                       color: wished ? Colors.red : colorScheme.onSurface,
-                      size: 18,
+                      size: 16,
                     ),
+                    style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.transparent)),
                   ),
                   IconButton(
                     onPressed: () => _addToCart(context, ref),
                     icon: const FaIcon(FontAwesomeIcons.cartPlus, size: 16),
+                    style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.transparent)),
+
                   ),
                 ],
               ),

@@ -38,6 +38,10 @@ android {
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
+            // Android framework types (RemoteException, Intent, ...) are stubs in
+            // the unit-test classpath; without this they throw "Stub!" instead of
+            // behaving as no-ops.
+            isReturnDefaultValues = true
             all {
                 it.useJUnitPlatform()
                 it.outputs.upToDateWhen { false }

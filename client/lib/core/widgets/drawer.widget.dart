@@ -8,7 +8,7 @@ import 'package:client/feature/settings/page/permissions.page.dart';
 import 'package:client/feature/settings/page/privacy.page.dart';
 import 'package:client/feature/settings/page/profile.page.dart';
 import 'package:client/feature/settings/page/settings.page.dart';
-import 'package:client/layout/providers/navigation.notifier.dart';
+import 'package:client/layout/notifiers/navigation.notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -32,7 +32,11 @@ class AppDrawer extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.health_and_safety_rounded, color: colorScheme.primary, size: 32),
+                  Icon(
+                    Icons.health_and_safety_rounded,
+                    color: colorScheme.primary,
+                    size: 32,
+                  ),
                   const SizedBox(height: 8),
                   Text(
                     'MediCare Plus',
@@ -62,45 +66,118 @@ class AppDrawer extends ConsumerWidget {
             ),
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
-              child: Text('MAIN NAVIGATION', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+              child: Text(
+                'MAIN NAVIGATION',
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+              ),
             ),
-            _tab(context, ref, icon: const FaIcon(FontAwesomeIcons.houseChimneyMedical, size: 16), label: 'Dashboard', index: 0),
-            _tab(context, ref, icon: const FaIcon(FontAwesomeIcons.userDoctor, size: 16), label: 'E-Doc', index: 2),
-            _tab(context, ref, icon: const FaIcon(FontAwesomeIcons.briefcaseMedical, size: 16), label: 'E-Pharmacy', index: 3),
+            _tab(
+              context,
+              ref,
+              icon: const FaIcon(
+                FontAwesomeIcons.houseChimneyMedical,
+                size: 16,
+              ),
+              label: 'Dashboard',
+              index: 0,
+            ),
+            _tab(
+              context,
+              ref,
+              icon: const FaIcon(FontAwesomeIcons.userDoctor, size: 16),
+              label: 'E-Doc',
+              index: 2,
+            ),
+            _tab(
+              context,
+              ref,
+              icon: const FaIcon(FontAwesomeIcons.briefcaseMedical, size: 16),
+              label: 'E-Pharmacy',
+              index: 3,
+            ),
             ListTile(
               leading: const FaIcon(FontAwesomeIcons.boxOpen, size: 16),
               title: const Text('Orders'),
               onTap: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OrdersPage()));
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const OrdersPage()));
               },
             ),
             ListTile(
-              leading: const FaIcon(FontAwesomeIcons.filePrescription, size: 16),
+              leading: const FaIcon(
+                FontAwesomeIcons.filePrescription,
+                size: 16,
+              ),
               title: const Text('Prescriptions'),
               onTap: () {
                 Navigator.of(context).pop();
-                ref.read(documentQueryProvider.notifier).setDocType('Prescription');
+                ref
+                    .read(documentQueryProvider.notifier)
+                    .setDocType('Prescription');
                 ref.read(navigationProvider.notifier).changeIndex(2);
               },
             ),
-            _tab(context, ref, icon: const FaIcon(FontAwesomeIcons.fileMedical, size: 16), label: 'Reports', index: 4),
+            _tab(
+              context,
+              ref,
+              icon: const FaIcon(FontAwesomeIcons.fileMedical, size: 16),
+              label: 'Reports',
+              index: 4,
+            ),
             const Divider(),
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
-              child: Text('ACCOUNT', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+              child: Text(
+                'ACCOUNT',
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+              ),
             ),
-            _push(context, icon: const FaIcon(FontAwesomeIcons.user, size: 16), label: 'Profile', page: const ProfilePage()),
-            _push(context, icon: const FaIcon(FontAwesomeIcons.gear, size: 16), label: 'Settings', page: const SettingsPage()),
+            _push(
+              context,
+              icon: const FaIcon(FontAwesomeIcons.user, size: 16),
+              label: 'Profile',
+              page: const ProfilePage(),
+            ),
+            _push(
+              context,
+              icon: const FaIcon(FontAwesomeIcons.gear, size: 16),
+              label: 'Settings',
+              page: const SettingsPage(),
+            ),
             const Divider(),
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
-              child: Text('APP INFORMATION', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+              child: Text(
+                'APP INFORMATION',
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+              ),
             ),
-            _push(context, icon: const FaIcon(FontAwesomeIcons.shieldHalved, size: 16), label: 'Permissions', page: const PermissionsPage()),
-            _push(context, icon: const FaIcon(FontAwesomeIcons.lock, size: 16), label: 'Privacy Statement', page: const PrivacyStatementPage()),
-            _push(context, icon: const FaIcon(FontAwesomeIcons.fileLines, size: 16), label: 'User Agreement', page: const UserAgreementPage()),
-            _push(context, icon: const FaIcon(FontAwesomeIcons.circleInfo, size: 16), label: 'About', page: const AboutPage()),
+            _push(
+              context,
+              icon: const FaIcon(FontAwesomeIcons.shieldHalved, size: 16),
+              label: 'Permissions',
+              page: const PermissionsPage(),
+            ),
+            _push(
+              context,
+              icon: const FaIcon(FontAwesomeIcons.lock, size: 16),
+              label: 'Privacy Statement',
+              page: const PrivacyStatementPage(),
+            ),
+            _push(
+              context,
+              icon: const FaIcon(FontAwesomeIcons.fileLines, size: 16),
+              label: 'User Agreement',
+              page: const UserAgreementPage(),
+            ),
+            _push(
+              context,
+              icon: const FaIcon(FontAwesomeIcons.circleInfo, size: 16),
+              label: 'About',
+              page: const AboutPage(),
+            ),
             info.when(
               data: (value) => ListTile(
                 leading: const FaIcon(FontAwesomeIcons.codeBranch, size: 16),
@@ -116,7 +193,10 @@ class AppDrawer extends ConsumerWidget {
             ),
             const Divider(),
             ListTile(
-              leading: const FaIcon(FontAwesomeIcons.rightFromBracket, size: 16),
+              leading: const FaIcon(
+                FontAwesomeIcons.rightFromBracket,
+                size: 16,
+              ),
               title: const Text('Logout'),
               onTap: () {
                 Navigator.of(context).pop();

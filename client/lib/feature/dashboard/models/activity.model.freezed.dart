@@ -209,8 +209,8 @@ return $default(_that.averageBpm,_that.minBpm,_that.maxBpm,_that.restingBpm);cas
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(fieldRename: FieldRename.snake)
 class _HeartRateSummary implements HeartRateSummary {
   const _HeartRateSummary({this.averageBpm, this.minBpm, this.maxBpm, this.restingBpm});
   factory _HeartRateSummary.fromJson(Map<String, dynamic> json) => _$HeartRateSummaryFromJson(json);
@@ -479,8 +479,8 @@ return $default(_that.totalMinutes,_that.sessionCount);case _:
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(fieldRename: FieldRename.snake)
 class _SleepSummary implements SleepSummary {
   const _SleepSummary({required this.totalMinutes, required this.sessionCount});
   factory _SleepSummary.fromJson(Map<String, dynamic> json) => _$SleepSummaryFromJson(json);
@@ -748,8 +748,8 @@ return $default(_that.type,_that.title,_that.startTime,_that.endTime,_that.durat
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(fieldRename: FieldRename.snake)
 class _WorkoutSummary implements WorkoutSummary {
   const _WorkoutSummary({required this.type, this.title, required this.startTime, required this.endTime, required this.durationMinutes});
   factory _WorkoutSummary.fromJson(Map<String, dynamic> json) => _$WorkoutSummaryFromJson(json);
@@ -1021,8 +1021,8 @@ return $default(_that.systolicMmHg,_that.diastolicMmHg,_that.measuredAt);case _:
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(fieldRename: FieldRename.snake)
 class _BloodPressureSummary implements BloodPressureSummary {
   const _BloodPressureSummary({required this.systolicMmHg, required this.diastolicMmHg, this.measuredAt});
   factory _BloodPressureSummary.fromJson(Map<String, dynamic> json) => _$BloodPressureSummaryFromJson(json);
@@ -1336,8 +1336,8 @@ return $default(_that.date,_that.steps,_that.distanceMeters,_that.activeCalories
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class _ActivityModel extends ActivityModel {
   const _ActivityModel({required this.date, this.steps, this.distanceMeters, this.activeCalories, this.totalCalories, this.heartRate, this.sleep, final  List<WorkoutSummary> workouts = const <WorkoutSummary>[], this.weightKilograms, this.heightMeters, this.bloodPressure, this.bloodGlucoseMmolPerLiter, this.oxygenSaturationPercent}): _workouts = workouts,super._();
   factory _ActivityModel.fromJson(Map<String, dynamic> json) => _$ActivityModelFromJson(json);
@@ -1466,6 +1466,305 @@ $BloodPressureSummaryCopyWith<$Res>? get bloodPressure {
 
   return $BloodPressureSummaryCopyWith<$Res>(_self.bloodPressure!, (value) {
     return _then(_self.copyWith(bloodPressure: value));
+  });
+}
+}
+
+
+/// @nodoc
+mixin _$HealthDataResult {
+
+ HealthAccessStatus get status; ActivityModel? get activity; List<String> get deniedMetrics;
+/// Create a copy of HealthDataResult
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$HealthDataResultCopyWith<HealthDataResult> get copyWith => _$HealthDataResultCopyWithImpl<HealthDataResult>(this as HealthDataResult, _$identity);
+
+  /// Serializes this HealthDataResult to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HealthDataResult&&(identical(other.status, status) || other.status == status)&&(identical(other.activity, activity) || other.activity == activity)&&const DeepCollectionEquality().equals(other.deniedMetrics, deniedMetrics));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,status,activity,const DeepCollectionEquality().hash(deniedMetrics));
+
+@override
+String toString() {
+  return 'HealthDataResult(status: $status, activity: $activity, deniedMetrics: $deniedMetrics)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $HealthDataResultCopyWith<$Res>  {
+  factory $HealthDataResultCopyWith(HealthDataResult value, $Res Function(HealthDataResult) _then) = _$HealthDataResultCopyWithImpl;
+@useResult
+$Res call({
+ HealthAccessStatus status, ActivityModel? activity, List<String> deniedMetrics
+});
+
+
+$ActivityModelCopyWith<$Res>? get activity;
+
+}
+/// @nodoc
+class _$HealthDataResultCopyWithImpl<$Res>
+    implements $HealthDataResultCopyWith<$Res> {
+  _$HealthDataResultCopyWithImpl(this._self, this._then);
+
+  final HealthDataResult _self;
+  final $Res Function(HealthDataResult) _then;
+
+/// Create a copy of HealthDataResult
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? activity = freezed,Object? deniedMetrics = null,}) {
+  return _then(_self.copyWith(
+status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as HealthAccessStatus,activity: freezed == activity ? _self.activity : activity // ignore: cast_nullable_to_non_nullable
+as ActivityModel?,deniedMetrics: null == deniedMetrics ? _self.deniedMetrics : deniedMetrics // ignore: cast_nullable_to_non_nullable
+as List<String>,
+  ));
+}
+/// Create a copy of HealthDataResult
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ActivityModelCopyWith<$Res>? get activity {
+    if (_self.activity == null) {
+    return null;
+  }
+
+  return $ActivityModelCopyWith<$Res>(_self.activity!, (value) {
+    return _then(_self.copyWith(activity: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [HealthDataResult].
+extension HealthDataResultPatterns on HealthDataResult {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _HealthDataResult value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _HealthDataResult() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _HealthDataResult value)  $default,){
+final _that = this;
+switch (_that) {
+case _HealthDataResult():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _HealthDataResult value)?  $default,){
+final _that = this;
+switch (_that) {
+case _HealthDataResult() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( HealthAccessStatus status,  ActivityModel? activity,  List<String> deniedMetrics)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _HealthDataResult() when $default != null:
+return $default(_that.status,_that.activity,_that.deniedMetrics);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( HealthAccessStatus status,  ActivityModel? activity,  List<String> deniedMetrics)  $default,) {final _that = this;
+switch (_that) {
+case _HealthDataResult():
+return $default(_that.status,_that.activity,_that.deniedMetrics);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( HealthAccessStatus status,  ActivityModel? activity,  List<String> deniedMetrics)?  $default,) {final _that = this;
+switch (_that) {
+case _HealthDataResult() when $default != null:
+return $default(_that.status,_that.activity,_that.deniedMetrics);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _HealthDataResult implements HealthDataResult {
+  const _HealthDataResult({required this.status, this.activity = null, final  List<String> deniedMetrics = const <String>[]}): _deniedMetrics = deniedMetrics;
+  factory _HealthDataResult.fromJson(Map<String, dynamic> json) => _$HealthDataResultFromJson(json);
+
+@override final  HealthAccessStatus status;
+@override@JsonKey() final  ActivityModel? activity;
+ final  List<String> _deniedMetrics;
+@override@JsonKey() List<String> get deniedMetrics {
+  if (_deniedMetrics is EqualUnmodifiableListView) return _deniedMetrics;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_deniedMetrics);
+}
+
+
+/// Create a copy of HealthDataResult
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$HealthDataResultCopyWith<_HealthDataResult> get copyWith => __$HealthDataResultCopyWithImpl<_HealthDataResult>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$HealthDataResultToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HealthDataResult&&(identical(other.status, status) || other.status == status)&&(identical(other.activity, activity) || other.activity == activity)&&const DeepCollectionEquality().equals(other._deniedMetrics, _deniedMetrics));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,status,activity,const DeepCollectionEquality().hash(_deniedMetrics));
+
+@override
+String toString() {
+  return 'HealthDataResult(status: $status, activity: $activity, deniedMetrics: $deniedMetrics)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$HealthDataResultCopyWith<$Res> implements $HealthDataResultCopyWith<$Res> {
+  factory _$HealthDataResultCopyWith(_HealthDataResult value, $Res Function(_HealthDataResult) _then) = __$HealthDataResultCopyWithImpl;
+@override @useResult
+$Res call({
+ HealthAccessStatus status, ActivityModel? activity, List<String> deniedMetrics
+});
+
+
+@override $ActivityModelCopyWith<$Res>? get activity;
+
+}
+/// @nodoc
+class __$HealthDataResultCopyWithImpl<$Res>
+    implements _$HealthDataResultCopyWith<$Res> {
+  __$HealthDataResultCopyWithImpl(this._self, this._then);
+
+  final _HealthDataResult _self;
+  final $Res Function(_HealthDataResult) _then;
+
+/// Create a copy of HealthDataResult
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? activity = freezed,Object? deniedMetrics = null,}) {
+  return _then(_HealthDataResult(
+status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as HealthAccessStatus,activity: freezed == activity ? _self.activity : activity // ignore: cast_nullable_to_non_nullable
+as ActivityModel?,deniedMetrics: null == deniedMetrics ? _self._deniedMetrics : deniedMetrics // ignore: cast_nullable_to_non_nullable
+as List<String>,
+  ));
+}
+
+/// Create a copy of HealthDataResult
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ActivityModelCopyWith<$Res>? get activity {
+    if (_self.activity == null) {
+    return null;
+  }
+
+  return $ActivityModelCopyWith<$Res>(_self.activity!, (value) {
+    return _then(_self.copyWith(activity: value));
   });
 }
 }

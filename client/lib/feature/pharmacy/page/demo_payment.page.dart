@@ -40,7 +40,14 @@ class _DemoPaymentPageState extends ConsumerState<DemoPaymentPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Demo payment', style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.w600)),
+        title: const Text(
+          'Demo payment',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
       body: SafeArea(
         child: Form(
@@ -60,11 +67,17 @@ class _DemoPaymentPageState extends ConsumerState<DemoPaymentPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text('Amount due: ${formatLkr(widget.cart.total)}', style: const TextStyle(fontWeight: FontWeight.w600)),
+              Text(
+                'Amount due: ${formatLkr(widget.cart.total)}',
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _number,
-                decoration: const InputDecoration(labelText: 'Demo card number', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'Demo card number',
+                  border: OutlineInputBorder(),
+                ),
                 keyboardType: TextInputType.number,
                 validator: (value) =>
                     value == null || value.replaceAll(' ', '').length < 12
@@ -74,8 +87,12 @@ class _DemoPaymentPageState extends ConsumerState<DemoPaymentPage> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _name,
-                decoration: const InputDecoration(labelText: 'Name on card', border: OutlineInputBorder()),
-                validator: (value) => value == null || value.trim().isEmpty ? 'Required' : null,
+                decoration: const InputDecoration(
+                  labelText: 'Name on card',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) =>
+                    value == null || value.trim().isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 12),
               Row(
@@ -83,17 +100,27 @@ class _DemoPaymentPageState extends ConsumerState<DemoPaymentPage> {
                   Expanded(
                     child: TextFormField(
                       controller: _expiry,
-                      decoration: const InputDecoration(labelText: 'MM/YY', border: OutlineInputBorder()),
-                      validator: (value) => value == null || !value.contains('/') ? 'Use MM/YY' : null,
+                      decoration: const InputDecoration(
+                        labelText: 'MM/YY',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) =>
+                          value == null || !value.contains('/')
+                          ? 'Use MM/YY'
+                          : null,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: TextFormField(
                       controller: _cvv,
-                      decoration: const InputDecoration(labelText: 'CVV', border: OutlineInputBorder()),
+                      decoration: const InputDecoration(
+                        labelText: 'CVV',
+                        border: OutlineInputBorder(),
+                      ),
                       obscureText: true,
-                      validator: (value) => value == null || value.length < 3 ? 'Invalid' : null,
+                      validator: (value) =>
+                          value == null || value.length < 3 ? 'Invalid' : null,
                     ),
                   ),
                 ],
@@ -105,7 +132,9 @@ class _DemoPaymentPageState extends ConsumerState<DemoPaymentPage> {
               const SizedBox(height: 16),
               FilledButton(
                 onPressed: _busy ? null : _pay,
-                child: Text(_busy ? 'Processing demo payment...' : 'Pay (demo)'),
+                child: Text(
+                  _busy ? 'Processing demo payment...' : 'Pay (demo)',
+                ),
               ),
             ],
           ),
@@ -124,17 +153,20 @@ class _DemoPaymentPageState extends ConsumerState<DemoPaymentPage> {
     final digits = _number.text.replaceAll(RegExp(r'\D'), '');
     final failed = digits.startsWith('0000') || digits.endsWith('0000');
     final status = failed ? PaymentStatus.failed : PaymentStatus.successful;
-    final order = await ref.read(orderProvider.notifier).placeOrder(
-      cart: widget.cart,
-      address: widget.address,
-      method: PaymentMethod.demoCard,
-      paymentStatus: status,
-    );
+    final order = await ref
+        .read(orderProvider.notifier)
+        .placeOrder(
+          cart: widget.cart,
+          address: widget.address,
+          method: PaymentMethod.demoCard,
+          paymentStatus: status,
+        );
     if (!mounted) return;
     if (failed) {
       setState(() {
         _busy = false;
-        _error = 'Demo payment failed. Try another demo number, or avoid cards starting/ending with 0000.';
+        _error =
+            'Demo payment failed. Try another demo number, or avoid cards starting/ending with 0000.';
       });
       return;
     }

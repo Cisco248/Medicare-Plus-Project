@@ -14,11 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$KnowledgeState {
 
- KnowledgePhase get phase; DateTime get periodStart; DateTime get periodEnd; ActivityModel? get activity; HealthSummaryResponse? get summary;/// The activity snapshot the current [summary] was generated from,
-/// used to avoid regenerating a summary for unchanged data.
- ActivityModel? get summarySource;/// User-friendly error description. Never a raw exception/stack trace.
- String? get errorMessage;/// Names of the metrics the user has not granted access to.
- List<String> get unavailableMetrics;
+ KnowledgePhase get phase; DateTime get periodStart; DateTime get periodEnd; ActivityModel? get activity; HealthSummaryResponse? get summary; ActivityModel? get summarySource; String? get errorMessage; List<String> get unavailableMetrics;
 /// Create a copy of KnowledgeState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -261,14 +257,9 @@ class _KnowledgeState extends KnowledgeState {
 @override final  DateTime periodEnd;
 @override final  ActivityModel? activity;
 @override final  HealthSummaryResponse? summary;
-/// The activity snapshot the current [summary] was generated from,
-/// used to avoid regenerating a summary for unchanged data.
 @override final  ActivityModel? summarySource;
-/// User-friendly error description. Never a raw exception/stack trace.
 @override final  String? errorMessage;
-/// Names of the metrics the user has not granted access to.
  final  List<String> _unavailableMetrics;
-/// Names of the metrics the user has not granted access to.
 @override@JsonKey() List<String> get unavailableMetrics {
   if (_unavailableMetrics is EqualUnmodifiableListView) return _unavailableMetrics;
   // ignore: implicit_dynamic_type

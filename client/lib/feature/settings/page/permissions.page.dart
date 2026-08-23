@@ -1,3 +1,4 @@
+import 'package:client/feature/settings/models/permission.model.dart';
 import 'package:client/feature/settings/notifiers/permissions.notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,7 +14,11 @@ class PermissionsPage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text(
           'Permissions',
-          style: TextStyle(fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: permissions.when(
@@ -40,11 +45,17 @@ class PermissionsPage extends ConsumerWidget {
                 isThreeLine: true,
                 trailing: item.kind == AppPermissionKind.healthConnect
                     ? TextButton(
-                        onPressed: item.status == AppPermissionStatus.unavailable
+                        onPressed:
+                            item.status == AppPermissionStatus.unavailable
                             ? null
-                            : () => item.status == AppPermissionStatus.notAllowed
-                                ? ref.read(permissionsProvider.notifier).requestHealthConnect()
-                                : ref.read(permissionsProvider.notifier).manageHealthConnect(),
+                            : () =>
+                                  item.status == AppPermissionStatus.notAllowed
+                                  ? ref
+                                        .read(permissionsProvider.notifier)
+                                        .requestHealthConnect()
+                                  : ref
+                                        .read(permissionsProvider.notifier)
+                                        .manageHealthConnect(),
                         child: Text(
                           item.status == AppPermissionStatus.notAllowed
                               ? 'Allow'

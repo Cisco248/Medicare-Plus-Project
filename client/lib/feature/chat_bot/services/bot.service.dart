@@ -1,3 +1,4 @@
+import 'package:client/core/exceptions/base.exception.dart';
 import 'package:client/feature/chat_bot/models/response.model.dart';
 import 'package:client/feature/chat_bot/repository/bot.repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -23,6 +24,8 @@ class BotService {
 
       final res = await _repository.sendInfo(value);
       return res;
+    } on AppException {
+      rethrow;
     } catch (e) {
       throw Exception(e);
     }

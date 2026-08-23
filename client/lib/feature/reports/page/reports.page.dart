@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-/// Reports tab: the patient's uploaded medical documents.
 class ReportsPage extends ConsumerWidget {
   const ReportsPage({super.key});
 
@@ -19,7 +18,7 @@ class ReportsPage extends ConsumerWidget {
     final query = ref.watch(documentQueryProvider);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

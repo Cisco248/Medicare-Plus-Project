@@ -7,12 +7,14 @@ class ActivityCardWidget extends ConsumerStatefulWidget {
   final String valueName;
   final FaIconData icon;
   final Color iconColor;
+  final void Function() callback;
 
   const ActivityCardWidget({
     required this.value,
     required this.valueName,
     required this.icon,
     required this.iconColor,
+    required this.callback,
     super.key,
   });
 
@@ -21,26 +23,10 @@ class ActivityCardWidget extends ConsumerStatefulWidget {
 }
 
 class _ActivityCardWidgetState extends ConsumerState<ActivityCardWidget> {
-  String value = "";
-
-  @override
-  void initState() {
-    setState(() {
-      value = widget.value;
-    });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 32, vertical: 32),
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.width / 2,
       decoration: BoxDecoration(
@@ -54,33 +40,51 @@ class _ActivityCardWidgetState extends ConsumerState<ActivityCardWidget> {
           end: Alignment.bottomRight,
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Stack(
         children: [
-          FaIcon(widget.icon, size: 48, color: widget.iconColor),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Align(
+            alignment: AlignmentGeometry.topRight,
+            child: IconButton(
+              onPressed: widget.callback,
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+              ),
+              icon: FaIcon(
+                FontAwesomeIcons.arrowsRotate,
+                color: colorScheme.onPrimary,
+                size: 12,
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                widget.valueName,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'Poppins',
-                  color: colorScheme.onSurface,
-                ),
-              ),
-              SizedBox(height: 12),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Poppins',
-                  color: widget.iconColor,
-                ),
+              FaIcon(widget.icon, size: 48, color: widget.iconColor),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    widget.valueName,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Poppins',
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    widget.value,
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                      color: widget.iconColor,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
