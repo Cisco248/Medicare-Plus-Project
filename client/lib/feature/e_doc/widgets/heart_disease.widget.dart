@@ -1,4 +1,3 @@
-import 'package:client/core/utils/body_metrics.dart';
 import 'package:client/core/utils/notification.utils.dart';
 import 'package:client/core/widgets/button.widget.dart';
 import 'package:client/core/widgets/textfield.widget.dart';
@@ -21,10 +20,8 @@ class HeartDiseaseFormWidget extends ConsumerStatefulWidget {
 class _HeartDiseaseFormWidgetState
     extends ConsumerState<HeartDiseaseFormWidget> {
   final _formKey = GlobalKey<FormState>();
-  final _bmi = TextEditingController();
   final _physicalHealth = TextEditingController();
   String? _ageCategory;
-  String? _sex;
   String? _genHealth;
   String? _diabetic;
   bool _smoking = false;
@@ -35,10 +32,6 @@ class _HeartDiseaseFormWidgetState
   void _apply(HeartDiseasePrefill prefill) {
     _prefill = prefill;
     _ageCategory ??= prefill.ageCategory;
-    _sex ??= prefill.sex;
-    if (_bmi.text.isEmpty && prefill.bmi != null) {
-      _bmi.text = BodyMetrics.formatBmi(prefill.bmi)!;
-    }
     _diabetic ??= prefill.diabetic;
     if (prefill.smoking == 'Yes') _smoking = true;
     if (prefill.stroke == 'Yes') _stroke = true;
@@ -47,7 +40,6 @@ class _HeartDiseaseFormWidgetState
 
   @override
   void dispose() {
-    _bmi.dispose();
     _physicalHealth.dispose();
     super.dispose();
   }
@@ -58,15 +50,13 @@ class _HeartDiseaseFormWidgetState
       return;
     }
     if (_ageCategory == null ||
-        _sex == null ||
         _genHealth == null ||
         _diabetic == null) {
       NotificationUtils.error(context, 'Please complete the required fields.');
       return;
     }
-    final bmi = double.tryParse(_bmi.text.trim());
     final physicalHealth = double.tryParse(_physicalHealth.text.trim());
-    if (bmi == null || physicalHealth == null) {
+    if (physicalHealth == null) {
       NotificationUtils.error(context, 'Please enter valid numeric values.');
       return;
     }
@@ -76,8 +66,8 @@ class _HeartDiseaseFormWidgetState
         .submitHeartDisease(
           HeartDiseaseModel(
             ageCategory: _ageCategory!,
-            sex: _sex!,
-            bmi: bmi,
+            sex: ref.watch(clinicalSnapshotProvider).gender.value?.toLowerCase() == 'male' ? 'male' : 'female' ,
+            bmi: ref.watch(clinicalSnapshotProvider).bmi.value?.toDouble() ?? 0,
             genHealth: _genHealth!,
             diabetic: _diabetic!,
             smoking: _smoking ? 'Yes' : 'No',
@@ -94,12 +84,7 @@ class _HeartDiseaseFormWidgetState
     ref.listen(clinicalSnapshotProvider, (_, next) {
       _apply(ClinicalParameterMapper(next).heartDisease());
     });
-    if (_bmi.text.isEmpty && snapshot.bmi.isAvailable) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _apply(ClinicalParameterMapper(snapshot).heartDisease());
-      });
-    }
-
+   
     final assessment = ref.watch(docStateProvider);
     final submitting =
         assessment.phase == DocPhase.loading &&
@@ -115,114 +100,106 @@ class _HeartDiseaseFormWidgetState
         key: _formKey,
         child: Column(
           children: [
-            DropdownButtonFormField<String>(
-              key: ValueKey('hd-age-$_ageCategory'),
-              initialValue: _ageCategory,
-              decoration: InputDecoration(
-                labelText: 'Age category',
-                helperText: snapshot.sourceLabel(_prefill.ageSource),
-              ),
-              items: [
-                for (final item in heartDiseaseAgeCategories)
-                  DropdownMenuItem(value: item, child: Text(item)),
-              ],
-              validator: (value) => value == null ? 'Required' : null,
-              onChanged: (value) {
-                if (value != null) setState(() => _ageCategory = value);
-              },
-            ),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              key: ValueKey('hd-sex-$_sex'),
-              initialValue: _sex,
-              decoration: InputDecoration(
-                labelText: 'Sex',
-                helperText: snapshot.sourceLabel(_prefill.sexSource),
-              ),
-              items: const [
-                DropdownMenuItem(value: 'male', child: Text('Male')),
-                DropdownMenuItem(value: 'female', child: Text('Female')),
-              ],
-              validator: (value) => value == null ? 'Required' : null,
-              onChanged: (value) {
-                if (value != null) setState(() => _sex = value);
-              },
-            ),
-            const SizedBox(height: 8),
-            ZintraTextField(
-              label: 'BMI',
-              hint: 'Calculated from height and weight when available',
-              helperText: snapshot.sourceLabel(_prefill.bmiSource),
-              controller: _bmi,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              validator: _requiredNumber,
-            ),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              key: ValueKey('hd-gen-$_genHealth'),
-              initialValue: _genHealth,
-              decoration: const InputDecoration(labelText: 'General health'),
-              items: [
-                for (final item in heartDiseaseGenHealth)
-                  DropdownMenuItem(value: item, child: Text(item)),
-              ],
-              validator: (value) => value == null ? 'Required' : null,
-              onChanged: (value) {
-                if (value != null) setState(() => _genHealth = value);
-              },
-            ),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              key: ValueKey('hd-diabetic-$_diabetic'),
-              initialValue: _diabetic,
-              decoration: const InputDecoration(labelText: 'Diabetes status'),
-              items: [
-                for (final item in heartDiseaseDiabetic)
-                  DropdownMenuItem(value: item, child: Text(item)),
-              ],
-              validator: (value) => value == null ? 'Required' : null,
-              onChanged: (value) {
-                if (value != null) setState(() => _diabetic = value);
-              },
-            ),
-            const SizedBox(height: 8),
-            ZintraTextField(
-              label: 'Poor physical-health days (last 30 days)',
-              hint: '0 to 30 — enter the number of days',
-              controller: _physicalHealth,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              validator: _requiredPhysicalDays,
-            ),
-            CheckboxListTile(
-              contentPadding: EdgeInsets.zero,
-              value: _smoking,
-              onChanged: (value) => setState(() => _smoking = value ?? false),
-              title: const Text(
-                'Smoking',
+            SizedBox(
+              height: 60,
+              child: DropdownButtonFormField<String>(
+                key: ValueKey('hd-age-$_ageCategory'),
+                initialValue: _ageCategory,
                 style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                decoration: InputDecoration(
+                  labelText: 'Age category',
+                  helperText: snapshot.sourceLabel(_prefill.ageSource),
+                ),
+                items: [
+                  for (final item in heartDiseaseAgeCategories)
+                    DropdownMenuItem(value: item, child: Text(item, style: TextStyle(fontFamily: 'Inter', fontSize: 13),)),
+                ],
+                validator: (value) => value == null ? 'Required' : null,
+                onChanged: (value) {
+                  if (value != null) setState(() => _ageCategory = value);
+                },
               ),
             ),
-            CheckboxListTile(
-              contentPadding: EdgeInsets.zero,
-              value: _stroke,
-              onChanged: (value) => setState(() => _stroke = value ?? false),
-              title: const Text(
-                'Previous stroke',
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 50,
+              child: DropdownButtonFormField<String>(
+                key: ValueKey('hd-gen-$_genHealth'),
+                initialValue: _genHealth,
+                decoration: const InputDecoration(labelText: 'General health'),
                 style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                items: [
+                  for (final item in heartDiseaseGenHealth)
+                    DropdownMenuItem(value: item, child: Text(item, style: TextStyle(fontFamily: 'Inter', fontSize: 13),)),
+                ],
+                validator: (value) => value == null ? 'Required' : null,
+                onChanged: (value) {
+                  if (value != null) setState(() => _genHealth = value);
+                },
               ),
             ),
-            CheckboxListTile(
-              contentPadding: EdgeInsets.zero,
-              value: _diffWalking,
-              onChanged: (value) =>
-                  setState(() => _diffWalking = value ?? false),
-              title: const Text(
-                'Difficulty walking',
-                style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 50,
+              child: DropdownButtonFormField<String>(
+                key: ValueKey('hd-diabetic-$_diabetic'),
+                initialValue: _diabetic,style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                decoration: const InputDecoration(labelText: 'Diabetes status'),
+                items: [
+                  for (final item in heartDiseaseDiabetic)
+                    DropdownMenuItem(value: item, child: Text(item, style: TextStyle(fontFamily: 'Inter', fontSize: 13),)),
+                ],
+                validator: (value) => value == null ? 'Required' : null,
+                onChanged: (value) {
+                  if (value != null) setState(() => _diabetic = value);
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 60,
+              child: ZintraTextField(
+                label: 'Poor physical-health days (last 30 days)',
+                hint: '0 to 30 — enter the number of days',
+                controller: _physicalHealth,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                validator: _requiredPhysicalDays,
+              ),
+            ),
+            SizedBox(height: 40,
+              child: CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                value: _smoking,
+                onChanged: (value) => setState(() => _smoking = value ?? false),
+                title: const Text(
+                  'Smoking',
+                  style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                ),
+              ),
+            ),
+            SizedBox(height: 40,
+              child: CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                value: _stroke,
+                onChanged: (value) => setState(() => _stroke = value ?? false),
+                title: const Text(
+                  'Previous stroke',
+                  style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                ),
+              ),
+            ),
+            SizedBox(height: 40,
+              child: CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                value: _diffWalking,
+                onChanged: (value) =>
+                    setState(() => _diffWalking = value ?? false),
+                title: const Text(
+                  'Difficulty walking',
+                  style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -237,12 +214,6 @@ class _HeartDiseaseFormWidgetState
       ),
     );
   }
-}
-
-String? _requiredNumber(String? value) {
-  if (value == null || value.trim().isEmpty) return 'This field is required.';
-  if (num.tryParse(value.trim()) == null) return 'Enter a valid number.';
-  return null;
 }
 
 String? _requiredPhysicalDays(String? value) {

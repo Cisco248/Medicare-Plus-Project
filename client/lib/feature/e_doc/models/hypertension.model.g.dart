@@ -17,7 +17,7 @@ _HypertensionModel _$HypertensionModelFromJson(Map<String, dynamic> json) =>
         _$DiabetesOrdinalEnumMap,
         json['diabetes_ordinal'],
       ),
-      gender: $enumDecode(_$GenderEnumMap, json['gender']),
+      gender: json['gender'] as String,
     );
 
 Map<String, dynamic> _$HypertensionModelToJson(_HypertensionModel instance) =>
@@ -28,17 +28,11 @@ Map<String, dynamic> _$HypertensionModelToJson(_HypertensionModel instance) =>
       'hba1c': instance.hba1c,
       'cholesterol_mgdl': instance.cholesterolMgdl,
       'diabetes_ordinal': _$DiabetesOrdinalEnumMap[instance.diabetesOrdinal]!,
-      'gender': _$GenderEnumMap[instance.gender]!,
+      'gender': instance.gender,
     };
 
 const _$DiabetesOrdinalEnumMap = {
   DiabetesOrdinal.normal: 'normal',
   DiabetesOrdinal.preDiabetic: 'pre-diabetic',
   DiabetesOrdinal.diabetic: 'diabetic',
-};
-
-const _$GenderEnumMap = {
-  Gender.male: 'male',
-  Gender.female: 'female',
-  Gender.other: 'other',
 };

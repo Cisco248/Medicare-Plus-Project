@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HypertensionModel {
 
- int get age; double get height; double get weight; double get hba1c;@JsonKey(name: 'cholesterol_mgdl') double get cholesterolMgdl; DiabetesOrdinal get diabetesOrdinal; Gender get gender;
+ int get age; double get height; double get weight; double get hba1c;@JsonKey(name: 'cholesterol_mgdl') double get cholesterolMgdl; DiabetesOrdinal get diabetesOrdinal; String get gender;
 /// Create a copy of HypertensionModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $HypertensionModelCopyWith<$Res>  {
   factory $HypertensionModelCopyWith(HypertensionModel value, $Res Function(HypertensionModel) _then) = _$HypertensionModelCopyWithImpl;
 @useResult
 $Res call({
- int age, double height, double weight, double hba1c,@JsonKey(name: 'cholesterol_mgdl') double cholesterolMgdl, DiabetesOrdinal diabetesOrdinal, Gender gender
+ int age, double height, double weight, double hba1c,@JsonKey(name: 'cholesterol_mgdl') double cholesterolMgdl, DiabetesOrdinal diabetesOrdinal, String gender
 });
 
 
@@ -74,7 +74,7 @@ as double,hba1c: null == hba1c ? _self.hba1c : hba1c // ignore: cast_nullable_to
 as double,cholesterolMgdl: null == cholesterolMgdl ? _self.cholesterolMgdl : cholesterolMgdl // ignore: cast_nullable_to_non_nullable
 as double,diabetesOrdinal: null == diabetesOrdinal ? _self.diabetesOrdinal : diabetesOrdinal // ignore: cast_nullable_to_non_nullable
 as DiabetesOrdinal,gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
-as Gender,
+as String,
   ));
 }
 
@@ -159,7 +159,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int age,  double height,  double weight,  double hba1c, @JsonKey(name: 'cholesterol_mgdl')  double cholesterolMgdl,  DiabetesOrdinal diabetesOrdinal,  Gender gender)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int age,  double height,  double weight,  double hba1c, @JsonKey(name: 'cholesterol_mgdl')  double cholesterolMgdl,  DiabetesOrdinal diabetesOrdinal,  String gender)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HypertensionModel() when $default != null:
 return $default(_that.age,_that.height,_that.weight,_that.hba1c,_that.cholesterolMgdl,_that.diabetesOrdinal,_that.gender);case _:
@@ -180,7 +180,7 @@ return $default(_that.age,_that.height,_that.weight,_that.hba1c,_that.cholestero
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int age,  double height,  double weight,  double hba1c, @JsonKey(name: 'cholesterol_mgdl')  double cholesterolMgdl,  DiabetesOrdinal diabetesOrdinal,  Gender gender)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int age,  double height,  double weight,  double hba1c, @JsonKey(name: 'cholesterol_mgdl')  double cholesterolMgdl,  DiabetesOrdinal diabetesOrdinal,  String gender)  $default,) {final _that = this;
 switch (_that) {
 case _HypertensionModel():
 return $default(_that.age,_that.height,_that.weight,_that.hba1c,_that.cholesterolMgdl,_that.diabetesOrdinal,_that.gender);case _:
@@ -200,7 +200,7 @@ return $default(_that.age,_that.height,_that.weight,_that.hba1c,_that.cholestero
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int age,  double height,  double weight,  double hba1c, @JsonKey(name: 'cholesterol_mgdl')  double cholesterolMgdl,  DiabetesOrdinal diabetesOrdinal,  Gender gender)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int age,  double height,  double weight,  double hba1c, @JsonKey(name: 'cholesterol_mgdl')  double cholesterolMgdl,  DiabetesOrdinal diabetesOrdinal,  String gender)?  $default,) {final _that = this;
 switch (_that) {
 case _HypertensionModel() when $default != null:
 return $default(_that.age,_that.height,_that.weight,_that.hba1c,_that.cholesterolMgdl,_that.diabetesOrdinal,_that.gender);case _:
@@ -224,7 +224,7 @@ class _HypertensionModel implements HypertensionModel {
 @override final  double hba1c;
 @override@JsonKey(name: 'cholesterol_mgdl') final  double cholesterolMgdl;
 @override final  DiabetesOrdinal diabetesOrdinal;
-@override final  Gender gender;
+@override final  String gender;
 
 /// Create a copy of HypertensionModel
 /// with the given fields replaced by the non-null parameter values.
@@ -259,7 +259,7 @@ abstract mixin class _$HypertensionModelCopyWith<$Res> implements $HypertensionM
   factory _$HypertensionModelCopyWith(_HypertensionModel value, $Res Function(_HypertensionModel) _then) = __$HypertensionModelCopyWithImpl;
 @override @useResult
 $Res call({
- int age, double height, double weight, double hba1c,@JsonKey(name: 'cholesterol_mgdl') double cholesterolMgdl, DiabetesOrdinal diabetesOrdinal, Gender gender
+ int age, double height, double weight, double hba1c,@JsonKey(name: 'cholesterol_mgdl') double cholesterolMgdl, DiabetesOrdinal diabetesOrdinal, String gender
 });
 
 
@@ -285,7 +285,7 @@ as double,hba1c: null == hba1c ? _self.hba1c : hba1c // ignore: cast_nullable_to
 as double,cholesterolMgdl: null == cholesterolMgdl ? _self.cholesterolMgdl : cholesterolMgdl // ignore: cast_nullable_to_non_nullable
 as double,diabetesOrdinal: null == diabetesOrdinal ? _self.diabetesOrdinal : diabetesOrdinal // ignore: cast_nullable_to_non_nullable
 as DiabetesOrdinal,gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
-as Gender,
+as String,
   ));
 }
 

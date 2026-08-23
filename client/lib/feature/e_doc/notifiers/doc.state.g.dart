@@ -41,7 +41,7 @@ final class DocStateNotifierProvider
   }
 }
 
-String _$docStateNotifierHash() => r'f3376270af3af77e49559e1b0a59680100e91ec9';
+String _$docStateNotifierHash() => r'b94506cf51a11eea9e2d9f075ce2934c4ea5d6a7';
 
 abstract class _$DocStateNotifier extends $Notifier<DocState> {
   DocState build();

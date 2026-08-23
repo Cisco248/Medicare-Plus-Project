@@ -6,6 +6,7 @@ part of 'activity.notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(ActivityNotifier)
@@ -40,7 +41,7 @@ final class ActivityNotifierProvider
   }
 }
 
-String _$activityNotifierHash() => r'3ff6403875314e9c84a8c89301d83e8566ee90d7';
+String _$activityNotifierHash() => r'7262f2b5472229a614006b6ec58646abfe2b18a4';
 
 abstract class _$ActivityNotifier extends $Notifier<KnowledgeState> {
   KnowledgeState build();

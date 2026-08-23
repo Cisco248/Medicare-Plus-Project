@@ -36,7 +36,7 @@ abstract class HypertensionModel with _$HypertensionModel {
     required double hba1c,
     @JsonKey(name: 'cholesterol_mgdl') required double cholesterolMgdl,
     required DiabetesOrdinal diabetesOrdinal,
-    required Gender gender,
+    required String gender,
   }) = _HypertensionModel;
 
   factory HypertensionModel.fromJson(Map<String, Object?> json) =>

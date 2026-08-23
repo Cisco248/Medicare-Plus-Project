@@ -1,4 +1,3 @@
-import 'package:client/core/utils/body_metrics.dart';
 import 'package:client/core/utils/notification.utils.dart';
 import 'package:client/core/widgets/button.widget.dart';
 import 'package:client/core/widgets/textfield.widget.dart';
@@ -20,11 +19,9 @@ class DiabetesFormWidget extends ConsumerStatefulWidget {
 
 class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
   final _formKey = GlobalKey<FormState>();
-  final _age = TextEditingController();
   final _pulse = TextEditingController();
   final _bp = TextEditingController();
   final _glucose = TextEditingController();
-  final _bmi = TextEditingController();
   String? _gender;
   bool _familyDiabetes = false;
   bool _hypertensive = false;
@@ -32,22 +29,14 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
 
   @override
   void dispose() {
-    _age.dispose();
     _pulse.dispose();
     _bp.dispose();
     _glucose.dispose();
-    _bmi.dispose();
     super.dispose();
   }
 
   void _apply(DiabetesPrefill prefill) {
     _prefill = prefill;
-    if (_age.text.isEmpty && prefill.age != null) {
-      _age.text = '${prefill.age}';
-    }
-    if (_bmi.text.isEmpty && prefill.bmi != null) {
-      _bmi.text = BodyMetrics.formatBmi(prefill.bmi)!;
-    }
     if (_bp.text.isEmpty && prefill.bpReading != null) {
       _bp.text = prefill.bpReading!;
     }
@@ -74,11 +63,9 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
       return;
     }
 
-    final age = int.tryParse(_age.text.trim());
     final pulse = double.tryParse(_pulse.text.trim());
     final glucose = double.tryParse(_glucose.text.trim());
-    final bmi = double.tryParse(_bmi.text.trim());
-    if (age == null || pulse == null || glucose == null || bmi == null) {
+    if (pulse == null || glucose == null) {
       NotificationUtils.error(context, 'Please enter valid numeric values.');
       return;
     }
@@ -87,12 +74,12 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
         .read(docStateProvider.notifier)
         .submitDiabetes(
           DiabetesModel(
-            age: age,
-            gender: _gender!,
+            age: ref.watch(clinicalSnapshotProvider).age.value?.toInt() ?? 0,
+            gender: ref.watch(clinicalSnapshotProvider).gender.value?.toLowerCase() == 'male' ? 'male' : 'female' ,
             pulseRate: pulse,
             bpReading: _bp.text.trim(),
             glucose: glucose,
-            bmi: bmi,
+            bmi: ref.watch(clinicalSnapshotProvider).bmi.value?.toDouble() ?? 0,
             familyDiabetes: _familyDiabetes ? 'Yes' : 'No',
             hypertensive: _hypertensive ? 'Yes' : 'No',
           ),
@@ -105,11 +92,7 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
     ref.listen(clinicalSnapshotProvider, (_, next) {
       _apply(ClinicalParameterMapper(next).diabetes());
     });
-    if (_age.text.isEmpty && snapshot.age.isAvailable) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _apply(ClinicalParameterMapper(snapshot).diabetes());
-      });
-    }
+    
 
     final assessment = ref.watch(docStateProvider);
     final submitting =
@@ -127,40 +110,11 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
         child: Column(
           children: [
             ZintraTextField(
-              label: 'Age',
-              hint: 'From your profile if available',
-              helperText: snapshot.sourceLabel(_prefill.ageSource),
-              controller: _age,
-              keyboardType: TextInputType.number,
-              validator: _requiredNumber,
-            ),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              key: ValueKey('diabetes-gender-$_gender'),
-              initialValue: _gender,
-              decoration: InputDecoration(
-                labelText: 'Gender',
-                helperText: snapshot.sourceLabel(_prefill.genderSource),
-              ),
-              items: const [
-                DropdownMenuItem(value: 'male', child: Text('Male')),
-                DropdownMenuItem(value: 'female', child: Text('Female')),
-              ],
-              onChanged: (value) {
-                if (value != null) setState(() => _gender = value);
-              },
-              validator: (value) =>
-                  value == null ? 'Please select a gender.' : null,
-            ),
-            const SizedBox(height: 8),
-            ZintraTextField(
               label: 'Pulse rate',
               hint: 'Beats per minute',
               helperText: snapshot.sourceLabel(_prefill.pulseSource),
               controller: _pulse,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
+              keyboardType:  TextInputType.text,
               validator: _requiredNumber,
             ),
             const SizedBox(height: 8),
@@ -183,42 +137,33 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
               validator: _requiredNumber,
             ),
             const SizedBox(height: 8),
-            ZintraTextField(
-              label: 'BMI',
-              hint: 'Calculated when height and weight exist',
-              helperText: snapshot.sourceLabel(_prefill.bmiSource),
-              controller: _bmi,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              validator: _requiredNumber,
-            ),
-            CheckboxListTile(
-              contentPadding: EdgeInsets.zero,
-              value: _familyDiabetes,
-              onChanged: (value) =>
-                  setState(() => _familyDiabetes = value ?? false),
-              title: const Text(
-                'Family history of diabetes',
-                style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+            SizedBox(
+              height: 40,
+              child: CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                value: _familyDiabetes,
+                activeColor: Theme.of(context).colorScheme.onSecondary,
+                onChanged: (value) =>
+                    setState(() => _familyDiabetes = value ?? false),
+                title: const Text(
+                  'Family history of diabetes',
+                  style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                ),
               ),
             ),
-            CheckboxListTile(
+            SizedBox(
+              height: 40,
+              child: CheckboxListTile(
+              activeColor: Theme.of(context).colorScheme.onSecondary,
               contentPadding: EdgeInsets.zero,
               value: _hypertensive,
               onChanged: (value) =>
                   setState(() => _hypertensive = value ?? false),
               title: const Text(
-                'Hypertensive',
+                'Hypertensive from recorded conditions',
                 style: TextStyle(fontFamily: 'Inter', fontSize: 13),
               ),
-              subtitle: _prefill.hypertensive != null
-                  ? const Text(
-                      'From recorded conditions',
-                      style: TextStyle(fontFamily: 'Inter', fontSize: 11),
-                    )
-                  : null,
-            ),
+            ),),
             const SizedBox(height: 16),
             ZintraButton(
               label: 'Generate assessment',

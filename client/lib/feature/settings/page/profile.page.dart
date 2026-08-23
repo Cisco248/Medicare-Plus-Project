@@ -61,7 +61,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           ..addAll(profile.conditions.map((item) => item.code));
       });
     } catch (_) {
-      // Fall back to the authenticated identity if the profile has not been extended yet.
       if (!mounted) return;
       setState(() {
         _profile = PatientProfile(
@@ -129,6 +128,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Icons.arrow_back),
+          style: ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+          ),
+        ),
       ),
       body: auth.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -140,106 +146,138 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               child: Text('No profile information is available.'),
             );
           }
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              ListTile(title: const Text('Name'), subtitle: Text(user.name)),
-              ListTile(title: const Text('Email'), subtitle: Text(user.email)),
-              ListTile(
-                title: const Text('Mobile'),
-                subtitle: Text(user.mobnum),
-              ),
-              if (_profile?.age != null)
-                ListTile(
-                  title: const Text('Age'),
-                  subtitle: Text('${_profile!.age} years'),
-                ),
-              DropdownButtonFormField<String>(
-                key: ValueKey('profile-gender-$_gender'),
-                initialValue: _gender,
-                decoration: const InputDecoration(labelText: 'Gender'),
-                items: const [
-                  DropdownMenuItem(value: 'male', child: Text('Male')),
-                  DropdownMenuItem(value: 'female', child: Text('Female')),
-                  DropdownMenuItem(value: 'other', child: Text('Other')),
-                ],
-                onChanged: (value) => setState(() => _gender = value),
-              ),
-              TextField(
-                controller: _dob,
-                decoration: const InputDecoration(
-                  labelText: 'Date of birth (YYYY-MM-DD)',
-                ),
-              ),
-              TextField(
-                controller: _height,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Height (cm)'),
-              ),
-              TextField(
-                controller: _weight,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Weight (kg)'),
-              ),
-              TextField(
-                controller: _blood,
-                decoration: const InputDecoration(labelText: 'Blood group'),
-              ),
-              TextField(
-                controller: _allergies,
-                decoration: const InputDecoration(labelText: 'Allergies'),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Recorded conditions',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Wrap(
-                spacing: 8,
-                children: [
-                  for (final code in const [
-                    'hypertension',
-                    'diabetes',
-                    'cardiovascular_disease',
-                    'obesity',
-                    'asthma',
-                    'copd',
-                    'chronic_kidney_disease',
-                    'smoking',
-                    'stroke',
-                  ])
-                    FilterChip(
-                      label: Text(code.replaceAll('_', ' ')),
-                      selected: _conditions.contains(code),
-                      onSelected: (selected) {
-                        setState(() {
-                          if (selected) {
-                            _conditions.add(code);
-                          } else {
-                            _conditions.remove(code);
-                          }
-                        });
-                      },
-                    ),
-                ],
-              ),
-              if (_error != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: Text(
-                    _error!,
-                    style: const TextStyle(color: Colors.red),
+          return SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 60,
+                  child: ListTile(
+                    title: const Text('Name'),
+                    subtitle: Text(user.name),
+                    style: ListTileStyle.list,
                   ),
                 ),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: _saving ? null : _save,
-                child: Text(_saving ? 'Saving…' : 'Save profile'),
-              ),
-            ],
+                SizedBox(
+                  height: 60,
+                  child: ListTile(
+                    title: const Text('Email'),
+                    subtitle: Text(user.email),
+                  ),
+                ),
+                SizedBox(
+                  height: 60,
+                  child: ListTile(
+                    title: const Text('Mobile'),
+                    subtitle: Text(user.mobnum),
+                  ),
+                ),
+                if (_profile?.age != null)
+                  SizedBox(
+                    height: 60,
+                    child: ListTile(
+                      title: const Text('Age'),
+                      subtitle: Text('${_profile!.age} years'),
+                    ),
+                  ),
+                SizedBox(height: 8),
+                DropdownButtonFormField<String>(
+                  key: ValueKey('profile-gender-$_gender'),
+                  initialValue: _gender,
+                  decoration: const InputDecoration(labelText: 'Gender'),
+                  items: const [
+                    DropdownMenuItem(value: 'male', child: Text('Male')),
+                    DropdownMenuItem(value: 'female', child: Text('Female')),
+                    DropdownMenuItem(value: 'other', child: Text('Other')),
+                  ],
+                  onChanged: (value) => setState(() => _gender = value),
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  controller: _dob,
+                  decoration: const InputDecoration(
+                    labelText: 'Date of birth (YYYY-MM-DD)',
+                  ),
+                ),
+                SizedBox(height: 16),
+
+                TextField(
+                  controller: _height,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Height (cm)'),
+                ),
+                SizedBox(height: 16),
+
+                TextField(
+                  controller: _weight,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Weight (kg)'),
+                ),
+                SizedBox(height: 16),
+
+                TextField(
+                  controller: _blood,
+                  decoration: const InputDecoration(labelText: 'Blood group'),
+                ),
+                SizedBox(height: 16),
+
+                TextField(
+                  controller: _allergies,
+                  decoration: const InputDecoration(labelText: 'Allergies'),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Recorded conditions',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    for (final code in const [
+                      'hypertension',
+                      'diabetes',
+                      'cardiovascular_disease',
+                      'obesity',
+                      'asthma',
+                      'copd',
+                      'chronic_kidney_disease',
+                      'smoking',
+                      'stroke',
+                    ])
+                      FilterChip(
+                        label: Text(code.replaceAll('_', ' ')),
+                        selected: _conditions.contains(code),
+                        onSelected: (selected) {
+                          setState(() {
+                            if (selected) {
+                              _conditions.add(code);
+                            } else {
+                              _conditions.remove(code);
+                            }
+                          });
+                        },
+                      ),
+                  ],
+                ),
+                if (_error != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Text(
+                      _error!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: _saving ? null : _save,
+                  child: Text(_saving ? 'Saving…' : 'Save profile'),
+                ),
+              ],
+            ),
           );
         },
       ),

@@ -1,4 +1,3 @@
-import 'package:client/core/themes/tokens/colors.dart';
 import 'package:client/core/utils/body_metrics.dart';
 import 'package:client/feature/dashboard/models/server_health.model.dart';
 import 'package:client/feature/dashboard/notifiers/clinical_snapshot.notifier.dart';
@@ -14,7 +13,9 @@ class TodayHealthGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final snapshot = ref.watch(clinicalSnapshotProvider);
-    final refresh = ref.read(clinicalSnapshotProvider.notifier).refreshDailyActivity;
+    final refresh = ref
+        .read(clinicalSnapshotProvider.notifier)
+        .refreshDailyActivity;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -99,10 +100,7 @@ class VitalSignsCard extends ConsumerWidget {
                   ? '—'
                   : '${snapshot.pulseRate.value!.toStringAsFixed(0)} bpm',
             ),
-            _row(
-              'Blood pressure',
-              bp == null ? '—' : '$bp mmHg',
-            ),
+            _row('Blood pressure', bp == null ? '—' : '$bp mmHg'),
             _row(
               'Blood glucose',
               snapshot.glucose.value == null
@@ -216,7 +214,7 @@ class RiskIndicatorCard extends ConsumerWidget {
     final busy = state.refreshing || (state.loading && latest == null);
 
     return Card(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      color: Theme.of(context).colorScheme.surfaceContainer,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -236,12 +234,15 @@ class RiskIndicatorCard extends ConsumerWidget {
             if (latest != null) ...[
               const SizedBox(height: 8),
               Chip(
-                label: Text(latest.riskLevel.toUpperCase()),
+                label: Text(
+                  "Risk Level: ${latest.riskLevel.toUpperCase()}",
+                  style: TextStyle(fontSize: 16),
+                ),
                 backgroundColor: latest.riskLevel == 'high'
                     ? Colors.red.withAlpha(40)
                     : latest.riskLevel == 'moderate'
                     ? Colors.orange.withAlpha(40)
-                    : ZintraColors.brandSubtle,
+                    : Colors.green.withAlpha(400),
               ),
               const SizedBox(height: 8),
               Text(

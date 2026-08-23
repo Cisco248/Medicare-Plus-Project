@@ -1,14 +1,7 @@
-// import 'package:client/core/exceptions/base.exception.dart';
-// import 'package:client/feature/e_doc/notifiers/document_query.notifier.dart';
-// import 'package:client/feature/e_doc/widgets/document_filters.widget.dart';
 import 'package:client/feature/e_doc/widgets/form.widget.dart';
 import 'package:client/feature/e_doc/widgets/generate.widget.dart';
-// import 'package:client/feature/reports/notifiers/reports.notifier.dart';
-// import 'package:client/feature/reports/page/upload_report.page.dart';
-// import 'package:client/feature/reports/widgets/report_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class EDocPage extends ConsumerStatefulWidget {
   const EDocPage({super.key});
@@ -26,26 +19,33 @@ class _EDocPageState extends ConsumerState<EDocPage> {
 
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'E-Doc',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: colorScheme.onSurface,
+            Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: Text(
+                'E-Doc',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: colorScheme.onSurface,
+                ),
               ),
             ),
             const SizedBox(height: 4),
-            Text(
+            Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: Text(
               'View uploaded documents or generate a personalized assessment.',
               style: TextStyle(
                 fontFamily: 'Inter',
-                fontSize: 12,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
                 color: colorScheme.onSurface.withAlpha(150),
+                ),
               ),
             ),
             const SizedBox(height: 12),

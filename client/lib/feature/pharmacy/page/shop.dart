@@ -46,170 +46,178 @@ class EPharmacy extends ConsumerWidget {
               if (product.id == id) product,
         ];
 
-        return ListView(
-          padding: const EdgeInsets.only(bottom: 24),
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(32, 8, 32, 0),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'E-Pharmacy',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: colorScheme.onPrimaryContainer,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Demo catalogue for everyday healthcare items. Prescription medicines require verification.',
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 11,
-                              color: colorScheme.onPrimaryContainer.withAlpha(
-                                180,
+        return Material(
+          child: ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'E-Pharmacy',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: colorScheme.onPrimaryContainer,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton.filledTonal(
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const CartPage()),
-                      ),
-                      icon: Badge(
-                        isLabelVisible: cartCount > 0,
-                        label: Text('$cartCount'),
-                        child: const FaIcon(
-                          FontAwesomeIcons.cartShopping,
-                          size: 16,
+                            const SizedBox(height: 4),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 1/2,
+                              child: Text(
+                                'Everyday healthcare items. Prescription medicines require verification.',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 11,
+                                  color: colorScheme.onPrimaryContainer.withAlpha(
+                                    180,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    IconButton.filledTonal(
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const OrdersPage()),
+                      Expanded(child: Row(spacing: 8,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                        children: [IconButton.filledTonal(
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const CartPage()),
+                        ),
+                        icon: Badge(
+                          isLabelVisible: cartCount > 0,
+                          label: Text('$cartCount'),
+                          child: const FaIcon(
+                            FontAwesomeIcons.cartShopping,
+                            size: 16,
+                          ),
+                        ),
                       ),
-                      icon: const FaIcon(FontAwesomeIcons.boxOpen, size: 16),
+                      IconButton.filledTonal(
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const OrdersPage()),
+                        ),
+                        icon: const FaIcon(FontAwesomeIcons.boxOpen, size: 16),
+                      ),]),),
+                    ],
+                  ),
+                ),
+              ),
+              SearchWidget(
+                onSubmitted: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ProductListPage()),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Wrap(
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  direction: Axis.horizontal,
+                  spacing: 4,
+                  runSpacing: 4,
+                  children: [
+                    ActionChip(
+                      label: const Text('Wishlist'),
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const WishlistPage()),
+                      ),
+                    ),
+                    ...ProductCategory.values.map(
+                      (category) => ActionChip(
+                        label: Text(category.label),
+                        onPressed: () {
+                          ref
+                              .read(pharmacyQueryProvider.notifier)
+                              .setCategory(category);
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const ProductListPage(),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-            SearchWidget(
-              onSubmitted: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const ProductListPage()),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  ActionChip(
-                    label: const Text('Wishlist'),
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const WishlistPage()),
-                    ),
+              if (query.search.isNotEmpty) ...[
+                _SectionHeader(
+                  title: 'Search results',
+                  onSeeAll: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ProductListPage()),
                   ),
-                  ...ProductCategory.values.map(
-                    (category) => ActionChip(
-                      label: Text(category.label),
-                      onPressed: () {
-                        ref
-                            .read(pharmacyQueryProvider.notifier)
-                            .setCategory(category);
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const ProductListPage(),
-                          ),
-                        );
-                      },
+                ),
+                ...visible
+                    .take(4)
+                    .map(
+                      (product) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: ProductCard(product: product),
+                      ),
+                    ),
+              ] else ...[
+                _SectionHeader(
+                  title: 'Featured',
+                  onSeeAll: () => _openList(context),
+                ),
+                ...featured
+                    .take(3)
+                    .map(
+                      (product) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: ProductCard(product: product),
+                      ),
+                    ),
+                _SectionHeader(
+                  title: 'Popular',
+                  onSeeAll: () {
+                    ref
+                        .read(pharmacyQueryProvider.notifier)
+                        .setSort(ProductSort.popularity);
+                    _openList(context);
+                  },
+                ),
+                ...popular
+                    .take(3)
+                    .map(
+                      (product) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: ProductCard(product: product),
+                      ),
+                    ),
+                _SectionHeader(
+                  title: 'Recommended',
+                  onSeeAll: () => _openList(context),
+                ),
+                ...recommended.map(
+                  (product) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ProductCard(product: product),
+                  ),
+                ),
+                if (recent.isNotEmpty) ...[
+                  const _SectionHeader(title: 'Recently viewed'),
+                  ...recent.map(
+                    (product) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: ProductCard(product: product, compact: true),
                     ),
                   ),
                 ],
-              ),
-            ),
-            if (query.search.isNotEmpty) ...[
-              _SectionHeader(
-                title: 'Search results',
-                onSeeAll: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const ProductListPage()),
-                ),
-              ),
-              ...visible
-                  .take(4)
-                  .map(
-                    (product) => Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      child: ProductCard(product: product),
-                    ),
-                  ),
-            ] else ...[
-              _SectionHeader(
-                title: 'Featured',
-                onSeeAll: () => _openList(context),
-              ),
-              ...featured
-                  .take(3)
-                  .map(
-                    (product) => Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      child: ProductCard(product: product),
-                    ),
-                  ),
-              _SectionHeader(
-                title: 'Popular',
-                onSeeAll: () {
-                  ref
-                      .read(pharmacyQueryProvider.notifier)
-                      .setSort(ProductSort.popularity);
-                  _openList(context);
-                },
-              ),
-              ...popular
-                  .take(3)
-                  .map(
-                    (product) => Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      child: ProductCard(product: product),
-                    ),
-                  ),
-              _SectionHeader(
-                title: 'Recommended',
-                onSeeAll: () => _openList(context),
-              ),
-              ...recommended.map(
-                (product) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: ProductCard(product: product),
-                ),
-              ),
-              if (recent.isNotEmpty) ...[
-                const _SectionHeader(title: 'Recently viewed'),
-                ...recent.map(
-                  (product) => Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: ProductCard(product: product, compact: true),
-                  ),
-                ),
               ],
             ],
-          ],
+          ),
         );
       },
     );
@@ -231,7 +239,7 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(32, 20, 32, 4),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Row(
         children: [
           Text(
