@@ -1,6 +1,5 @@
 import logging
 from contextlib import asynccontextmanager
-
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -8,9 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from core import DBConnection, ServerSettings
-from data import BASE
-from repository import (
+from core.utils import DBConnection
+from core.configs import ServerSettings
+from data.models import BASE
+from repository.routes import (
     auth_router,
     base_model_router,
     har_router,

@@ -32,6 +32,7 @@ class RAGPipeline:
         self._usage = UsageTracker()
         self._cache: OrderedDict[str, tuple[float, str]] = OrderedDict()
         self._cache_lock = Lock()
+
         self._prompt = ChatPromptTemplate.from_messages(
             [
                 (

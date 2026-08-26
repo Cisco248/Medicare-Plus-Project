@@ -9,11 +9,12 @@ class ServerSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=BASE_DIR / ".env", extra="ignore")
 
     # Database Configurations
-    DB_HOST: str = os.getenv("MYSQL_HOST", "localhost")
+    DB_HOST: str = os.getenv("MYSQL_HOST", "mysql-server")
     DB_PORT: int = int(os.getenv("MYSQL_PORT", 3306))
     DB_USER: str = os.getenv("MYSQL_USER", "root")
     DB_PASSWORD: str = os.getenv("MYSQL_PASSWORD", "password")
     DB_NAME: str = os.getenv("MYSQL_DATABASE", "db_name")
+    # CLOUD_SQL_CONNECTION_NAME: str = ""
     ECO: bool = False
     Pool_Pre_Ping: bool = True
 
