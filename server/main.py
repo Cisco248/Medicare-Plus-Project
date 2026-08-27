@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from core.utils import DBConnection
+from core.utils import DBConnection, download_models
 from core.configs import ServerSettings
 from data.models import BASE
 from repository.routes import (
@@ -83,4 +83,5 @@ app.include_router(router=base_model_router, prefix="/api-base")
 
 
 if __name__ == "__main__":
+    download_models()
     uvicorn.run("main:app", host=setting.APP_HOST, port=setting.APP_PORT, reload=True)

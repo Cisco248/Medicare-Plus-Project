@@ -28,8 +28,6 @@ RUN mkdir -p /app/data
 
 COPY . .
 
-COPY ./artifact/ /app/data/
-
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s \

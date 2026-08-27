@@ -13,6 +13,7 @@ from .utils import (
     base62_encode,
     short_uuid,
     DBConnection,
+    download_models,
 )
 from .configs import ServerSettings
 
@@ -30,4 +31,5 @@ __all__ = [
     "TokenGenerator",
     "base62_encode",
     "short_uuid",
+    "download_models",
 ]

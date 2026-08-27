@@ -17,6 +17,7 @@ dependencies = [
     "uvicorn>=0.46.0",
     "httpx>=0.28.0",
     "xgboost>=3.4.1",
+    "google-cloud-storage>=3.13.1",
 ]
 
 [project.optional-dependencies]

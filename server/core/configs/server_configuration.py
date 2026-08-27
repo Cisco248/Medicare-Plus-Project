@@ -8,17 +8,16 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 class ServerSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=BASE_DIR / ".env", extra="ignore")
 
-    # Database Configurations
+    # Database Configuration.
     DB_HOST: str = os.getenv("MYSQL_HOST", "mysql-server")
     DB_PORT: int = int(os.getenv("MYSQL_PORT", 3306))
     DB_USER: str = os.getenv("MYSQL_USER", "root")
     DB_PASSWORD: str = os.getenv("MYSQL_PASSWORD", "password")
     DB_NAME: str = os.getenv("MYSQL_DATABASE", "db_name")
-    # CLOUD_SQL_CONNECTION_NAME: str = ""
     ECO: bool = False
     Pool_Pre_Ping: bool = True
 
-    # Server Configurations
+    # Server Configuration.
     APP_NAME: str = os.getenv("APP_NAME", "app_name")
     APP_VERSION: str = os.getenv("APP_VERSION", "app_version")
     APP_HOST: str = os.getenv("HOST", "0.0.0.0")
@@ -39,25 +38,23 @@ class ServerSettings(BaseSettings):
         "DOCUMENT_STORAGE_PATH", f"{BASE_DIR}/uploads/documents"
     )
 
-    # Base Models Paths Configurations
-    HYPERTENSION_PATH: str = "/app/data/base/hypertension"
-    HYPERTENSION_MODEL_PATH: str = f"{HYPERTENSION_PATH}/risk_classifier.pkl"
-    HYPERTENSION_FEATURE_PATH: str = f"{HYPERTENSION_PATH}/feature_names.pkl"
-    HYPERTENSION_LABEL_PATH: str = f"{HYPERTENSION_PATH}/risk_labels.pkl"
+    MODEL_DIR: Path = Path(os.getenv("MODEL_DIR", "./artifact"))
+    BUCKET_NAME: str = os.getenv("BUCKET_NAME", "medicare-plus-models")
 
-    DIABETES_PATH: str = "/app/data/base/diabetes"
-    DIABETES_MODEL_PATH: str = f"{DIABETES_PATH}/model.pkl"
-    DIABETES_SCALER_PATH: str = f"{DIABETES_PATH}/scaler.pkl"
-    DIABETES_FEATURE_PATH: str = f"{DIABETES_PATH}/features.pkl"
+    HYPERTENSION_MODEL_PATH: str = f"{MODEL_DIR}/base/hypertension/risk_classifier.pkl"
+    HYPERTENSION_FEATURE_PATH: str = f"{MODEL_DIR}/base/hypertension/feature_names.pkl"
+    HYPERTENSION_LABEL_PATH: str = f"{MODEL_DIR}/base/hypertension/risk_labels.pkl"
 
-    HEART_DISEASE_PATH: str = "/app/data/base/heart_disease"
-    HEART_DISEASE_MODEL_PATH: str = f"{HEART_DISEASE_PATH}/model.pkl"
-    HEART_DISEASE_SCALER_PATH: str = f"{HEART_DISEASE_PATH}/scaler.pkl"
-    HEART_DISEASE_FEATURE_PATH: str = f"{HEART_DISEASE_PATH}/features.json"
-    HEART_DISEASE_INFO_PATH: str = f"{HEART_DISEASE_PATH}/model.json"
+    DIABETES_MODEL_PATH: str = f"{MODEL_DIR}/base/diabetes/model.pkl"
+    DIABETES_SCALER_PATH: str = f"{MODEL_DIR}/base/diabetes/scaler.pkl"
+    DIABETES_FEATURE_PATH: str = f"{MODEL_DIR}/base/diabetes/features.pkl"
 
-    HAR_PATH: str = "/app/data/har"
-    HAR_MODEL_PATH: str = f"{HAR_PATH}/model.pkl"
+    HEART_DISEASE_MODEL_PATH: str = f"{MODEL_DIR}/base/heart_disease/model.pkl"
+    HEART_DISEASE_SCALER_PATH: str = f"{MODEL_DIR}/base/heart_disease/scaler.pkl"
+    HEART_DISEASE_FEATURE_PATH: str = f"{MODEL_DIR}/base/heart_disease/features.json"
+    HEART_DISEASE_INFO_PATH: str = f"{MODEL_DIR}/base/heart_disease/model.json"
+
+    HAR_MODEL_PATH: str = f"{MODEL_DIR}/har/model.pkl"
 
     @property
     def rag_url(self) -> str:
