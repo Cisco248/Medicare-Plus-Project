@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 /// Kept inside E-Doc so the shared `/api` client is unchanged.
 Dio eDocBaseModelClient() => Dio(
   BaseOptions(
-    baseUrl: '${ApiEndpoints.baseUrl}:8080/api-base',
+    baseUrl: '${ApiEndpoints.backendUrl}/api-base',
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 120),
     headers: {'Content-Type': 'application/json'},

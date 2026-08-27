@@ -37,7 +37,7 @@ class SummaryAIMiddleware:
                 "'Recommendations:' section.\n\n"
                 f"{context}"
             )
-            url = f"{setting.RAG_HOST}:{setting.RAG_PORT}/api/knowledge"
+            url = f"{setting.rag_url}/api/knowledge"
             payload = {
                 "userId": user_id,
                 "period": {

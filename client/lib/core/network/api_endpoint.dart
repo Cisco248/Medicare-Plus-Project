@@ -1,12 +1,17 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  // These is default emulator URL Endpoint.
-  // If you want the Connect Physical Device replace URL Endpoint.
-  // E.G. http://192.168.1.10
-  static const String baseUrl = 'http://192.168.1.103';
+  /// FastAPI backend. Override at build time with
+  /// `--dart-define=BACKEND_URL=http://192.168.1.103:8080` for local devices.
+  static const String backendUrl = String.fromEnvironment(
+    'BACKEND_URL',
+    defaultValue: 'https://medicare-plus-68356394205.europe-west1.run.app',
+  );
 
-  // static const String login = '/auth/login';
-  // static const String register = '/auth/register';
-  // static const String dashbord = '/dashboard';
+  /// RAG API. Override at build time with
+  /// `--dart-define=RAG_URL=http://192.168.1.103:8000` for local devices.
+  static const String ragUrl = String.fromEnvironment(
+    'RAG_URL',
+    defaultValue: 'https://medicare-plus-rag-68356394205.europe-west1.run.app',
+  );
 }

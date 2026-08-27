@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 
 Dio client() => Dio(
   BaseOptions(
-    baseUrl: '${ApiEndpoints.baseUrl}:8080',
+    baseUrl: ApiEndpoints.backendUrl,
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 120),
     headers: {'Content-Type': 'application/json'},
@@ -12,7 +12,7 @@ Dio client() => Dio(
 
 Dio ragClient() => Dio(
   BaseOptions(
-    baseUrl: '${ApiEndpoints.baseUrl}:8000',
+    baseUrl: ApiEndpoints.ragUrl,
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 120),
     headers: {'Content-Type': 'application/json'},

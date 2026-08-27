@@ -101,7 +101,7 @@ class MotionSensorNotifier extends Notifier<MotionSensorState> {
       if (_sensors.usesNativeCapture) {
         await _sensors.startNative(
           token: token,
-          baseUrl: '${ApiEndpoints.baseUrl}:8080',
+          baseUrl: ApiEndpoints.backendUrl,
         );
         state = state.copyWith(recording: true, clearError: true);
         return;

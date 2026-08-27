@@ -60,7 +60,7 @@ def _predict_from_readings(readings: list, model) -> tuple[str, float, dict]:
 async def _optional_har_summary(activity: str, confidence: float) -> Any | None:
     try:
         response = await RagClientMiddleware(
-            url=f"{config.RAG_HOST}:{config.RAG_PORT}/api/har-summary",
+            url=f"{config.rag_url}/api/har-summary",
             data={"question": _compose_har_questions(activity, confidence)},
         ).build()
         response.raise_for_status()

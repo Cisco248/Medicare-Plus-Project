@@ -48,7 +48,7 @@ async def hypertension_add_data(schema: HypertensionScehema):
     recommendations: str | None = None
     try:
         response = await RagClientMiddleware(
-            url=f"{config.RAG_HOST}:{config.RAG_PORT}/api/e-doc",
+            url=f"{config.rag_url}/api/e-doc",
             data={"question": question},
         ).build()
         response.raise_for_status()
@@ -110,7 +110,7 @@ async def diabetes_add_data(schema: DiabetesSchema):
     recommendations = None
     try:
         rag_response = await RagClientMiddleware(
-            url=f"{config.RAG_HOST}:{config.RAG_PORT}/api/e-doc",
+            url=f"{config.rag_url}/api/e-doc",
             data={"question": question},
         ).build()
         rag_response.raise_for_status()
@@ -174,7 +174,7 @@ async def _predict_heart_disease(schema: HeartDiseaseSchema) -> dict:
     recommendations = None
     try:
         rag_response = await RagClientMiddleware(
-            url=f"{config.RAG_HOST}:{config.RAG_PORT}/api/e-doc",
+            url=f"{config.rag_url}/api/e-doc",
             data={"question": question},
         ).build()
         rag_response.raise_for_status()

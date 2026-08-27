@@ -1,12 +1,10 @@
 .venv
+.venv/
 __pycache__
-ml/
 .git
 .github
 .pytest_cache
 .python-version
-artifacts/
-data/
 tests/
 *.pyc
 *.pyo
@@ -14,9 +12,6 @@ tests/
 .DS_Store
 .env
 .env.example
-node_modules/
-.npm
-.node-gyp
 README.md
 .gitignore
-.editorconfig
+.gcloudignore

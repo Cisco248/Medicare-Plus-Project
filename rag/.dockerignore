@@ -2,3 +2,8 @@ artifact/
 .venv/
 __pycache__/
 temp/
+.env
+.env.example
+.pytest_cache/
+*.pyc
+.gcloudignore

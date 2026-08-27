@@ -29,6 +29,7 @@ class ServerSettings(BaseSettings):
     # Rag URL
     RAG_HOST: str = os.getenv("RAG_HOST", "loacalhost")
     RAG_PORT: int = int(os.getenv("RAG_PORT", 8081))
+    RAG_BASE_URL: str = os.getenv("RAG_BASE_URL", "")
 
     # JWT Tokens
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "secret-key")
@@ -57,3 +58,9 @@ class ServerSettings(BaseSettings):
     HEART_DISEASE_SCALER_PATH: str = f"{HEART_DISEASE_PATH}/scaler.pkl"
     HEART_DISEASE_FEATURE_PATH: str = f"{HEART_DISEASE_PATH}/features.json"
     HEART_DISEASE_INFO_PATH: str = f"{HEART_DISEASE_PATH}/model.json"
+
+    @property
+    def rag_url(self) -> str:
+        if self.RAG_BASE_URL:
+            return self.RAG_BASE_URL.rstrip("/")
+        return f"{self.RAG_HOST.rstrip('/')}:{self.RAG_PORT}"
