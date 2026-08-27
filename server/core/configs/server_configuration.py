@@ -39,7 +39,7 @@ class ServerSettings(BaseSettings):
     )
 
     MODEL_DIR: Path = Path(os.getenv("MODEL_DIR", "./artifact"))
-    BUCKET_NAME: str = os.getenv("BUCKET_NAME", "medicare-plus-models")
+    BUCKET_NAME: str = os.getenv("BUCKET_NAME", "server-models")
 
     HYPERTENSION_MODEL_PATH: str = f"{MODEL_DIR}/base/hypertension/risk_classifier.pkl"
     HYPERTENSION_FEATURE_PATH: str = f"{MODEL_DIR}/base/hypertension/feature_names.pkl"
