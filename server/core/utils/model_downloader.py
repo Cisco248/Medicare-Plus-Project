@@ -11,15 +11,16 @@ def download_models():
     bucket = client.bucket(setting.BUCKET_NAME)
 
     models = [
-        "diabetes/model.pkl",
-        "diabetes/features.pkl",
-        "diabetes/labels.pkl",
-        "hypertension/model.pkl",
-        "hypertension/features.pkl",
-        "hypertension/labels.pkl",
-        "heart_disease/model.pkl",
-        "heart_disease/features.pkl",
-        "heart_disease/labels.pkl",
+        "base/diabetes/model.pkl",
+        "base/diabetes/features.pkl",
+        "base/diabetes/labels.pkl",
+        "base/hypertension/model.pkl",
+        "base/hypertension/features.pkl",
+        "base/hypertension/labels.pkl",
+        "base/heart_disease/model.pkl",
+        "base/heart_disease/features.pkl",
+        "base/heart_disease/labels.pkl",
+        "har/model.pkl",
     ]
 
     for model_path in models:
