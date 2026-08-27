@@ -96,7 +96,6 @@ jobs:
           region: '${{ env.REGION }}'
           image: '${{ env.BACKEND_IMAGE }}'
           flags: >-
-            --service-account=server-models@medicare-plus-506621.iam.gserviceaccount.com
             --allow-unauthenticated
             --cpu=1
             --memory=1Gi
