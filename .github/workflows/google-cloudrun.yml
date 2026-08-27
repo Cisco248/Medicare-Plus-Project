@@ -55,13 +55,6 @@ jobs:
       - name: 'Docker Auth'
         run: gcloud auth configure-docker '${{ env.REGION }}-docker.pkg.dev' --quiet
 
-      # - name: Download ML artifacts
-      #   run: |
-      #     gcloud storage cp \
-      #       --recursive \
-      #       gs://server-models \
-      #       ./server/app/data/
-
       - name: 'Build and Push Containers'
         run: |-
           BACKEND_IMAGE="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.AR_REPO }}/backend:${{ github.sha }}"
@@ -103,6 +96,7 @@ jobs:
           region: '${{ env.REGION }}'
           image: '${{ env.BACKEND_IMAGE }}'
           flags: >-
+            --service-account=server-models@medicare-plus-506621.iam.gserviceaccount.com
             --allow-unauthenticated
             --cpu=1
             --memory=1Gi
