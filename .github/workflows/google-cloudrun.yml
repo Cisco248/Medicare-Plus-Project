@@ -74,6 +74,7 @@ jobs:
           region: '${{ env.REGION }}'
           image: '${{ env.RAG_IMAGE }}'
           flags: >-
+            --service-account=${{env.DEPLOY_SERVICE_ACCOUNT}}
             --allow-unauthenticated
             --cpu=1
             --memory=2Gi
@@ -96,6 +97,7 @@ jobs:
           region: '${{ env.REGION }}'
           image: '${{ env.BACKEND_IMAGE }}'
           flags: >-
+            --service-account=${{env.DEPLOY_SERVICE_ACCOUNT}}
             --allow-unauthenticated
             --cpu=1
             --memory=1Gi
