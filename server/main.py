@@ -33,6 +33,7 @@ def initialize_database() -> None:
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     initialize_database()
+    download_models()
     yield
 
 
@@ -83,5 +84,4 @@ app.include_router(router=base_model_router, prefix="/api-base")
 
 
 if __name__ == "__main__":
-    download_models()
     uvicorn.run("main:app", host=setting.APP_HOST, port=setting.APP_PORT, reload=True)
