@@ -46,6 +46,8 @@ jobs:
           workload_identity_provider: '${{ env.WORKLOAD_IDENTITY_PROVIDER }}'
           service_account: '${{ env.DEPLOY_SERVICE_ACCOUNT }}'
           project_id: '${{ env.PROJECT_ID }}'
+          token_format: 'access_token'
+          access_token_lifetime: '3600s'
 
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v2'
