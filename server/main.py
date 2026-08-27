@@ -33,7 +33,6 @@ def initialize_database() -> None:
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     initialize_database()
-    download_models()
     yield
 
 
@@ -75,6 +74,8 @@ async def unhandled_exception_handler(_request: Request, exc: Exception):
         content={"detail": "An unexpected server error occurred."},
     )
 
+
+download_models()
 
 app.include_router(router=init_router)
 app.include_router(router=auth_router, prefix="/api")

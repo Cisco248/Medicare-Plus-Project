@@ -21,7 +21,7 @@ class ServerSettings(BaseSettings):
     APP_NAME: str = os.getenv("APP_NAME", "app_name")
     APP_VERSION: str = os.getenv("APP_VERSION", "app_version")
     APP_HOST: str = os.getenv("HOST", "0.0.0.0")
-    APP_PORT: int = int(os.getenv("PORT", 8000))
+    APP_PORT: int = int(os.getenv("PORT", 8080))
     DEBUG: bool = os.getenv("DEBUG", "true").lower() == "true"
     CORS_ORIGIN: list[str] = os.getenv("CORS_ORIGINS", "").split()
 
