@@ -68,7 +68,7 @@ services:
       RAG_PORT: "8000"
 
     volumes:
-      - server-data:/app/data
+      - ./server/artifact:/app/data
 
     networks:
       - app-network

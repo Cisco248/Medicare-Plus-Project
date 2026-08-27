@@ -24,7 +24,11 @@ WORKDIR /server
 
 COPY --from=builder /server/.venv /server/.venv
 
+RUN mkdir -p /app/data
+
 COPY . .
+
+COPY ./artifact/ /app/data/
 
 EXPOSE 8080
 

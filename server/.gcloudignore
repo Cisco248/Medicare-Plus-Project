@@ -1,6 +1,9 @@
 .gcloudignore
+
 # Keep this in sync with .dockerignore. Cloud Build uploads the source
-# tarball before Docker applies .dockerignore.
+
+# tarball before Docker applies .dockerignore
+
 .venv/
 .venv
 __pycache__/
