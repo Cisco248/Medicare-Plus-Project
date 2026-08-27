@@ -1,8 +1,17 @@
+from pathlib import Path
+
 import joblib
 from sklearn.ensemble import RandomForestClassifier
 
 
 class ArtifactLoader:
+    @staticmethod
+    def resolve(*candidates: str) -> str:
+        for path in candidates:
+            if path and Path(path).exists():
+                return path
+        return candidates[0] if candidates else ""
+
     def model_loader(self, model_path: str) -> RandomForestClassifier:
         if not model_path:
             raise Exception("Models not Found")

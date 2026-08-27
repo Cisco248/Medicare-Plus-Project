@@ -21,9 +21,30 @@ async def hypertension_add_data(schema: HypertensionScehema):
     loader = ArtifactLoader()
     middleware = HypertensionMiddleware()
 
-    model = loader.model_loader(config.HYPERTENSION_PATH + "/model.pkl")
-    features = loader.feature_loader(config.HYPERTENSION_PATH + "/features.pkl")
-    labels = loader.label_loader(config.HYPERTENSION_PATH + "/labels.pkl")
+    try:
+        model = loader.model_loader(
+            loader.resolve(
+                config.HYPERTENSION_MODEL_PATH,
+                f"{config.MODEL_DIR}/base/hypertension/model.pkl",
+            )
+        )
+        features = loader.feature_loader(
+            loader.resolve(
+                config.HYPERTENSION_FEATURE_PATH,
+                f"{config.MODEL_DIR}/base/hypertension/features.pkl",
+            )
+        )
+        labels = loader.label_loader(
+            loader.resolve(
+                config.HYPERTENSION_LABEL_PATH,
+                f"{config.MODEL_DIR}/base/hypertension/labels.pkl",
+            )
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=503,
+            detail="The hypertension model is not available on the server.",
+        ) from exc
 
     bmi_value = middleware.bmi_calculator(schema.height, schema.weight)
     gender_value = middleware.gender_encoder(schema.gender)
