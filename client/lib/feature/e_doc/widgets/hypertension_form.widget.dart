@@ -22,7 +22,6 @@ class _HypertensionFormWidgetState
   final _formKey = GlobalKey<FormState>();
   final _hba1c = TextEditingController();
   final _cholesterol = TextEditingController();
-  final String _gender = '';
   DiabetesOrdinal? _diabetes;
 
   @override
@@ -37,11 +36,8 @@ class _HypertensionFormWidgetState
       NotificationUtils.error(context, 'Please complete the required fields.');
       return;
     }
-    if (_gender == '') {
-      NotificationUtils.error(
-        context,
-        'Please select gender and diabetes status.',
-      );
+    if (_diabetes!.name.isEmpty) {
+      NotificationUtils.error(context, 'Please select diabetes status.');
       return;
     }
 

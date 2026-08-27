@@ -22,7 +22,6 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
   final _pulse = TextEditingController();
   final _bp = TextEditingController();
   final _glucose = TextEditingController();
-  String? _gender;
   bool _familyDiabetes = false;
   bool _hypertensive = false;
   DiabetesPrefill _prefill = const DiabetesPrefill();
@@ -46,20 +45,12 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
     if (_pulse.text.isEmpty && prefill.pulseRate != null) {
       _pulse.text = prefill.pulseRate!.toStringAsFixed(0);
     }
-    _gender ??= prefill.gender;
-    if (prefill.hypertensive != null) {
-      _hypertensive = prefill.hypertensive!;
-    }
     if (mounted) setState(() {});
   }
 
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) {
       NotificationUtils.error(context, 'Please complete the required fields.');
-      return;
-    }
-    if (_gender == null) {
-      NotificationUtils.error(context, 'Please select a gender.');
       return;
     }
 
@@ -75,7 +66,15 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
         .submitDiabetes(
           DiabetesModel(
             age: ref.watch(clinicalSnapshotProvider).age.value?.toInt() ?? 0,
-            gender: ref.watch(clinicalSnapshotProvider).gender.value?.toLowerCase() == 'male' ? 'male' : 'female' ,
+            gender:
+                ref
+                        .watch(clinicalSnapshotProvider)
+                        .gender
+                        .value
+                        ?.toLowerCase() ==
+                    'male'
+                ? 'male'
+                : 'female',
             pulseRate: pulse,
             bpReading: _bp.text.trim(),
             glucose: glucose,
@@ -92,7 +91,6 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
     ref.listen(clinicalSnapshotProvider, (_, next) {
       _apply(ClinicalParameterMapper(next).diabetes());
     });
-    
 
     final assessment = ref.watch(docStateProvider);
     final submitting =
@@ -114,7 +112,7 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
               hint: 'Beats per minute',
               helperText: snapshot.sourceLabel(_prefill.pulseSource),
               controller: _pulse,
-              keyboardType:  TextInputType.text,
+              keyboardType: TextInputType.text,
               validator: _requiredNumber,
             ),
             const SizedBox(height: 8),
@@ -154,16 +152,17 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
             SizedBox(
               height: 40,
               child: CheckboxListTile(
-              activeColor: Theme.of(context).colorScheme.onSecondary,
-              contentPadding: EdgeInsets.zero,
-              value: _hypertensive,
-              onChanged: (value) =>
-                  setState(() => _hypertensive = value ?? false),
-              title: const Text(
-                'Hypertensive from recorded conditions',
-                style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                activeColor: Theme.of(context).colorScheme.onSecondary,
+                contentPadding: EdgeInsets.zero,
+                value: _hypertensive,
+                onChanged: (value) =>
+                    setState(() => _hypertensive = value ?? false),
+                title: const Text(
+                  'Hypertensive from recorded conditions',
+                  style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                ),
               ),
-            ),),
+            ),
             const SizedBox(height: 16),
             ZintraButton(
               label: 'Generate assessment',

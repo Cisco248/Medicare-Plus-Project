@@ -49,9 +49,7 @@ class _HeartDiseaseFormWidgetState
       NotificationUtils.error(context, 'Please complete the required fields.');
       return;
     }
-    if (_ageCategory == null ||
-        _genHealth == null ||
-        _diabetic == null) {
+    if (_ageCategory == null || _genHealth == null || _diabetic == null) {
       NotificationUtils.error(context, 'Please complete the required fields.');
       return;
     }
@@ -66,7 +64,15 @@ class _HeartDiseaseFormWidgetState
         .submitHeartDisease(
           HeartDiseaseModel(
             ageCategory: _ageCategory!,
-            sex: ref.watch(clinicalSnapshotProvider).gender.value?.toLowerCase() == 'male' ? 'male' : 'female' ,
+            sex:
+                ref
+                        .watch(clinicalSnapshotProvider)
+                        .gender
+                        .value
+                        ?.toLowerCase() ==
+                    'male'
+                ? 'male'
+                : 'female',
             bmi: ref.watch(clinicalSnapshotProvider).bmi.value?.toDouble() ?? 0,
             genHealth: _genHealth!,
             diabetic: _diabetic!,
@@ -84,7 +90,7 @@ class _HeartDiseaseFormWidgetState
     ref.listen(clinicalSnapshotProvider, (_, next) {
       _apply(ClinicalParameterMapper(next).heartDisease());
     });
-   
+
     final assessment = ref.watch(docStateProvider);
     final submitting =
         assessment.phase == DocPhase.loading &&
@@ -112,7 +118,13 @@ class _HeartDiseaseFormWidgetState
                 ),
                 items: [
                   for (final item in heartDiseaseAgeCategories)
-                    DropdownMenuItem(value: item, child: Text(item, style: TextStyle(fontFamily: 'Inter', fontSize: 13),)),
+                    DropdownMenuItem(
+                      value: item,
+                      child: Text(
+                        item,
+                        style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                      ),
+                    ),
                 ],
                 validator: (value) => value == null ? 'Required' : null,
                 onChanged: (value) {
@@ -130,7 +142,13 @@ class _HeartDiseaseFormWidgetState
                 style: TextStyle(fontFamily: 'Inter', fontSize: 13),
                 items: [
                   for (final item in heartDiseaseGenHealth)
-                    DropdownMenuItem(value: item, child: Text(item, style: TextStyle(fontFamily: 'Inter', fontSize: 13),)),
+                    DropdownMenuItem(
+                      value: item,
+                      child: Text(
+                        item,
+                        style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                      ),
+                    ),
                 ],
                 validator: (value) => value == null ? 'Required' : null,
                 onChanged: (value) {
@@ -143,11 +161,18 @@ class _HeartDiseaseFormWidgetState
               height: 50,
               child: DropdownButtonFormField<String>(
                 key: ValueKey('hd-diabetic-$_diabetic'),
-                initialValue: _diabetic,style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                initialValue: _diabetic,
+                style: TextStyle(fontFamily: 'Inter', fontSize: 13),
                 decoration: const InputDecoration(labelText: 'Diabetes status'),
                 items: [
                   for (final item in heartDiseaseDiabetic)
-                    DropdownMenuItem(value: item, child: Text(item, style: TextStyle(fontFamily: 'Inter', fontSize: 13),)),
+                    DropdownMenuItem(
+                      value: item,
+                      child: Text(
+                        item,
+                        style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                      ),
+                    ),
                 ],
                 validator: (value) => value == null ? 'Required' : null,
                 onChanged: (value) {
@@ -168,7 +193,8 @@ class _HeartDiseaseFormWidgetState
                 validator: _requiredPhysicalDays,
               ),
             ),
-            SizedBox(height: 40,
+            SizedBox(
+              height: 40,
               child: CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
                 value: _smoking,
@@ -179,7 +205,8 @@ class _HeartDiseaseFormWidgetState
                 ),
               ),
             ),
-            SizedBox(height: 40,
+            SizedBox(
+              height: 40,
               child: CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
                 value: _stroke,
@@ -190,7 +217,8 @@ class _HeartDiseaseFormWidgetState
                 ),
               ),
             ),
-            SizedBox(height: 40,
+            SizedBox(
+              height: 40,
               child: CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
                 value: _diffWalking,
