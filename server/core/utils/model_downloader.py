@@ -1,5 +1,5 @@
 from google.cloud import storage
-from core import ServerSettings
+from core.configs.server_configuration import ServerSettings
 
 setting = ServerSettings()
 
