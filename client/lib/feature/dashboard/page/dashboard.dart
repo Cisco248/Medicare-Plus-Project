@@ -55,7 +55,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
                   const SizedBox(height: 12),
                   const AiHealthSummaryCard(),
                   const SizedBox(height: 12),
-                  const RiskIndicatorCard(),
+                  const ActivityTrackingCard(),
                   const SizedBox(height: 12),
                   trend.when(
                     data: (value) => value == null

@@ -12,6 +12,7 @@ from pydantic import (
 
 class Request(BaseModel):
     question: str = Field(min_length=1, max_length=4000)
+    patient_context: Optional[str] = Field(default=None, max_length=4000)
 
 
 class EDocRequest(BaseModel):
@@ -80,6 +81,12 @@ class SimilaritySearchRequest(Request):
             "patient_id",
             "user_id",
             "date",
+            "disease",
+            "category",
+            "parameter",
+            "topic",
+            "medical_domain",
+            "model",
         }
         unknown = set(value or {}) - allowed
         if unknown:

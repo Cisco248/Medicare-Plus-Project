@@ -10,6 +10,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.documents import Document
 from pydantic import SecretStr
 
+from domain.retriever.query_expander import expand_query
 from core.configs.configuration import RAGSettings
 from .token_budget import TokenBudget, UsageTracker
 
@@ -37,14 +38,27 @@ class RAGPipeline:
             [
                 (
                     "system",
-                    "You are a medical information assistant. Answer only from "
-                    "the supplied context. Be concise, do not diagnose, and do "
-                    "not invent facts. If the context is insufficient, answer "
-                    '"I don\'t know based on the available documents."',
+                    "You are a medical information assistant for MediCare Plus. "
+                    "Use the supplied knowledge context as the source of truth. "
+                    "If the question includes submitted health values or a model "
+                    "prediction, interpret those values using the knowledge context. "
+                    "Answer clearly in everyday language. Do not diagnose. Do not "
+                    "invent facts, thresholds, medicines, or missing patient values. "
+                    "A machine-learning prediction is not a clinical diagnosis. "
+                    "This information is educational and does not replace a qualified "
+                    "healthcare professional. "
+                    "If emergency warning signs are described, tell the user to "
+                    "contact local emergency services immediately and do not delay "
+                    "for more questions. "
+                    "If the knowledge context covers the topic, give a useful "
+                    "educational answer even when a single number cannot settle a "
+                    "diagnosis. "
+                    "Only say \"I don't know based on the available documents\" when "
+                    "the topic is genuinely absent from the context.",
                 ),
                 (
                     "human",
-                    "Context:\n{context}\n\nQuestion:\n{question}",
+                    "Knowledge context:\n{context}\n\nQuestion:\n{question}",
                 ),
             ]
         )
@@ -59,10 +73,11 @@ class RAGPipeline:
             else None
         )
 
-    def _cache_key(self, question: str) -> str:
+    def _cache_key(self, question: str, patient_context: str = "") -> str:
         normalized = " ".join(question.lower().split())
+        context_norm = " ".join(patient_context.lower().split())
         return hashlib.sha256(
-            f"{self.index_version}\x1f{normalized}".encode("utf-8")
+            f"{self.index_version}\x1f{normalized}\x1f{context_norm}".encode("utf-8")
         ).hexdigest()
 
     def _get_cached(self, key: str) -> str | None:
@@ -91,6 +106,7 @@ class RAGPipeline:
         question: str,
         metadata_filter: dict[str, Any] | None = None,
         k: int | None = None,
+        patient_context: str | None = None,
     ) -> list[Document]:
         question = question.strip()
         if not question:
@@ -102,16 +118,34 @@ class RAGPipeline:
         self._budget.validate_question(question)
         if self.retriever is None:
             return []
-        return self.retriever.search(question, metadata_filter=metadata_filter, k=k)
+        retrieval_query = expand_query(question, patient_context)
+        return self.retriever.search(
+            retrieval_query, metadata_filter=metadata_filter, k=k
+        )
 
-    def invoke(self, question: str) -> str:
-        return self._generate(question, self._prompt)
+    def invoke(self, question: str, patient_context: str | None = None) -> str:
+        return self._generate(question, self._prompt, patient_context)
 
     def invoke_health_summary(self, question: str, prompt: ChatPromptTemplate) -> str:
         return self._generate(question, prompt)
 
-    def _generate(self, question: str, prompt: ChatPromptTemplate) -> str:
-        documents = self.search(question)
+    def _generation_question(self, question: str, patient_context: str | None) -> str:
+        question = question.strip()
+        context = (patient_context or "").strip()
+        if not context:
+            return question
+        return (
+            "Submitted health values (dynamic patient data, not from the knowledge "
+            f"documents):\n{context}\n\nUser question:\n{question}"
+        )
+
+    def _generate(
+        self,
+        question: str,
+        prompt: ChatPromptTemplate,
+        patient_context: str | None = None,
+    ) -> str:
+        documents = self.search(question, patient_context=patient_context)
         if not documents:
             return "I don't know based on the available documents."
 
@@ -119,7 +153,8 @@ class RAGPipeline:
         if not context.text:
             return "I don't know based on the available documents."
 
-        key = self._cache_key(question)
+        generation_question = self._generation_question(question, patient_context)
+        key = self._cache_key(generation_question, patient_context or "")
         cached = self._get_cached(key)
         if cached is not None:
             return cached
@@ -128,7 +163,7 @@ class RAGPipeline:
 
         messages = prompt.format_messages(
             context=context.text,
-            question=question.strip(),
+            question=generation_question,
         )
         response = self._llm.invoke(messages)
         answer = str(response.content).strip()
@@ -137,7 +172,8 @@ class RAGPipeline:
         input_tokens = int(
             usage.get(
                 "input_tokens",
-                self._budget.count(context.text) + self._budget.count(question),
+                self._budget.count(context.text)
+                + self._budget.count(generation_question),
             )
         )
         output_tokens = int(usage.get("output_tokens", self._budget.count(answer)))

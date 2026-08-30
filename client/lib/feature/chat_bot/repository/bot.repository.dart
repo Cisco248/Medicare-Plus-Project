@@ -11,7 +11,7 @@ BotRepositoryImpService botRepositoryImpService(Ref ref) =>
     BotRepositoryImpService(client: ragClient());
 
 abstract class BotRepository {
-  Future<ChatResponseModel> sendInfo(String info);
+  Future<ChatResponseModel> sendInfo(String info, {String? patientContext});
 }
 
 class BotRepositoryImpService extends BotRepository {
@@ -20,13 +20,17 @@ class BotRepositoryImpService extends BotRepository {
   BotRepositoryImpService({required this._client});
 
   @override
-  Future<ChatResponseModel> sendInfo(String value) async {
+  Future<ChatResponseModel> sendInfo(
+    String value, {
+    String? patientContext,
+  }) async {
     if (value.isEmpty) throw Exception('Value Not Found!');
     try {
-      final response = await _client.post(
-        '/api/ask',
-        data: {'question': value},
-      );
+      final payload = <String, dynamic>{'question': value};
+      if (patientContext != null && patientContext.trim().isNotEmpty) {
+        payload['patient_context'] = patientContext.trim();
+      }
+      final response = await _client.post('/api/ask', data: payload);
       return ChatResponseModel(
         message: response.data.toString(),
         createdDate: DateTime.now(),

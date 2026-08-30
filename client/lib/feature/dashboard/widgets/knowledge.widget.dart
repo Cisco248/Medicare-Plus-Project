@@ -6,11 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-/// Presentation-only entry point of the health-summary feature.
-///
-/// Reads [KnowledgeState] from the `ActivityNotifier` and renders the
-/// corresponding UI. All Health Connect and RAG interaction happens in the
-/// notifier/repository layers — this widget only dispatches user intents.
 class KnowledgeWidget extends ConsumerWidget {
   const KnowledgeWidget({super.key});
 
@@ -140,17 +135,6 @@ class _Header extends StatelessWidget {
           FontAwesomeIcons.circleQuestion,
           size: 14,
           color: colorScheme.primary,
-        ),
-        const Spacer(),
-        IconButton(
-          tooltip: 'Refresh health data',
-          visualDensity: VisualDensity.compact,
-          onPressed: onRefresh,
-          icon: FaIcon(
-            FontAwesomeIcons.arrowsRotate,
-            size: 14,
-            color: colorScheme.primary,
-          ),
         ),
       ],
     );

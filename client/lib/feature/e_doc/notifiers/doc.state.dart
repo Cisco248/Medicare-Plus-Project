@@ -3,9 +3,11 @@ import 'package:client/feature/e_doc/models/doc.state.dart';
 import 'package:client/feature/e_doc/models/diabetes.model.dart';
 import 'package:client/feature/e_doc/models/heart_disease.model.dart';
 import 'package:client/feature/e_doc/models/hypertension.model.dart';
+import 'package:client/feature/e_doc/notifiers/edoc_chat_context.notifier.dart';
 import 'package:client/feature/e_doc/repository/diabetes.repository.dart';
 import 'package:client/feature/e_doc/repository/heart_disease.repository.dart';
 import 'package:client/feature/e_doc/repository/hypertension.repository.dart';
+import 'package:client/feature/e_doc/utils/edoc_chat_context.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'doc.state.g.dart';
@@ -19,6 +21,11 @@ class DocStateNotifier extends _$DocStateNotifier {
     state = DocState(phase: DocPhase.loading, model: DocModel.hypertension);
     try {
       state = await ref.read(hypertensionRepositoryProvider).sendData(data);
+      if (state.phase == DocPhase.success) {
+        ref
+            .read(edocChatContextProvider.notifier)
+            .replace(hypertensionEdocContext(data, state));
+      }
     } on AppException catch (e) {
       state = DocState(
         phase: DocPhase.error,
@@ -38,6 +45,11 @@ class DocStateNotifier extends _$DocStateNotifier {
     state = DocState(phase: DocPhase.loading, model: DocModel.diabetes);
     try {
       state = await ref.read(diabetesRepositoryProvider).predict(data);
+      if (state.phase == DocPhase.success) {
+        ref
+            .read(edocChatContextProvider.notifier)
+            .replace(diabetesEdocContext(data, state));
+      }
     } on AppException catch (e) {
       state = DocState(
         phase: DocPhase.error,
@@ -57,6 +69,11 @@ class DocStateNotifier extends _$DocStateNotifier {
     state = DocState(phase: DocPhase.loading, model: DocModel.heartDisease);
     try {
       state = await ref.read(heartDiseaseRepositoryProvider).predict(data);
+      if (state.phase == DocPhase.success) {
+        ref
+            .read(edocChatContextProvider.notifier)
+            .replace(heartDiseaseEdocContext(data, state));
+      }
     } on AppException catch (e) {
       state = DocState(
         phase: DocPhase.error,

@@ -9,7 +9,7 @@ router = APIRouter()
 async def ask_question(req: AskRequest, request: FastAPIRequest):
     pipeline = require_ready(request)
     try:
-        return pipeline.invoke(req.question)
+        return pipeline.invoke(req.question, patient_context=req.patient_context)
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

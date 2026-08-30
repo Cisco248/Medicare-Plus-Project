@@ -1,8 +1,16 @@
 # Hypertension Overview
 
-## Definition and purpose
+Also called: high blood pressure, high BP, elevated BP.
+
+## Question: What is hypertension?
+
+### Answer
 
 Blood pressure is the force of circulating blood against artery walls. Hypertension means blood pressure is persistently elevated and is confirmed through appropriate repeated measurements and clinical assessment. Systolic and diastolic pressure are recorded in mmHg.
+
+### Important safety information
+
+This is general education, not a diagnosis. The MediCare Plus hypertension model does not take a mmHg reading as input. A model label is not a NICE or AHA diagnosis.
 
 ## Key facts
 

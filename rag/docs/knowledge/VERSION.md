@@ -2,19 +2,32 @@
 
 ## Current release
 
-- Version: 1.1.0
-- Release date: 2026-08-23
-- Content access date: 2026-08-23
+- Version: 2.0.0
+- Release date: 2026-08-31
+- Content access date: 2026-08-31
 
 ## Scope
 
-Version 1.1.0 keeps the governed educational material for diabetes, hypertension, cholesterol, physical activity, sleep, monitoring, and safety, and adds real-world daily-summary use cases: interpreting one recorded day, steps and distance, estimated calories, workout intensity, resting and activity heart rate, BMI and weight, home blood pressure, self-checked glucose, wearable limits, and daily sleep tracking.
+Version 2.0.0 keeps the governed educational material for diabetes, hypertension, cholesterol, physical activity, sleep, monitoring, and safety, and adds parameter-aware, model-aware, and e-doc knowledge so the chatbot can explain submitted health values without treating a prediction as a diagnosis.
 
-Startup also ingests live pages listed in `docs/knowledge_urls.txt` (WHO, CDC, NHS, AHA, ADA, NIH/NHLBI, Mayo Clinic, and Harvard Health Publishing). Sample or demo data files are not used.
+Covered model features are taken from the running inference code:
 
-The release does not provide individualized treatment plans, medication recommendations, diagnostic decision rules, or country-specific emergency numbers.
+- Diabetes: age, gender, pulse_rate, systolic_bp, diastolic_bp, glucose (mmol/L), bmi, family_diabetes, hypertensive; scaler; labels Diabetic / High Risk versus Non-Diabetic / Low Risk.
+- Hypertension: age, bmi (from height and weight), hba1c_pct, cholesterol_mgdl, diabetes_ordinal, sex_male; labels from `risk_labels.pkl` (wording not invented here).
+- Heart disease: AgeCategory, Sex, BMI, GenHealth, Diabetic, Smoking, Stroke, DiffWalking, PhysicalHealth; probability versus threshold (default 0.6).
+
+Startup also ingests live pages listed in `docs/knowledge_urls.txt`. Sample or demo data files are not used. Named patient values are not stored in static documents.
+
+The release does not provide individualized treatment plans, medication doses, diagnostic decision rules that replace a clinician, or country-specific emergency numbers.
 
 ## Changelog
+
+### 2.0.0 - 2026-08-31
+
+- Added parameter documents for every confirmed e-doc/model feature, plus insulin as a related concept.
+- Added model, e-doc, mapping, combination, FAQ, heart-disease, medication-class, and South Asian diet files.
+- Expanded diabetes diagnosis, management, types, causes, complications, emergencies, and diet Q&A so common chatbot questions retrieve an answer instead of “I don’t know.”
+- Documented value-interpretation concepts (reference versus diagnostic versus risk versus emergency) without claiming that a single parameter diagnoses disease.
 
 ### 1.1.0 - 2026-08-23
 

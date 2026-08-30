@@ -10,23 +10,6 @@ class RagService {
   final Dio _client;
 
   String generationQuestion(HealthSummaryRequest data, PatientProfile user) {
-    final activity = data.activities;
-    final height = user.heightCm ??
-        (activity.heightMeters == null ? null : activity.heightMeters! * 100);
-    final weight = activity.weightKilograms ?? user.weightKg;
-    final heart = activity.heartRate?.averageBpm ?? activity.heartRate?.restingBpm;
-    final gender = user.gender?.trim().toLowerCase();
-    final genderText = switch (gender) {
-      'male' => 'Male',
-      'female' => 'Female',
-      null || '' => 'N/A',
-      _ => user.gender!.trim(),
-    };
-    final pressure = activity.bloodPressure;
-    final pressureText = pressure == null
-        ? 'N/A'
-        : '${pressure.systolicMmHg.toStringAsFixed(0)} mmHg / ${pressure.diastolicMmHg.toStringAsFixed(0)} mmHg';
-
     return '''
 Generate a health summary for the following patient data in the following format:
 
@@ -37,20 +20,19 @@ You are also given the patient's activity data.
 You are to generate a health summary for the patient based on the activity data.
 The health summary should be in the following format:
 
-Output Format:
-- Health Summary:
-- Age: ${_na(user.age, ' years')}
-- Gender: $genderText
-- Height: ${_na(height, ' cm')}
-- Weight: ${_na(weight, ' kg')}
-- Blood Pressure: $pressureText
-- Blood Sugar: ${_na(activity.bloodGlucoseMmolPerLiter, ' mmol/L')}
-- Heart Rate: ${_na(heart, ' bpm')}
-- Sleep: ${_na(activity.sleep?.totalMinutes, ' minutes')}
-- Steps: ${_na(activity.steps, ' steps')}
-- Calories: ${_na(activity.totalCalories, ' calories')}
-- Distance: ${_na(activity.distanceMeters, ' meters')}
-Today's Date: ${DateTime.now().toLocal()}
+Use this parameters to generate the health summary:
+- Age:
+- Gender:
+- Height:
+- Weight:
+- Blood Pressure:
+- Blood Sugar:
+- Heart Rate:
+- Sleep:
+- Steps:
+- Calories:
+- Distance:
+- Today's Date:
 
 Instructions:
 - Generate a health summary for the patient based on the activity data.

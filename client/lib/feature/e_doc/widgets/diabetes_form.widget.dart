@@ -140,6 +140,7 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
               child: CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
                 value: _familyDiabetes,
+                checkColor: Theme.of(context).colorScheme.onSurface,
                 activeColor: Theme.of(context).colorScheme.onSecondary,
                 onChanged: (value) =>
                     setState(() => _familyDiabetes = value ?? false),
@@ -152,6 +153,7 @@ class _DiabetesFormWidgetState extends ConsumerState<DiabetesFormWidget> {
             SizedBox(
               height: 40,
               child: CheckboxListTile(
+                checkColor: Theme.of(context).colorScheme.onSurface,
                 activeColor: Theme.of(context).colorScheme.onSecondary,
                 contentPadding: EdgeInsets.zero,
                 value: _hypertensive,

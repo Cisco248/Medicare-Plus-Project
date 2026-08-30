@@ -8,14 +8,17 @@ This document has the highest retrieval priority when severe or rapidly worsenin
 
 Contact local emergency services for:
 
-- severe or persistent chest pain, pressure, or tightness;
+- severe or persistent chest pain, pressure, or tightness (suspected heart attack);
 - major difficulty breathing;
 - collapse, loss of consciousness, or inability to wake normally;
-- sudden facial weakness, arm weakness, speech difficulty, severe confusion, or sudden major vision change;
+- sudden facial weakness, arm weakness, speech difficulty, severe confusion, or sudden major vision change (stroke warning signs);
 - seizure;
+- severe confusion or unconsciousness in a person with diabetes (possible severe hypoglycaemia or other emergency);
 - severe allergic reaction with breathing difficulty or swelling;
 - uncontrolled heavy bleeding; or
 - any rapidly worsening severe symptom or immediate threat to life.
+
+A person who is unconscious should not be given food or drink. Do not delay emergency care for an e-doc prediction, chatbot answer, or wearable reading. Hypertensive-crisis-range blood pressure with chest pain, severe headache, breathlessness, or neurological symptoms needs emergency care.
 
 Use the local emergency service for the person’s location; do not assume a country-specific number. If it is safe, follow instructions from emergency professionals and any established emergency care plan.
 

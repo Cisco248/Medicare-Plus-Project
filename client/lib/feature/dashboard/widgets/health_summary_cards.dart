@@ -204,8 +204,8 @@ class AiHealthSummaryCard extends ConsumerWidget {
   }
 }
 
-class RiskIndicatorCard extends ConsumerWidget {
-  const RiskIndicatorCard({super.key});
+class ActivityTrackingCard extends ConsumerWidget {
+  const ActivityTrackingCard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
