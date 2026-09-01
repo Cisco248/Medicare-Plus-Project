@@ -131,9 +131,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.arrow_back),
-          style: ButtonStyle(
-            backgroundColor: WidgetStatePropertyAll(Colors.transparent),
-          ),
         ),
       ),
       body: auth.when(

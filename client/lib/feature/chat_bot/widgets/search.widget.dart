@@ -74,9 +74,10 @@ class _SearchWidgetState extends ConsumerState<SearchWidget> {
             ),
           ),
           const SizedBox(width: 8),
-          IconButton(
+          IconButton.filled(
+            tooltip: 'Send',
             onPressed: _send,
-            icon: const Icon(size: 16, Icons.send, color: Colors.white),
+            icon: const Icon(Icons.send, size: 18),
           ),
         ],
       ),

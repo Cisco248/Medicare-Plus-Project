@@ -39,6 +39,7 @@ class AppbarWidget extends ConsumerWidget implements PreferredSizeWidget {
             children: [
               IconButton(
                 tooltip: 'Menu',
+                visualDensity: VisualDensity.compact,
                 onPressed: () => Scaffold.of(context).openDrawer(),
                 icon: FaIcon(
                   FontAwesomeIcons.bars,
@@ -75,6 +76,7 @@ class AppbarWidget extends ConsumerWidget implements PreferredSizeWidget {
               ),
               IconButton(
                 tooltip: 'Toggle theme',
+                visualDensity: VisualDensity.compact,
                 onPressed: () => ref.read(themeProvider.notifier).toggle(),
                 icon: FaIcon(
                   ref.watch(themeProvider).isDark

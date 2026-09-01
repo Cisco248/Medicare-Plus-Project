@@ -26,16 +26,12 @@ class RagService {
     final sleep = activity.sleep;
 
     return '''
-Generate a health summary for the following patient data in the following format:
+Generate a health summary for the following patient data.
 
 Context:
 You are a health assistant that generates a health summary for a patient based on their activity data.
-You are given the patient's age, gender, height, weight, blood pressure, blood sugar, heart rate, sleep, steps, and calories.
-You are also given the patient's activity data.
-You are to generate a health summary for the patient based on the activity data.
-The health summary should be in the following format:
 
-Use this parameters to generate the health summary:
+Recorded values (input only; do not copy this list into the report):
 - Age: ${_na(user.age, ' years')}
 - Gender: $genderText
 - Height: ${_na(heightCm, ' cm')}
@@ -50,13 +46,9 @@ Use this parameters to generate the health summary:
 - Today's Date: ${data.period.start.toUtc().toIso8601String()}
 
 Instructions:
-- Generate a health summary for the patient based on the activity data.
-- Patient predict the current health status of the patient based on the activity data.
-- Patient predict the current health trend of the patient based on the activity data.
-- Patient predict the current health risk of the patient based on the activity data.
-- Patient predict the current health recommendations for the patient based on the activity data.
-- Patient predict the current health insights for the patient based on the activity data.
-- Use only the recorded values above. If a field is N/A, keep it N/A. Do not invent measurements.
+- Do not include a Health Summary parameter list in the answer.
+- Write Status, Trend, Risk, Recommendations, and Insights only.
+- Use only the recorded values above. If a field is N/A, treat it as unavailable. Do not invent measurements.
 ''';
   }
 

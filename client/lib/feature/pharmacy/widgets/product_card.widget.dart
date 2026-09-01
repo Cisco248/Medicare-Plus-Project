@@ -135,6 +135,8 @@ class ProductCard extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IconButton(
+                    visualDensity: VisualDensity.compact,
+                    tooltip: wished ? 'Remove from wishlist' : 'Save to wishlist',
                     onPressed: () =>
                         ref.read(wishlistProvider.notifier).toggle(product.id),
                     icon: Icon(
@@ -142,13 +144,12 @@ class ProductCard extends ConsumerWidget {
                       color: wished ? Colors.red : colorScheme.onSurface,
                       size: 16,
                     ),
-                    style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.transparent)),
                   ),
                   IconButton(
+                    visualDensity: VisualDensity.compact,
+                    tooltip: 'Add to cart',
                     onPressed: () => _addToCart(context, ref),
                     icon: const FaIcon(FontAwesomeIcons.cartPlus, size: 16),
-                    style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.transparent)),
-
                   ),
                 ],
               ),

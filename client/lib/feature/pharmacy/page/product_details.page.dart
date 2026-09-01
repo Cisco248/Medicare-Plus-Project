@@ -181,6 +181,7 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
             Row(
               children: [
                 IconButton(
+                  visualDensity: VisualDensity.compact,
                   onPressed: _quantity > 1
                       ? () => setState(() => _quantity--)
                       : null,
@@ -194,6 +195,7 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                   ),
                 ),
                 IconButton(
+                  visualDensity: VisualDensity.compact,
                   onPressed: () => setState(() => _quantity++),
                   icon: const Icon(Icons.add_circle_outline),
                 ),

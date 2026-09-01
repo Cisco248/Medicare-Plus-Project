@@ -94,6 +94,7 @@ class MotionStatusCard extends ConsumerWidget {
           else
             IconButton(
               tooltip: 'Recognise current activity',
+              visualDensity: VisualDensity.compact,
               onPressed: () =>
                   ref.read(motionSensorProvider.notifier).predictCurrent(),
               icon: FaIcon(
@@ -105,6 +106,7 @@ class MotionStatusCard extends ConsumerWidget {
           if (!motion.recording)
             IconButton(
               tooltip: 'Start motion capture',
+              visualDensity: VisualDensity.compact,
               onPressed: () => ref.read(motionSensorProvider.notifier).start(),
               icon: FaIcon(FontAwesomeIcons.play, size: 14, color: cs.primary),
             ),
