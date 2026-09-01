@@ -10,37 +10,21 @@ extension ZintraButtonScheme on ButtonTheme {
   static final lightScheme = ZintraColorScheme.light();
   static final darkScheme = ZintraColorScheme.dark();
 
-  // ── IconButton ────────────────────────────────────────
-  static IconButtonThemeData lightIconButton() => IconButtonThemeData(
-    style: IconButton.styleFrom(
-      backgroundColor: lightScheme.primary,
-      foregroundColor: lightScheme.onPrimary,
-      disabledBackgroundColor: ZintraColors.textDisabled,
-      disabledForegroundColor: ZintraColorPrimitives.neutral50,
-      padding: const EdgeInsets.symmetric(
-        horizontal: ZintraSpacing.md,
-        vertical: ZintraSpacing.sm,
-      ),
-      shape: const RoundedRectangleBorder(borderRadius: ZintraRadius.md),
-      elevation: 0,
-      iconSize: ZintraSpacing.lg,
-    ),
-  );
+  // Default IconButtons stay transparent. Use IconButton.filled /
+  // filledTonal only in empty action slots (send, banner shortcuts).
+  static IconButtonThemeData lightIconButton(ColorScheme cs) =>
+      IconButtonThemeData(style: _plainIconButton(cs));
 
-  static IconButtonThemeData darkIconButton() => IconButtonThemeData(
-    style: IconButton.styleFrom(
-      backgroundColor: darkScheme.primary,
-      foregroundColor: darkScheme.onPrimary,
-      disabledBackgroundColor: ZintraColors.textDisabled,
-      disabledForegroundColor: ZintraColorPrimitives.neutral50,
-      padding: const EdgeInsets.symmetric(
-        horizontal: ZintraSpacing.md,
-        vertical: ZintraSpacing.sm,
-      ),
-      shape: const RoundedRectangleBorder(borderRadius: ZintraRadius.md),
-      elevation: 0,
-      iconSize: ZintraSpacing.lg,
-    ),
+  static IconButtonThemeData darkIconButton(ColorScheme cs) =>
+      IconButtonThemeData(style: _plainIconButton(cs));
+
+  static ButtonStyle _plainIconButton(ColorScheme cs) => IconButton.styleFrom(
+    overlayColor: cs.primary.withValues(alpha: 0.08),
+    padding: const EdgeInsets.all(ZintraSpacing.sm),
+    minimumSize: const Size.square(40),
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    iconSize: 20,
+    shape: const CircleBorder(),
   );
 
   // ── ElevatedButton ────────────────────────────────────────

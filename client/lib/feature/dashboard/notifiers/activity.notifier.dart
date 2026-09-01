@@ -5,16 +5,13 @@ import 'package:client/feature/dashboard/models/activity.model.dart';
 import 'package:client/feature/dashboard/models/knowledge.state.model.dart';
 import 'package:client/feature/dashboard/models/patient_profile.model.dart';
 import 'package:client/feature/dashboard/notifiers/clinical_snapshot.notifier.dart';
-import 'package:client/feature/dashboard/repository/activity_repository.dart';
 import 'package:client/feature/dashboard/notifiers/server_health.notifier.dart';
 import 'package:client/feature/dashboard/repository/knowledge.repository.dart';
-import 'package:client/feature/dashboard/services/health_connect.service.dart';
 import 'package:client/feature/dashboard/services/rag.service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'activity.notifier.g.dart';
 
-final _activityRepository = ActivityRepository(service: HealthConnectService());
 final _knowledgeRepository = KnowledgeRepository(
   ragService: RagService(client: ragClient()),
 );
@@ -39,10 +36,12 @@ class ActivityNotifier extends _$ActivityNotifier {
       errorMessage: null,
     );
     try {
-      final result = await _activityRepository.collectActivity(
-        startTime: state.periodStart,
-        endTime: state.periodEnd,
-      );
+      final result = await ref
+          .read(activityRepositoryProvider)
+          .collectActivity(
+            startTime: state.periodStart,
+            endTime: state.periodEnd,
+          );
       switch (result.status) {
         case HealthAccessStatus.unavailable:
           state = state.copyWith(
@@ -67,17 +66,9 @@ class ActivityNotifier extends _$ActivityNotifier {
             unavailableMetrics: result.deniedMetrics,
           );
           if (hasData) {
-            final auth = ref.read(authenticationProvider).value?.data;
-            await HarSyncService(
-              ref.read(harRepositoryProvider),
-            ).syncIfPossible(
-              token: auth?.token,
-              userId: auth?.id,
-              activity: activity,
-            );
             ref.invalidate(serverDailySummaryProvider);
             ref.invalidate(serverPredictionProvider);
-            ref.invalidate(stepsTrendProvider);
+            ref.invalidate(weeklyHealthProvider);
           }
       }
     } on AppException catch (e) {
@@ -152,7 +143,7 @@ class ActivityNotifier extends _$ActivityNotifier {
       errorMessage: null,
     );
     try {
-      await _activityRepository.requestPermissions();
+      await ref.read(activityRepositoryProvider).requestPermissions();
     } on AppException catch (e) {
       state = state.copyWith(
         phase: KnowledgePhase.failure,

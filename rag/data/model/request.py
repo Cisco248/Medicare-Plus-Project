@@ -12,6 +12,7 @@ from pydantic import (
 
 class Request(BaseModel):
     question: str = Field(min_length=1, max_length=4000)
+    patient_context: Optional[str] = Field(default=None, max_length=4000)
 
 
 class EDocRequest(BaseModel):
@@ -80,6 +81,12 @@ class SimilaritySearchRequest(Request):
             "patient_id",
             "user_id",
             "date",
+            "disease",
+            "category",
+            "parameter",
+            "topic",
+            "medical_domain",
+            "model",
         }
         unknown = set(value or {}) - allowed
         if unknown:
@@ -289,17 +296,12 @@ def compose_knowledge_question(payload: HealthSummaryRequest) -> str:
         sleep_text = f"{activities.sleep.total_minutes} minutes"
 
     return f"""
-Generate a health summary for the following patient data in the following format:
+Generate a health summary for the following patient data.
 
 Context:
 You are a health assistant that generates a health summary for a patient based on their activity data.
-You are given the patient's age, gender, height, weight, blood pressure, blood sugar, heart rate, sleep, steps, and calories.
-You are also given the patient's activity data.
-You are to generate a health summary for the patient based on the activity data.
-The health summary should be in the following format:
 
-Output Format:
-- Health Summary:
+Recorded values (input only; do not copy this list into the report):
 - Age: {_display(payload.age, " years")}
 - Gender: {gender_text}
 - Height: {_display(height, " cm")}
@@ -314,38 +316,22 @@ Output Format:
 Today's Date: {datetime.now().isoformat(timespec="seconds")}
 
 Instructions:
-- Generate a health summary for the patient based on the activity data.
-- Patient predict the current health status of the patient based on the activity data.
-- Patient predict the current health trend of the patient based on the activity data.
-- Patient predict the current health risk of the patient based on the activity data.
-- Patient predict the current health recommendations for the patient based on the activity data.
-- Patient predict the current health insights for the patient based on the activity data.
-- Use only the recorded values above. If a field is N/A, keep it N/A. Do not invent measurements.
+- Do not include a Health Summary parameter list in the answer.
+- Write Status, Trend, Risk, Recommendations, and Insights only.
+- Use only the recorded values above. If a field is N/A, treat it as unavailable. Do not invent measurements.
 """.strip()
 
 
 KNOWLEDGE_SYSTEM_TEMPLATE = """
 You are a health assistant that writes an informational daily health summary.
 
-Use only the recorded patient values in the question. If a field is N/A, keep it N/A.
+Use only the recorded patient values in the question. If a field is N/A, treat it as unavailable.
 Do not invent measurements, diagnoses, or lab results.
+Do not copy the recorded values back as a Health Summary parameter list.
 Use the medical knowledge context only for general interpretation of recorded values.
 This is not a diagnosis and must not replace clinical review.
 
 Write the answer in this exact order:
-Health Summary:
-- Age: <copy the recorded value>
-- Gender: <copy the recorded value>
-- Height: <copy the recorded value>
-- Weight: <copy the recorded value>
-- Blood Pressure: <copy the recorded value>
-- Blood Sugar: <copy the recorded value>
-- Heart Rate: <copy the recorded value>
-- Sleep: <copy the recorded value>
-- Steps: <copy the recorded value>
-- Calories: <copy the recorded value>
-- Distance: <copy the recorded value>
-
 Status:
 <one short paragraph based only on recorded values>
 

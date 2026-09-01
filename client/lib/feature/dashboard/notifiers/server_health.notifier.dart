@@ -7,11 +7,19 @@ import 'package:client/feature/auth/notifiers/authentication.notifier.dart';
 import 'package:client/feature/auth/services/token.service.dart';
 import 'package:client/feature/dashboard/models/activity.model.dart';
 import 'package:client/feature/dashboard/models/server_health.model.dart';
+import 'package:client/feature/dashboard/models/weekly_health.model.dart';
+import 'package:client/feature/dashboard/repository/activity_repository.dart';
 import 'package:client/feature/dashboard/repository/har_repository.dart';
+import 'package:client/feature/dashboard/services/health_connect.service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final harRepositoryProvider = Provider<HarRepository>(
   (ref) => HarRepository(client: client()),
+);
+
+final activityRepositoryProvider = Provider<ActivityRepository>(
+  (ref) => ActivityRepository(service: HealthConnectService()),
 );
 
 final serverDailySummaryProvider = FutureProvider<ServerDailySummary?>((
@@ -143,17 +151,78 @@ final serverPredictionProvider =
       ServerPredictionNotifier.new,
     );
 
-final stepsTrendProvider = FutureProvider<HealthTrend?>((ref) async {
+final weeklyHealthProvider = FutureProvider<WeeklyHealthOverview?>((ref) async {
   final auth = ref.watch(authenticationProvider).value?.data;
   if (auth == null || auth.token.isEmpty) return null;
+
+  final timezone = DateTime.now().timeZoneName;
+  WeeklyHealthOverview? fromConnect;
   try {
-    return await ref
-        .read(harRepositoryProvider)
-        .trends(token: auth.token, metric: 'steps');
+    final result = await ref
+        .read(activityRepositoryProvider)
+        .collectWeeklyActivity();
+    if (result.status == HealthAccessStatus.granted ||
+        result.status == HealthAccessStatus.partial) {
+      fromConnect = WeeklyHealthOverview.fromActivities(
+        patientId: auth.id,
+        days: result.days,
+        timezone: timezone,
+      );
+      if (result.hasAnyData) {
+        unawaited(
+          _syncWeeklyActivities(
+            ref.read(harRepositoryProvider),
+            token: auth.token,
+            userId: auth.id,
+            days: result.days,
+          ),
+        );
+      }
+    }
+  } on AppException catch (error) {
+    debugPrint('weekly Health Connect failed code=${error.code}');
   } catch (_) {
-    return null;
+    debugPrint('weekly Health Connect failed');
   }
+
+  WeeklyHealthOverview? fromServer;
+  try {
+    fromServer = await ref
+        .read(harRepositoryProvider)
+        .weeklyOverview(
+          token: auth.token,
+          timezone: timezone,
+          end: DateTime.now(),
+        );
+  } on AppException catch (error) {
+    debugPrint('weeklyHealthProvider failed code=${error.code}');
+    if (fromConnect == null) rethrow;
+  } catch (_) {
+    debugPrint('weeklyHealthProvider failed');
+    if (fromConnect == null) rethrow;
+  }
+
+  if (fromConnect != null) {
+    return fromConnect.mergePreferLocal(fromServer);
+  }
+  return fromServer;
 });
+
+Future<void> _syncWeeklyActivities(
+  HarRepository repository, {
+  required String token,
+  required String userId,
+  required List<ActivityModel> days,
+}) async {
+  final sync = HarSyncService(repository);
+  for (final day in days) {
+    try {
+      await sync.syncIfPossible(token: token, userId: userId, activity: day);
+    } catch (error) {
+      debugPrint('weekly Health Connect sync failed');
+    }
+  }
+}
 
 class HarSyncService {
   const HarSyncService(this._repository);

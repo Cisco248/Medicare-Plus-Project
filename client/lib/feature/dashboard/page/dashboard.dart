@@ -1,9 +1,13 @@
+import 'package:client/core/themes/primitives/spacing.dart';
 import 'package:client/feature/dashboard/notifiers/clinical_snapshot.notifier.dart';
+import 'package:client/feature/dashboard/notifiers/motion_sensor.notifier.dart';
 import 'package:client/feature/dashboard/notifiers/server_health.notifier.dart';
 import 'package:client/feature/dashboard/widgets/health_summary_cards.dart';
 import 'package:client/feature/dashboard/widgets/knowledge.widget.dart';
+import 'package:client/feature/dashboard/widgets/motion_status.widget.dart';
 import 'package:client/feature/dashboard/widgets/patient.widget.dart';
 import 'package:client/feature/dashboard/widgets/remainder.widget.dart';
+import 'package:client/feature/dashboard/widgets/weekly_charts.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,13 +30,13 @@ class _DashboardState extends ConsumerState<Dashboard> {
   Future<void> _refresh() async {
     ref.invalidate(patientProfileProvider);
     ref.invalidate(serverPredictionProvider);
+    ref.invalidate(weeklyHealthProvider);
     await ref.read(clinicalSnapshotProvider.notifier).refreshDailyActivity();
+    await ref.read(motionSensorProvider.notifier).refreshStats();
   }
 
   @override
   Widget build(BuildContext context) {
-    final trend = ref.watch(stepsTrendProvider);
-
     return RefreshIndicator(
       onRefresh: _refresh,
       child: SingleChildScrollView(
@@ -42,31 +46,29 @@ class _DashboardState extends ConsumerState<Dashboard> {
           children: [
             const PatientCard(),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(
+                horizontal: ZintraSpacing.pageMargin,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 16),
+                  const SizedBox(height: ZintraSpacing.md),
+                  const MotionStatusCard(),
+                  const SizedBox(height: ZintraSpacing.md),
+                  const WeeklyHealthCharts(),
+                  const SizedBox(height: ZintraSpacing.md),
                   const RemainderCard(),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: ZintraSpacing.md),
                   const TodayHealthGrid(),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: ZintraSpacing.sm),
                   const VitalSignsCard(),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: ZintraSpacing.sm),
                   const AiHealthSummaryCard(),
-                  const SizedBox(height: 12),
-                  const RiskIndicatorCard(),
-                  const SizedBox(height: 12),
-                  trend.when(
-                    data: (value) => value == null
-                        ? const SizedBox.shrink()
-                        : HealthTrendChart(trend: value),
-                    loading: () => const SizedBox.shrink(),
-                    error: (_, _) => const SizedBox.shrink(),
-                  ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: ZintraSpacing.sm),
+                  const ActivityTrackingCard(),
+                  const SizedBox(height: ZintraSpacing.md),
                   const KnowledgeWidget(),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: ZintraSpacing.xl),
                 ],
               ),
             ),

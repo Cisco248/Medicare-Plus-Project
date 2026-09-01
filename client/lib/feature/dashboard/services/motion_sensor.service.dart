@@ -17,8 +17,11 @@ class MotionSensorProbe {
   bool get isReady => accelerometer && gyroscope;
 }
 
-/// Pairs accelerometer and gyroscope X/Y/Z. On Android the native
-/// [HarMotionService] owns capture and upload so it survives app close.
+/// In-app accelerometer + gyroscope capture.
+///
+/// On Android a native foreground service keeps the process alive in the
+/// background and takes over capture when the Flutter UI is not running.
+/// Collected samples are posted to `POST /api-har/samples` by the notifier.
 class MotionSensorService {
   MotionSensorService({this.minInterval = const Duration(milliseconds: 50)});
 
@@ -42,22 +45,41 @@ class MotionSensorService {
 
   Future<MotionSensorProbe> probe() async {
     if (usesNativeCapture) {
-      final raw = await channel.invokeMapMethod<String, dynamic>('probe');
-      return MotionSensorProbe(
-        accelerometer: raw?['accelerometer'] == true,
-        gyroscope: raw?['gyroscope'] == true,
-      );
+      try {
+        final raw = await channel.invokeMapMethod<String, dynamic>('probe');
+        return MotionSensorProbe(
+          accelerometer: raw?['accelerometer'] == true,
+          gyroscope: raw?['gyroscope'] == true,
+        );
+      } on MissingPluginException {
+        debugPrint('HAR probe plugin missing; assuming device sensors exist');
+      }
     }
     return const MotionSensorProbe(accelerometer: true, gyroscope: true);
   }
 
+  Future<bool> isNativeRunning() async {
+    if (!usesNativeCapture) return false;
+    try {
+      return await channel.invokeMethod<bool>('isRunning') ?? false;
+    } on MissingPluginException {
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// [capture] true: native sensors + POST `/api-har/samples`.
+  /// [capture] false: keep-alive foreground service only (Dart captures).
   Future<void> startNative({
     required String token,
     required String baseUrl,
+    bool capture = true,
   }) async {
     await channel.invokeMethod<void>('start', {
       'token': token,
       'baseUrl': baseUrl,
+      'capture': capture,
     });
   }
 
@@ -67,8 +89,6 @@ class MotionSensorService {
 
   void startLocal() {
     if (isLocalRunning) return;
-    // Prefer ~20 Hz. Do not treat a single EventChannel error as "missing
-    // sensors" — OEM streams can emit a transient error on subscribe.
     const period = Duration(milliseconds: 50);
     _accSub = accelerometerEventStream(samplingPeriod: period).listen(
       (event) {

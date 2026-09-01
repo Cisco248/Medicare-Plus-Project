@@ -35,6 +35,8 @@ void main() {
     expect(question, contains('Heart Rate: 72.0 bpm'));
     expect(question, contains('Blood Pressure: N/A'));
     expect(question, contains('Steps: 4200 steps'));
+    expect(question, contains('do not copy this list into the report'));
+    expect(question, isNot(contains('Use this parameters')));
     expect(question, isNot(contains('Instance of')));
   });
 }

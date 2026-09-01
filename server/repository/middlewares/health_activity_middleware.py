@@ -25,6 +25,7 @@ from data.schemas.health_activity_schema import (
     HealthActivityRecordOut,
     HealthTrendsOut,
     TrendPointOut,
+    WeeklyOverviewOut,
 )
 
 logger = logging.getLogger(__name__)
@@ -443,14 +444,17 @@ class HealthActivityMiddleware:
             "steps": ("steps", "count"),
             "distance": ("distance_meters", "meters"),
             "total_calories": ("total_calories", "kcal"),
+            "active_calories": ("active_calories", "kcal"),
             "heart_rate": ("average_heart_rate", "bpm"),
             "sleep": ("sleep_minutes", "minutes"),
+            "activity": ("activity_minutes", "minutes"),
             "blood_pressure": ("systolic_mm_hg", "mmHg"),
         }
         if metric not in field_map:
             raise HTTPException(status_code=422, detail="Unsupported trend metric.")
         attr, unit = field_map[metric]
-        end = date.today()
+        zone = _zone("UTC")
+        end = datetime.now(zone).date()
         start = end - timedelta(days=days - 1)
         rows = (
             db.query(HealthActivityDailySummaryModel)
@@ -467,3 +471,48 @@ class HealthActivityMiddleware:
             for offset in range(days)
         ]
         return HealthTrendsOut(patient_id=str(user.id), metric=metric, unit=unit, points=points)
+
+    @staticmethod
+    def weekly_overview(
+        db: Session,
+        user: UserModel,
+        days: int = 7,
+        tz_name: str = "UTC",
+        end_day: date | None = None,
+    ) -> WeeklyOverviewOut:
+        zone = _zone(tz_name)
+        end = end_day or datetime.now(zone).date()
+        start = end - timedelta(days=days - 1)
+        rows = (
+            db.query(HealthActivityDailySummaryModel)
+            .filter(
+                HealthActivityDailySummaryModel.user_id == user.id,
+                HealthActivityDailySummaryModel.summary_date >= start,
+                HealthActivityDailySummaryModel.summary_date <= end,
+            )
+            .order_by(HealthActivityDailySummaryModel.summary_date.desc())
+            .all()
+        )
+        by_date = {row.summary_date: row for row in rows}
+        summaries = []
+        for offset in range(days):
+            day = start + timedelta(days=offset)
+            row = by_date.get(day)
+            if row is None:
+                summaries.append(
+                    DailySummaryOut(
+                        patient_id=str(user.id),
+                        date=day,
+                        timezone=tz_name,
+                    )
+                )
+            else:
+                summaries.append(HealthActivityMiddleware.to_daily_out(row))
+        return WeeklyOverviewOut(
+            patient_id=str(user.id),
+            start=start,
+            end=end,
+            days=days,
+            timezone=tz_name,
+            summaries=summaries,
+        )

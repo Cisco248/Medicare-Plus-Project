@@ -1,5 +1,6 @@
+import 'package:client/core/themes/primitives/spacing.dart';
 import 'package:client/core/utils/body_metrics.dart';
-import 'package:client/feature/dashboard/models/server_health.model.dart';
+import 'package:client/core/widgets/glass.widget.dart';
 import 'package:client/feature/dashboard/notifiers/clinical_snapshot.notifier.dart';
 import 'package:client/feature/dashboard/notifiers/server_health.notifier.dart';
 import 'package:client/feature/dashboard/widgets/activity.widget.dart';
@@ -16,6 +17,46 @@ class TodayHealthGrid extends ConsumerWidget {
     final refresh = ref
         .read(clinicalSnapshotProvider.notifier)
         .refreshDailyActivity;
+    final cs = Theme.of(context).colorScheme;
+    final tiles = <Widget>[
+      ActivityCardWidget(
+        value: snapshot.steps.value?.toString() ?? '—',
+        valueName: 'Steps',
+        icon: FontAwesomeIcons.shoePrints,
+        iconColor: cs.primary,
+        callback: refresh,
+      ),
+      ActivityCardWidget(
+        value: snapshot.totalCalories.value?.toStringAsFixed(0) ?? '—',
+        valueName: 'Calories',
+        icon: FontAwesomeIcons.fire,
+        iconColor: cs.secondary,
+        callback: refresh,
+      ),
+      ActivityCardWidget(
+        value: snapshot.sleepHours.value?.toStringAsFixed(1) ?? '—',
+        valueName: 'Sleep (hours)',
+        icon: FontAwesomeIcons.bed,
+        iconColor: cs.tertiary,
+        callback: refresh,
+      ),
+      ActivityCardWidget(
+        value: snapshot.weightKg.value?.toStringAsFixed(1) ?? '—',
+        valueName: 'Weight',
+        icon: FontAwesomeIcons.dumbbell,
+        iconColor: cs.primary,
+        callback: refresh,
+      ),
+      if (snapshot.bmi.isAvailable)
+        ActivityCardWidget(
+          value: BodyMetrics.formatBmi(snapshot.bmi.value) ?? '—',
+          valueName: 'BMI',
+          icon: FontAwesomeIcons.heartPulse,
+          iconColor: cs.secondary,
+          callback: refresh,
+        ),
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -24,50 +65,26 @@ class TodayHealthGrid extends ConsumerWidget {
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w600,
+            color: cs.onSurface,
           ),
         ),
-        const SizedBox(height: 12),
-        ActivityCardWidget(
-          value: snapshot.steps.value?.toString() ?? '—',
-          valueName: 'Steps',
-          icon: FontAwesomeIcons.shoePrints,
-          iconColor: Colors.red,
-          callback: refresh,
+        const SizedBox(height: ZintraSpacing.sm),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final columns = constraints.maxWidth >= 700 ? 4 : 2;
+            final gap = ZintraSpacing.xs;
+            final width =
+                ((constraints.maxWidth - gap * (columns - 1)) / columns)
+                    .floorToDouble();
+            return Wrap(
+              spacing: gap,
+              runSpacing: gap,
+              children: [
+                for (final tile in tiles) SizedBox(width: width, child: tile),
+              ],
+            );
+          },
         ),
-        const SizedBox(height: 8),
-        ActivityCardWidget(
-          value: snapshot.totalCalories.value?.toStringAsFixed(0) ?? '—',
-          valueName: 'Calories',
-          icon: FontAwesomeIcons.fire,
-          iconColor: Colors.orange,
-          callback: refresh,
-        ),
-        const SizedBox(height: 8),
-        ActivityCardWidget(
-          value: snapshot.sleepHours.value?.toStringAsFixed(1) ?? '—',
-          valueName: 'Sleep (hours)',
-          icon: FontAwesomeIcons.bed,
-          iconColor: Colors.blue,
-          callback: refresh,
-        ),
-        const SizedBox(height: 8),
-        ActivityCardWidget(
-          value: snapshot.weightKg.value?.toStringAsFixed(1) ?? '—',
-          valueName: 'Weight',
-          icon: FontAwesomeIcons.dumbbell,
-          iconColor: Colors.green,
-          callback: refresh,
-        ),
-        if (snapshot.bmi.isAvailable) ...[
-          const SizedBox(height: 8),
-          ActivityCardWidget(
-            value: BodyMetrics.formatBmi(snapshot.bmi.value) ?? '—',
-            valueName: 'BMI',
-            icon: FontAwesomeIcons.heartPulse,
-            iconColor: Colors.pink,
-            callback: refresh,
-          ),
-        ],
       ],
     );
   }
@@ -80,57 +97,64 @@ class VitalSignsCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final snapshot = ref.watch(clinicalSnapshotProvider);
     final bp = snapshot.bloodPressureReading.value;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Vital Signs',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w600,
-              ),
+    final cs = Theme.of(context).colorScheme;
+    return GlassContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Vital Signs',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w600,
+              color: cs.onSurface,
             ),
-            const SizedBox(height: 12),
-            _row(
-              'Heart rate',
-              snapshot.pulseRate.value == null
-                  ? '—'
-                  : '${snapshot.pulseRate.value!.toStringAsFixed(0)} bpm',
-            ),
-            _row('Blood pressure', bp == null ? '—' : '$bp mmHg'),
-            _row(
-              'Blood glucose',
-              snapshot.glucose.value == null
-                  ? '—'
-                  : '${snapshot.glucose.value!.toStringAsFixed(1)} mmol/L',
-            ),
-            _row(
-              'SpO₂',
-              snapshot.oxygenSaturation.value == null
-                  ? '—'
-                  : '${snapshot.oxygenSaturation.value!.toStringAsFixed(0)}%',
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: ZintraSpacing.sm),
+          _row(
+            context,
+            'Heart rate',
+            snapshot.pulseRate.value == null
+                ? '—'
+                : '${snapshot.pulseRate.value!.toStringAsFixed(0)} bpm',
+          ),
+          _row(context, 'Blood pressure', bp == null ? '—' : '$bp mmHg'),
+          _row(
+            context,
+            'Blood glucose',
+            snapshot.glucose.value == null
+                ? '—'
+                : '${snapshot.glucose.value!.toStringAsFixed(1)} mmol/L',
+          ),
+          _row(
+            context,
+            'SpO₂',
+            snapshot.oxygenSaturation.value == null
+                ? '—'
+                : '${snapshot.oxygenSaturation.value!.toStringAsFixed(0)}%',
+          ),
+        ],
       ),
     );
   }
 
-  Widget _row(String label, String value) {
+  Widget _row(BuildContext context, String label, String value) {
+    final cs = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontFamily: 'Inter')),
+          Text(
+            label,
+            style: TextStyle(fontFamily: 'Inter', color: cs.onSurfaceVariant),
+          ),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Inter',
               fontWeight: FontWeight.w600,
+              color: cs.onSurface,
             ),
           ),
         ],
@@ -149,191 +173,189 @@ class AiHealthSummaryCard extends ConsumerWidget {
         (summary.aiSummary == null && summary.recommendations.isEmpty)) {
       return const SizedBox.shrink();
     }
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    final cs = Theme.of(context).colorScheme;
+    return GlassContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'AI-generated health insight',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w600,
+              color: cs.onSurface,
+            ),
+          ),
+          const SizedBox(height: ZintraSpacing.xs),
+          if (summary.aiSummary != null)
             Text(
-              'AI-generated health insight',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              summary.aiSummary!,
+              style: TextStyle(fontFamily: 'Inter', color: cs.onSurface),
+            ),
+          if (summary.recommendations.isNotEmpty) ...[
+            const SizedBox(height: ZintraSpacing.sm),
+            Text(
+              'Recommendations',
+              style: TextStyle(
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w600,
+                color: cs.onSurface,
               ),
             ),
-            const SizedBox(height: 8),
-            if (summary.aiSummary != null)
-              Text(
-                summary.aiSummary!,
-                style: const TextStyle(fontFamily: 'Inter'),
-              ),
-            if (summary.recommendations.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              const Text(
-                'Recommendations',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
+            ...summary.recommendations.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text(
+                  '• $item',
+                  style: TextStyle(fontFamily: 'Inter', color: cs.onSurface),
                 ),
-              ),
-              ...summary.recommendations.map(
-                (item) => Padding(
-                  padding: const EdgeInsets.only(top: 6),
-                  child: Text(
-                    '• $item',
-                    style: const TextStyle(fontFamily: 'Inter'),
-                  ),
-                ),
-              ),
-            ],
-            const SizedBox(height: 12),
-            Text(
-              summary.disclaimer ??
-                  'This information is intended to support monitoring and should not replace professional medical evaluation.',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ],
-        ),
+          const SizedBox(height: ZintraSpacing.sm),
+          Text(
+            summary.disclaimer ??
+                'This information is intended to support monitoring and should not replace professional medical evaluation.',
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 12,
+              color: cs.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class RiskIndicatorCard extends ConsumerWidget {
-  const RiskIndicatorCard({super.key});
+class ActivityTrackingCard extends ConsumerWidget {
+  const ActivityTrackingCard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(serverPredictionProvider);
     final latest = state.latest;
     final busy = state.refreshing || (state.loading && latest == null);
+    final cs = Theme.of(context).colorScheme;
 
-    return Card(
-      color: Theme.of(context).colorScheme.surfaceContainer,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Risk indicators',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w600,
-              ),
+    return GlassContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Risk indicators',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w600,
+              color: cs.onSurface,
             ),
-            if (state.refreshing) ...[
-              const SizedBox(height: 8),
-              const LinearProgressIndicator(minHeight: 2),
-            ],
-            if (latest != null) ...[
-              const SizedBox(height: 8),
-              Chip(
-                label: Text(
-                  "Risk Level: ${latest.riskLevel.toUpperCase()}",
-                  style: TextStyle(fontSize: 16),
-                ),
-                backgroundColor: latest.riskLevel == 'high'
-                    ? Colors.red.withAlpha(40)
-                    : latest.riskLevel == 'moderate'
-                    ? Colors.orange.withAlpha(40)
-                    : Colors.green.withAlpha(400),
+          ),
+          if (state.refreshing) ...[
+            const SizedBox(height: ZintraSpacing.xs),
+            const LinearProgressIndicator(minHeight: 2),
+          ],
+          if (latest != null) ...[
+            const SizedBox(height: ZintraSpacing.xs),
+            Chip(
+              label: Text(
+                'Risk Level: ${latest.riskLevel.toUpperCase()}',
+                style: TextStyle(fontSize: 13, color: cs.onSurface),
               ),
-              const SizedBox(height: 8),
-              Text(
-                latest.prediction,
-                style: const TextStyle(fontFamily: 'Inter'),
-              ),
-              const SizedBox(height: 8),
-              ...latest.evidence
-                  .take(4)
-                  .map(
-                    (item) => Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        '• ${item.statement}',
-                        style: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 13,
-                        ),
+              backgroundColor: latest.riskLevel == 'high'
+                  ? cs.error.withValues(alpha: 0.16)
+                  : latest.riskLevel == 'moderate'
+                  ? cs.tertiary.withValues(alpha: 0.16)
+                  : cs.primary.withValues(alpha: 0.16),
+              side: BorderSide(color: cs.outline.withValues(alpha: 0.3)),
+            ),
+            const SizedBox(height: ZintraSpacing.xs),
+            Text(
+              latest.prediction,
+              style: TextStyle(fontFamily: 'Inter', color: cs.onSurface),
+            ),
+            const SizedBox(height: ZintraSpacing.xs),
+            ...latest.evidence
+                .take(4)
+                .map(
+                  (item) => Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      '• ${item.statement}',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 13,
+                        color: cs.onSurface,
                       ),
                     ),
                   ),
-              const SizedBox(height: 12),
-              Text(
-                latest.disclaimer ??
-                    'Potential risk only. This is not a diagnosis and requires clinical review.',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 12,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
+            const SizedBox(height: ZintraSpacing.sm),
+            Text(
+              latest.disclaimer ??
+                  'Potential risk only. This is not a diagnosis and requires clinical review.',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 12,
+                color: cs.onSurfaceVariant,
               ),
-              const SizedBox(height: 4),
-              Text(
-                '${latest.modelName} ${latest.modelVersion}  ·  ${_formatGeneratedAt(latest.generatedAt)}',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 11,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '${latest.modelName} ${latest.modelVersion}  ·  ${_formatGeneratedAt(latest.generatedAt)}',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 11,
+                color: cs.onSurfaceVariant,
               ),
-            ] else if (busy) ...[
-              const SizedBox(height: 8),
-              const Text(
-                'Generating risk indicators from your latest health record…',
-                style: TextStyle(fontFamily: 'Inter'),
-              ),
-            ] else ...[
-              const SizedBox(height: 8),
-              Text(
-                state.errorMessage ??
-                    'No risk indicators yet. Tap refresh to generate them from your latest health record.',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  color: state.errorMessage == null
-                      ? null
-                      : Theme.of(context).colorScheme.error,
-                ),
-              ),
-            ],
-            if (latest != null && state.errorMessage != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                state.errorMessage!,
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 12,
-                  color: Theme.of(context).colorScheme.error,
-                ),
-              ),
-            ],
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.tonalIcon(
-                onPressed: state.refreshing
-                    ? null
-                    : () => ref
-                          .read(serverPredictionProvider.notifier)
-                          .refreshNow(),
-                icon: state.refreshing
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const FaIcon(FontAwesomeIcons.arrowsRotate, size: 14),
-                label: Text(state.refreshing ? 'Refreshing…' : 'Refresh now'),
+            ),
+          ] else if (busy) ...[
+            const SizedBox(height: ZintraSpacing.xs),
+            Text(
+              'Generating risk indicators from your latest health record…',
+              style: TextStyle(fontFamily: 'Inter', color: cs.onSurface),
+            ),
+          ] else ...[
+            const SizedBox(height: ZintraSpacing.xs),
+            Text(
+              state.errorMessage ??
+                  'No risk indicators yet. Tap refresh to generate them from your latest health record.',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                color: state.errorMessage == null ? cs.onSurface : cs.error,
               ),
             ),
           ],
-        ),
+          if (latest != null && state.errorMessage != null) ...[
+            const SizedBox(height: ZintraSpacing.xs),
+            Text(
+              state.errorMessage!,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 12,
+                color: cs.error,
+              ),
+            ),
+          ],
+          const SizedBox(height: ZintraSpacing.sm),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.tonalIcon(
+              onPressed: state.refreshing
+                  ? null
+                  : () => ref
+                        .read(serverPredictionProvider.notifier)
+                        .refreshNow(),
+              icon: state.refreshing
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const FaIcon(FontAwesomeIcons.arrowsRotate, size: 14),
+              label: Text(state.refreshing ? 'Refreshing…' : 'Refresh now'),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -346,66 +368,5 @@ class RiskIndicatorCard extends ConsumerWidget {
     final minute = local.minute.toString().padLeft(2, '0');
     final second = local.second.toString().padLeft(2, '0');
     return '$day/$month/${local.year} $hour:$minute:$second';
-  }
-}
-
-class HealthTrendChart extends StatelessWidget {
-  const HealthTrendChart({required this.trend, super.key});
-
-  final HealthTrend trend;
-
-  @override
-  Widget build(BuildContext context) {
-    final values = trend.points.map((point) => point.value).toList();
-    if (values.every((value) => value == null)) {
-      return const SizedBox.shrink();
-    }
-    final maxValue = values.whereType<double>().fold<double>(
-      1,
-      (a, b) => a > b ? a : b,
-    );
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '7-day ${trend.metric.replaceAll('_', ' ')}',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 80,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  for (final point in trend.points)
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 3),
-                        child: Container(
-                          height: point.value == null
-                              ? 4
-                              : (point.value! / maxValue) * 72 + 4,
-                          decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.primary.withAlpha(160),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

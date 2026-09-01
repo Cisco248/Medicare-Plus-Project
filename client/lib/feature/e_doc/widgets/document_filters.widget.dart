@@ -28,6 +28,7 @@ class DocumentFilters extends ConsumerWidget {
             suffixIcon: query.search.isEmpty
                 ? null
                 : IconButton(
+                    visualDensity: VisualDensity.compact,
                     onPressed: () => notifier.setSearch(''),
                     icon: const Icon(Icons.close, size: 16),
                   ),

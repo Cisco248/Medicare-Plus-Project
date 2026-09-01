@@ -61,7 +61,8 @@ Map<String, dynamic> knowledgeSummaryJson(
   String? question,
 }) {
   final activity = request.activities;
-  final heightCm = user?.heightCm ??
+  final heightCm =
+      user?.heightCm ??
       (activity.heightMeters == null ? null : activity.heightMeters! * 100);
   final weightKg = activity.weightKilograms ?? user?.weightKg;
   return {

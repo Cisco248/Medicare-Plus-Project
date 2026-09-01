@@ -111,7 +111,11 @@ class _HeartDiseaseFormWidgetState
               child: DropdownButtonFormField<String>(
                 key: ValueKey('hd-age-$_ageCategory'),
                 initialValue: _ageCategory,
-                style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 decoration: InputDecoration(
                   labelText: 'Age category',
                   helperText: snapshot.sourceLabel(_prefill.ageSource),
@@ -122,7 +126,11 @@ class _HeartDiseaseFormWidgetState
                       value: item,
                       child: Text(
                         item,
-                        style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 13,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ),
                 ],
@@ -139,14 +147,22 @@ class _HeartDiseaseFormWidgetState
                 key: ValueKey('hd-gen-$_genHealth'),
                 initialValue: _genHealth,
                 decoration: const InputDecoration(labelText: 'General health'),
-                style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 items: [
                   for (final item in heartDiseaseGenHealth)
                     DropdownMenuItem(
                       value: item,
                       child: Text(
                         item,
-                        style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 13,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ),
                 ],
@@ -162,7 +178,11 @@ class _HeartDiseaseFormWidgetState
               child: DropdownButtonFormField<String>(
                 key: ValueKey('hd-diabetic-$_diabetic'),
                 initialValue: _diabetic,
-                style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 decoration: const InputDecoration(labelText: 'Diabetes status'),
                 items: [
                   for (final item in heartDiseaseDiabetic)
@@ -170,7 +190,11 @@ class _HeartDiseaseFormWidgetState
                       value: item,
                       child: Text(
                         item,
-                        style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 13,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ),
                 ],
@@ -199,9 +223,13 @@ class _HeartDiseaseFormWidgetState
                 contentPadding: EdgeInsets.zero,
                 value: _smoking,
                 onChanged: (value) => setState(() => _smoking = value ?? false),
-                title: const Text(
+                title: Text(
                   'Smoking',
-                  style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
               ),
             ),
@@ -211,9 +239,13 @@ class _HeartDiseaseFormWidgetState
                 contentPadding: EdgeInsets.zero,
                 value: _stroke,
                 onChanged: (value) => setState(() => _stroke = value ?? false),
-                title: const Text(
+                title: Text(
                   'Previous stroke',
-                  style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
               ),
             ),
@@ -224,9 +256,13 @@ class _HeartDiseaseFormWidgetState
                 value: _diffWalking,
                 onChanged: (value) =>
                     setState(() => _diffWalking = value ?? false),
-                title: const Text(
+                title: Text(
                   'Difficulty walking',
-                  style: TextStyle(fontFamily: 'Inter', fontSize: 13),
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
               ),
             ),

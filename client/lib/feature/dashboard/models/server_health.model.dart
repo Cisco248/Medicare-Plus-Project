@@ -10,6 +10,7 @@ class ServerDailySummary {
     this.maxHeartRate,
     this.restingHeartRate,
     this.sleepMinutes,
+    this.activityMinutes,
     this.systolicMmHg,
     this.diastolicMmHg,
     this.bloodGlucoseMmol,
@@ -32,6 +33,7 @@ class ServerDailySummary {
   final double? maxHeartRate;
   final double? restingHeartRate;
   final int? sleepMinutes;
+  final int? activityMinutes;
   final double? systolicMmHg;
   final double? diastolicMmHg;
   final double? bloodGlucoseMmol;
@@ -45,8 +47,8 @@ class ServerDailySummary {
 
   factory ServerDailySummary.fromJson(Map<String, dynamic> json) {
     return ServerDailySummary(
-      date: DateTime.parse(json['date'] as String),
-      steps: json['steps'] as int?,
+      date: parseCalendarDate(json['date'] as String),
+      steps: (json['steps'] as num?)?.toInt(),
       distanceMeters: (json['distance_meters'] as num?)?.toDouble(),
       activeCalories: (json['active_calories'] as num?)?.toDouble(),
       totalCalories: (json['total_calories'] as num?)?.toDouble(),
@@ -54,7 +56,8 @@ class ServerDailySummary {
       minHeartRate: (json['min_heart_rate'] as num?)?.toDouble(),
       maxHeartRate: (json['max_heart_rate'] as num?)?.toDouble(),
       restingHeartRate: (json['resting_heart_rate'] as num?)?.toDouble(),
-      sleepMinutes: json['sleep_minutes'] as int?,
+      sleepMinutes: (json['sleep_minutes'] as num?)?.toInt(),
+      activityMinutes: (json['activity_minutes'] as num?)?.toInt(),
       systolicMmHg: (json['systolic_mm_hg'] as num?)?.toDouble(),
       diastolicMmHg: (json['diastolic_mm_hg'] as num?)?.toDouble(),
       bloodGlucoseMmol: (json['blood_glucose_mmol'] as num?)?.toDouble(),
@@ -131,6 +134,12 @@ class ServerPrediction {
   }
 }
 
+DateTime parseCalendarDate(String raw) {
+  final parsed = DateTime.tryParse(raw);
+  if (parsed == null) return DateTime.now();
+  return DateTime(parsed.year, parsed.month, parsed.day);
+}
+
 DateTime _parseDateTime(dynamic value) {
   if (value is DateTime) return value;
   if (value is String && value.isNotEmpty) {
@@ -147,7 +156,7 @@ class TrendPoint {
 
   factory TrendPoint.fromJson(Map<String, dynamic> json) {
     return TrendPoint(
-      date: DateTime.parse(json['date'] as String),
+      date: parseCalendarDate(json['date'] as String),
       value: (json['value'] as num?)?.toDouble(),
     );
   }

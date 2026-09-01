@@ -22,6 +22,7 @@ from .schemas import (
     HARSensorBatchIn,
     HARSensorReading,
     HARSensorStoreResponse,
+    HARSixHourWindowOut,
     HARWindowScheme,
     HealthActivityIngestRequest,
     HealthActivityIngestResponse,
@@ -35,6 +36,7 @@ from .schemas import (
     PatientProfileUpdate,
     UserCreate,
     UserLogin,
+    WeeklyOverviewOut,
 )
 
 __all__ = [
@@ -57,6 +59,7 @@ __all__ = [
     "HARSensorBatchIn",
     "HARSensorStoreResponse",
     "HARCurrentPredictionOut",
+    "HARSixHourWindowOut",
     "HARWindowScheme",
     "HeartScehema",
     "HeartDiseaseSchema",
@@ -71,5 +74,6 @@ __all__ = [
     "HealthActivityIngestResponse",
     "DailySummaryOut",
     "HealthTrendsOut",
+    "WeeklyOverviewOut",
     "PatientPredictionOut",
 ]

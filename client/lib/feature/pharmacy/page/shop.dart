@@ -73,25 +73,21 @@ class EPharmacy extends ConsumerWidget {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 1/2,
-                              child: Text(
-                                'Everyday healthcare items. Prescription medicines require verification.',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 11,
-                                  color: colorScheme.onPrimaryContainer.withAlpha(
-                                    180,
-                                  ),
+                            Text(
+                              'Everyday healthcare items. Prescription medicines require verification.',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 11,
+                                color: colorScheme.onPrimaryContainer.withAlpha(
+                                  180,
                                 ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      Expanded(child: Row(spacing: 8,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                        children: [IconButton.filledTonal(
+                      IconButton.filledTonal(
+                        tooltip: 'Cart',
                         onPressed: () => Navigator.of(context).push(
                           MaterialPageRoute(builder: (_) => const CartPage()),
                         ),
@@ -104,12 +100,14 @@ class EPharmacy extends ConsumerWidget {
                           ),
                         ),
                       ),
+                      const SizedBox(width: 8),
                       IconButton.filledTonal(
+                        tooltip: 'Orders',
                         onPressed: () => Navigator.of(context).push(
                           MaterialPageRoute(builder: (_) => const OrdersPage()),
                         ),
                         icon: const FaIcon(FontAwesomeIcons.boxOpen, size: 16),
-                      ),]),),
+                      ),
                     ],
                   ),
                 ),

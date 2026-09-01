@@ -11,55 +11,44 @@ class RagService {
 
   String generationQuestion(HealthSummaryRequest data, PatientProfile user) {
     final activity = data.activities;
-    final height = user.heightCm ??
-        (activity.heightMeters == null ? null : activity.heightMeters! * 100);
-    final weight = activity.weightKilograms ?? user.weightKg;
-    final heart = activity.heartRate?.averageBpm ?? activity.heartRate?.restingBpm;
-    final gender = user.gender?.trim().toLowerCase();
-    final genderText = switch (gender) {
-      'male' => 'Male',
-      'female' => 'Female',
-      null || '' => 'N/A',
-      _ => user.gender!.trim(),
-    };
-    final pressure = activity.bloodPressure;
-    final pressureText = pressure == null
+    final gender = user.gender?.trim();
+    final genderText = (gender == null || gender.isEmpty)
         ? 'N/A'
-        : '${pressure.systolicMmHg.toStringAsFixed(0)} mmHg / ${pressure.diastolicMmHg.toStringAsFixed(0)} mmHg';
+        : '${gender[0].toUpperCase()}${gender.substring(1)}';
+    final heightCm =
+        user.heightCm ??
+        (activity.heightMeters == null ? null : activity.heightMeters! * 100);
+    final weightKg = activity.weightKilograms ?? user.weightKg;
+    final bp = activity.bloodPressure;
+    final bpText = bp == null
+        ? 'N/A'
+        : '${bp.systolicMmHg}/${bp.diastolicMmHg} mmHg';
+    final sleep = activity.sleep;
 
     return '''
-Generate a health summary for the following patient data in the following format:
+Generate a health summary for the following patient data.
 
 Context:
 You are a health assistant that generates a health summary for a patient based on their activity data.
-You are given the patient's age, gender, height, weight, blood pressure, blood sugar, heart rate, sleep, steps, and calories.
-You are also given the patient's activity data.
-You are to generate a health summary for the patient based on the activity data.
-The health summary should be in the following format:
 
-Output Format:
-- Health Summary:
+Recorded values (input only; do not copy this list into the report):
 - Age: ${_na(user.age, ' years')}
 - Gender: $genderText
-- Height: ${_na(height, ' cm')}
-- Weight: ${_na(weight, ' kg')}
-- Blood Pressure: $pressureText
+- Height: ${_na(heightCm, ' cm')}
+- Weight: ${_na(weightKg, ' kg')}
+- Blood Pressure: $bpText
 - Blood Sugar: ${_na(activity.bloodGlucoseMmolPerLiter, ' mmol/L')}
-- Heart Rate: ${_na(heart, ' bpm')}
-- Sleep: ${_na(activity.sleep?.totalMinutes, ' minutes')}
+- Heart Rate: ${_na(activity.heartRate?.averageBpm, ' bpm')}
+- Sleep: ${_na(sleep?.totalMinutes, ' minutes')}
 - Steps: ${_na(activity.steps, ' steps')}
-- Calories: ${_na(activity.totalCalories, ' calories')}
-- Distance: ${_na(activity.distanceMeters, ' meters')}
-Today's Date: ${DateTime.now().toLocal()}
+- Calories: ${_na(activity.totalCalories ?? activity.activeCalories, ' kcal')}
+- Distance: ${_na(activity.distanceMeters, ' m')}
+- Today's Date: ${data.period.start.toUtc().toIso8601String()}
 
 Instructions:
-- Generate a health summary for the patient based on the activity data.
-- Patient predict the current health status of the patient based on the activity data.
-- Patient predict the current health trend of the patient based on the activity data.
-- Patient predict the current health risk of the patient based on the activity data.
-- Patient predict the current health recommendations for the patient based on the activity data.
-- Patient predict the current health insights for the patient based on the activity data.
-- Use only the recorded values above. If a field is N/A, keep it N/A. Do not invent measurements.
+- Do not include a Health Summary parameter list in the answer.
+- Write Status, Trend, Risk, Recommendations, and Insights only.
+- Use only the recorded values above. If a field is N/A, treat it as unavailable. Do not invent measurements.
 ''';
   }
 

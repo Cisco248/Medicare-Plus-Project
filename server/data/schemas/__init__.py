@@ -5,6 +5,7 @@ from .har_data_schema import (
     HARSensorBatchIn,
     HARSensorReading,
     HARSensorStoreResponse,
+    HARSixHourWindowOut,
     HARWindowScheme,
 )
 from .base_model_scehema import (
@@ -21,6 +22,7 @@ from .health_activity_schema import (
     HealthActivityIngestResponse,
     HealthTrendsOut,
     PatientPredictionOut,
+    WeeklyOverviewOut,
 )
 
 __all__ = [
@@ -31,6 +33,7 @@ __all__ = [
     "HARSensorBatchIn",
     "HARSensorStoreResponse",
     "HARCurrentPredictionOut",
+    "HARSixHourWindowOut",
     "HARWindowScheme",
     "HeartScehema",
     "HeartDiseaseSchema",
@@ -45,5 +48,6 @@ __all__ = [
     "HealthActivityIngestResponse",
     "DailySummaryOut",
     "HealthTrendsOut",
+    "WeeklyOverviewOut",
     "PatientPredictionOut",
 ]

@@ -93,8 +93,8 @@ class ZintraTheme {
           : ZintraButtonScheme.darkTextButtonTheme(cs),
 
       iconButtonTheme: isLight
-          ? ZintraButtonScheme.lightIconButton()
-          : ZintraButtonScheme.darkIconButton(),
+          ? ZintraButtonScheme.lightIconButton(cs)
+          : ZintraButtonScheme.darkIconButton(cs),
 
       // ── InputDecoration ───────────────────────────────────────
       inputDecorationTheme: isLight

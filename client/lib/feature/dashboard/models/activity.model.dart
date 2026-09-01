@@ -90,7 +90,8 @@ abstract class ActivityModel with _$ActivityModel {
       if (totalCalories != null) 'total_calories': totalCalories,
       if (heartRate != null)
         'heart_rate': {
-          if (heartRate!.averageBpm != null) 'average_bpm': heartRate!.averageBpm,
+          if (heartRate!.averageBpm != null)
+            'average_bpm': heartRate!.averageBpm,
           if (heartRate!.minBpm != null) 'min_bpm': heartRate!.minBpm,
           if (heartRate!.maxBpm != null) 'max_bpm': heartRate!.maxBpm,
           if (heartRate!.restingBpm != null)
@@ -144,6 +145,20 @@ abstract class ActivityModel with _$ActivityModel {
 }
 
 enum HealthAccessStatus { unavailable, denied, partial, granted }
+
+class WeeklyActivityResult {
+  const WeeklyActivityResult({
+    required this.status,
+    required this.days,
+    this.deniedMetrics = const [],
+  });
+
+  final HealthAccessStatus status;
+  final List<ActivityModel> days;
+  final List<String> deniedMetrics;
+
+  bool get hasAnyData => days.any((day) => day.hasAnyData);
+}
 
 @Freezed(fromJson: true, toJson: true, toStringOverride: true, copyWith: true)
 abstract class HealthDataResult with _$HealthDataResult {

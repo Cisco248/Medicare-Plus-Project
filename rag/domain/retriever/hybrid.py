@@ -16,16 +16,56 @@ from .result_formatter import RetrievalResultFormatter
 logger = logging.getLogger(__name__)
 
 _SAFETY_BOOST = 1.5
+_TOPIC_BOOST = 1.3
 
 
 def _source_path(document: Document) -> str:
     return str(document.metadata.get("source", "")).replace("\\", "/")
 
 
-def _boost_safety(entries: list[dict]) -> list[dict]:
+def _query_topics(query: str) -> set[str]:
+    text = query.lower()
+    topics: set[str] = set()
+    if any(term in text for term in ("diabetes", "glucose", "blood sugar", "hba1c", "insulin")):
+        topics.add("diabetes")
+    if any(
+        term in text
+        for term in ("hypertension", "blood pressure", "systolic", "diastolic", "high bp")
+    ):
+        topics.add("hypertension")
+    if any(
+        term in text
+        for term in ("heart disease", "cardiac", "cardiovascular", "heart attack", "stroke")
+    ):
+        topics.add("heart_disease")
+    return topics
+
+
+def _boost_entries(entries: list[dict], query: str) -> list[dict]:
+    topics = _query_topics(query)
     for entry in entries:
-        if "safety/" in _source_path(entry["document"]):
+        source = _source_path(entry["document"])
+        disease = str(entry["document"].metadata.get("disease", "")).lower()
+        category = str(entry["document"].metadata.get("category", "")).lower()
+        if "safety/" in source or category == "safety":
             entry["score"] *= _SAFETY_BOOST
+        if "diabetes" in topics and (
+            disease == "diabetes" or "diabetes/" in source or "parameters/glucose" in source
+        ):
+            entry["score"] *= _TOPIC_BOOST
+        if "hypertension" in topics and (
+            disease == "hypertension"
+            or "hypertension/" in source
+            or "parameters/blood_pressure" in source
+            or "parameters/systolic" in source
+        ):
+            entry["score"] *= _TOPIC_BOOST
+        if "heart_disease" in topics and (
+            disease == "heart_disease" or "heart_disease/" in source
+        ):
+            entry["score"] *= _TOPIC_BOOST
+        if category in {"faq", "parameter", "model", "e-doc"}:
+            entry["score"] *= 1.1
     return sorted(entries, key=lambda item: item["score"], reverse=True)
 
 
@@ -69,7 +109,7 @@ class HybridRetriever(BaseRetriever):
             bm25_results=bm25_results,
             result_limit=max(result_limit * 3, result_limit),
         )
-        ranked = _boost_safety(ranked)[:result_limit]
+        ranked = _boost_entries(ranked, query)[:result_limit]
         results = self.result_formatter.format(ranked)
 
         logger.info(

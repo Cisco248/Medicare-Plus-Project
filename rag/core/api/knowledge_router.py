@@ -28,6 +28,31 @@ _SECTION_HEADINGS = (
     "insights:",
 )
 
+_BODY_HEADINGS = (
+    "status:",
+    "trend:",
+    "risk:",
+    "recommendations:",
+    "recommendation:",
+    "insights:",
+)
+
+
+def _strip_health_summary_parameters(text: str) -> str:
+    """Drop a leading Health Summary parameter dump from the generated report."""
+    stripped = text.strip()
+    lower = stripped.lower()
+    if not lower.startswith("health summary"):
+        return stripped
+    indexes = [
+        lower.find(heading)
+        for heading in _BODY_HEADINGS
+        if lower.find(heading) != -1
+    ]
+    if not indexes:
+        return stripped
+    return stripped[min(indexes) :].strip()
+
 _HEALTH_SUMMARY_PROMPT = ChatPromptTemplate.from_messages(
     [
         ("system", KNOWLEDGE_SYSTEM_TEMPLATE),
@@ -108,7 +133,9 @@ async def generate_health_summary(
             detail="The health summary could not be generated. Please try again.",
         )
 
-    summary, recommendations = _split_recommendations(str(generated))
+    summary, recommendations = _split_recommendations(
+        _strip_health_summary_parameters(str(generated))
+    )
     return HealthSummaryResponse(
         summary=summary,
         recommendations=recommendations,

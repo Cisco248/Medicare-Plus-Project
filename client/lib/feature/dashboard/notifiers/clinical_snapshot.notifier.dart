@@ -35,7 +35,7 @@ class ClinicalSnapshotNotifier extends Notifier<ClinicalSnapshot> {
   Future<void> refreshDailyActivity() async {
     await ref.read(activityProvider.notifier).refresh();
     ref.invalidate(serverDailySummaryProvider);
-    ref.invalidate(stepsTrendProvider);
+    ref.invalidate(weeklyHealthProvider);
   }
 }
 

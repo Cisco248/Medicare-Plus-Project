@@ -25,33 +25,20 @@ class _AppLayoutState extends ConsumerState<AppLayout> {
     final index = ref.watch(navigationProvider);
 
     return Scaffold(
-      appBar: AppbarWidget(),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: const AppbarWidget(),
       drawer: const AppDrawer(),
+      extendBody: false,
       body: SafeArea(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: Stack(
-            children: [
-              IndexedStack(
-                index: index,
-                children: const [
-                  Dashboard(),
-                  AskPage(),
-                  EDocPage(),
-                  EPharmacy(),
-                  ReportsPage(),
-                ],
-              ),
-              // if (isPopUpOpen)
-              //   Positioned.fill(
-              //     child: GestureDetector(
-              //       onTap: () => ref.read(popUpProvider.notifier).toggle(),
-              //       child: Container(color: Colors.black54),
-              //     ),
-              //   ),
-            ],
-          ),
+        child: IndexedStack(
+          index: index,
+          children: const [
+            Dashboard(),
+            AskPage(),
+            EDocPage(),
+            EPharmacy(),
+            ReportsPage(),
+          ],
         ),
       ),
       bottomNavigationBar: BottomNavigation(index),

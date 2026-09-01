@@ -1,124 +1,218 @@
+import 'package:client/core/themes/primitives/spacing.dart';
+import 'package:client/core/widgets/glass.widget.dart';
+import 'package:client/feature/dashboard/models/patient_profile.model.dart';
+import 'package:client/feature/dashboard/notifiers/clinical_snapshot.notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class RemainderCard extends StatelessWidget {
-  final String? doctorName;
-  final String? doctorRole;
-  final String? month;
-  final int? day;
-  final String? timeSlot;
+class RemainderCard extends ConsumerWidget {
+  const RemainderCard({super.key});
 
-  const RemainderCard({
-    super.key,
-    this.doctorName = 'Dr.Smith',
-    this.doctorRole = 'Cardiology',
-    this.month = 'Jul',
-    this.day = 31,
-    this.timeSlot = '10:00 AM',
-  });
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cs = Theme.of(context).colorScheme;
+    final profile = ref.watch(patientProfileProvider);
+
+    return profile.when(
+      loading: () => const GlassContainer(
+        child: SizedBox(height: 72, child: _ReminderSkeleton()),
+      ),
+      error: (_, _) => GlassContainer(
+        child: _EmptyReminder(
+          title: 'Unable to load reminders',
+          message: 'Try again after refreshing the dashboard.',
+          colorScheme: cs,
+        ),
+      ),
+      data: (value) {
+        final medications = value?.medications ?? const <PatientMedication>[];
+        if (medications.isEmpty) {
+          return GlassContainer(
+            child: _EmptyReminder(
+              title: 'No upcoming appointments',
+              message: "You're all caught up.",
+              colorScheme: cs,
+            ),
+          );
+        }
+
+        final shown = medications.take(3).toList();
+        return GlassContainer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Reminders',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: cs.onSurface,
+                ),
+              ),
+              const SizedBox(height: ZintraSpacing.xs),
+              Text(
+                'From your saved medication list',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: ZintraSpacing.sm),
+              for (var i = 0; i < shown.length; i++) ...[
+                _MedicationRow(medication: shown[i]),
+                if (i < shown.length - 1)
+                  const SizedBox(height: ZintraSpacing.xs),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _MedicationRow extends StatelessWidget {
+  const _MedicationRow({required this.medication});
+
+  final PatientMedication medication;
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return InkWell(
-      onTap: () {},
-      child: Container(
-        alignment: AlignmentGeometry.center,
-        transformAlignment: AlignmentGeometry.center,
-        padding: const EdgeInsets.symmetric(vertical: 24),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              colorScheme.onSurface.withAlpha(10),
-              colorScheme.surfaceContainer.withAlpha(50),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+    final cs = Theme.of(context).colorScheme;
+    final details = [
+      if (medication.dosage != null && medication.dosage!.trim().isNotEmpty)
+        medication.dosage!.trim(),
+      if (medication.frequency != null &&
+          medication.frequency!.trim().isNotEmpty)
+        medication.frequency!.trim(),
+    ].join('  ·  ');
+
+    return Row(
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: cs.primary.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(ZintraSpacing.radiusMd),
           ),
-          borderRadius: BorderRadius.circular(16),
+          child: Center(
+            child: FaIcon(FontAwesomeIcons.pills, size: 14, color: cs.primary),
+          ),
         ),
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
+        const SizedBox(width: ZintraSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                children: [
-                  Text(
-                    'Next Appointment',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: colorScheme.primary,
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    '$doctorName -- $doctorRole',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: colorScheme.onPrimary,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: [
-                      FaIcon(FontAwesomeIcons.businessTime, size: 16),
-                      SizedBox(width: 4),
-                      Text(
-                        timeSlot!,
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 10,
-                          fontWeight: FontWeight.w400,
-                          color: colorScheme.onPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: colorScheme.surface, width: 2),
+              Text(
+                medication.name,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: cs.onSurface,
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      month!,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: colorScheme.onPrimary,
-                      ),
-                    ),
-                    Text(
-                      day!.toString(),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: colorScheme.onPrimary,
-                      ),
-                    ),
-                  ],
+              ),
+              if (details.isNotEmpty)
+                Text(
+                  details,
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 11,
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _EmptyReminder extends StatelessWidget {
+  const _EmptyReminder({
+    required this.title,
+    required this.message,
+    required this.colorScheme,
+  });
+
+  final String title;
+  final String message;
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        FaIcon(
+          FontAwesomeIcons.calendarCheck,
+          size: 18,
+          color: colorScheme.primary,
+        ),
+        const SizedBox(width: ZintraSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                message,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
           ),
         ),
-      ),
+      ],
+    );
+  }
+}
+
+class _ReminderSkeleton extends StatelessWidget {
+  const _ReminderSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final fill = Theme.of(context).colorScheme.outline.withValues(alpha: 0.18);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          height: 12,
+          width: 160,
+          decoration: BoxDecoration(
+            color: fill,
+            borderRadius: BorderRadius.circular(ZintraSpacing.radiusFull),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          height: 10,
+          width: 220,
+          decoration: BoxDecoration(
+            color: fill,
+            borderRadius: BorderRadius.circular(ZintraSpacing.radiusFull),
+          ),
+        ),
+      ],
     );
   }
 }

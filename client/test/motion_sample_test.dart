@@ -23,4 +23,23 @@ void main() {
       'gyro_z': 0.03,
     });
   });
+
+  test('MotionPrediction reads six-hour window metadata', () {
+    final prediction = MotionPrediction.fromJson({
+      'activity': 'Walk',
+      'confidence': 0.91,
+      'window_samples': 48,
+      'history_samples': 1200,
+      'lookback_hours': 6,
+      'window_start': '2026-09-01T17:59:57.000Z',
+      'window_end': '2026-09-01T18:00:00.000Z',
+    });
+
+    expect(prediction.activity, 'Walk');
+    expect(prediction.confidence, 0.91);
+    expect(prediction.windowSamples, 48);
+    expect(prediction.historySamples, 1200);
+    expect(prediction.lookbackHours, 6);
+    expect(prediction.windowEnd, DateTime.utc(2026, 9, 1, 18));
+  });
 }

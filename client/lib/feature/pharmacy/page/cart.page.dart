@@ -72,29 +72,35 @@ class CartPage extends ConsumerWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
+                                visualDensity: VisualDensity.compact,
+                                tooltip: 'Decrease quantity',
                                 onPressed: () => ref
                                     .read(cartProvider.notifier)
                                     .setQuantity(
                                       item.product.id,
                                       item.quantity - 1,
                                     ),
-                                icon: const Icon(Icons.remove),
+                                icon: const Icon(Icons.remove, size: 18),
                               ),
                               Text('${item.quantity}'),
                               IconButton(
+                                visualDensity: VisualDensity.compact,
+                                tooltip: 'Increase quantity',
                                 onPressed: () => ref
                                     .read(cartProvider.notifier)
                                     .setQuantity(
                                       item.product.id,
                                       item.quantity + 1,
                                     ),
-                                icon: const Icon(Icons.add),
+                                icon: const Icon(Icons.add, size: 18),
                               ),
                               IconButton(
+                                visualDensity: VisualDensity.compact,
+                                tooltip: 'Remove',
                                 onPressed: () => ref
                                     .read(cartProvider.notifier)
                                     .remove(item.product.id),
-                                icon: const Icon(Icons.delete_outline),
+                                icon: const Icon(Icons.delete_outline, size: 18),
                               ),
                             ],
                           ),

@@ -1,6 +1,6 @@
 # Sources and Governance
 
-Topic files link directly to the relevant pages. Version 1.1.0 sources were accessed on 2026-08-23. Earlier register entries were accessed on 2026-08-18.
+Topic files link directly to the relevant pages. Version 2.0.0 parameter, model, and FAQ files were prepared on 2026-08-31 using the same organizations. Version 1.1.0 sources were accessed on 2026-08-23. Earlier register entries were accessed on 2026-08-18.
 
 ## World Health Organization
 
@@ -55,6 +55,10 @@ Topic files link directly to the relevant pages. Version 1.1.0 sources were acce
 - Emergency symptoms, “Heart Attack, Stroke and Cardiac Arrest Symptoms”: <https://www.heart.org/en/about-us/heart-attack-and-stroke-symptoms>
 - Heart rate, “All About Heart Rate”: <https://www.heart.org/en/health-topics/high-blood-pressure/the-facts-about-high-blood-pressure/all-about-heart-rate-pulse>
 - Exercise, “Target Heart Rates Chart”: <https://www.heart.org/en/healthy-living/exercise-and-physical-activity/fitness-basics/target-heart-rates>
+
+## NIH / National Institute of Diabetes and Digestive and Kidney Diseases
+
+- Diabetes overview, “Diabetes”: <https://www.niddk.nih.gov/health-information/diabetes>
 
 ## American Diabetes Association
 

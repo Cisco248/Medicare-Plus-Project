@@ -42,12 +42,16 @@ class WishlistPage extends ConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
+                            visualDensity: VisualDensity.compact,
+                            tooltip: 'Remove from wishlist',
                             onPressed: () => ref
                                 .read(wishlistProvider.notifier)
                                 .toggle(product.id),
                             icon: const Icon(Icons.favorite, color: Colors.red),
                           ),
                           IconButton(
+                            visualDensity: VisualDensity.compact,
+                            tooltip: 'Add to cart',
                             onPressed: () async {
                               if (product.prescriptionRequired) {
                                 Navigator.of(context).push(

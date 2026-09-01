@@ -24,7 +24,7 @@ class RAGSettings(BaseSettings):
     LLM_MODEL_NAME: str = "gpt-4o-mini"
     EMBEDDING_MODEL_NAME: str = "text-embedding-3-small"
     LLM_TEMPERATURE: float = 0.2
-    MAX_OUTPUT_TOKENS: int = 500
+    MAX_OUTPUT_TOKENS: int = 900
 
     # Chroma Configurations
     CHROMA_HOST: str = os.getenv("CHROMA_HOST", "")
@@ -33,18 +33,18 @@ class RAGSettings(BaseSettings):
     VECTOR_DB_DIR: Path = ARTIFACT_PATH / "db"
 
     # Retrieval Configurations
-    CHUNK_SIZE: int = 500
-    CHUNK_OVERLAP: int = 50
-    VECTOR_CANDIDATE_K: int = 8
-    RETRIEVER_K: int = 3
-    SIMILARITY_THRESHOLD: float = 0.55
-    BM25_WEIGHT: float = 0.35
-    BM25_MIN_MATCH_RATIO: float = 0.2
+    CHUNK_SIZE: int = 900
+    CHUNK_OVERLAP: int = 150
+    VECTOR_CANDIDATE_K: int = 16
+    RETRIEVER_K: int = 8
+    SIMILARITY_THRESHOLD: float = 0.32
+    BM25_WEIGHT: float = 0.4
+    BM25_MIN_MATCH_RATIO: float = 0.12
     RRF_K: int = 60
 
     # Per-request cost controls.
     MAX_REQUEST_TOKENS: int = 4000
-    MAX_CONTEXT_TOKENS: int = 2500
+    MAX_CONTEXT_TOKENS: int = 3500
     MAX_QUERY_CHARS: int = 4000
     RESPONSE_CACHE_SIZE: int = 128
     RESPONSE_CACHE_TTL_SECONDS: int = 300

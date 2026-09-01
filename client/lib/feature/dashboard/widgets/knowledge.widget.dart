@@ -1,4 +1,4 @@
-import 'package:client/core/themes/primitives/colors.dart';
+import 'package:client/core/widgets/glass.widget.dart';
 import 'package:client/feature/dashboard/models/health_summary.model.dart';
 import 'package:client/feature/dashboard/models/knowledge.state.model.dart';
 import 'package:client/feature/dashboard/notifiers/activity.notifier.dart';
@@ -6,37 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-/// Presentation-only entry point of the health-summary feature.
-///
-/// Reads [KnowledgeState] from the `ActivityNotifier` and renders the
-/// corresponding UI. All Health Connect and RAG interaction happens in the
-/// notifier/repository layers — this widget only dispatches user intents.
 class KnowledgeWidget extends ConsumerWidget {
   const KnowledgeWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final state = ref.watch(activityProvider);
     final notifier = ref.read(activityProvider.notifier);
 
-    return Container(
+    return GlassContainer(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            colorScheme.onSurface.withAlpha(10),
-            colorScheme.surfaceContainer.withAlpha(100),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        backgroundBlendMode: BlendMode.srcOver,
-        shape: BoxShape.rectangle,
-        borderRadius: const BorderRadius.all(Radius.circular(16)),
-        border: Border.all(color: ZintraColorPrimitives.transparent),
-      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,17 +119,6 @@ class _Header extends StatelessWidget {
           FontAwesomeIcons.circleQuestion,
           size: 14,
           color: colorScheme.primary,
-        ),
-        const Spacer(),
-        IconButton(
-          tooltip: 'Refresh health data',
-          visualDensity: VisualDensity.compact,
-          onPressed: onRefresh,
-          icon: FaIcon(
-            FontAwesomeIcons.arrowsRotate,
-            size: 14,
-            color: colorScheme.primary,
-          ),
         ),
       ],
     );
@@ -260,7 +228,7 @@ class _SummaryContent extends StatelessWidget {
             fontFamily: 'Inter',
             fontSize: 10,
             fontStyle: FontStyle.italic,
-            color: colorScheme.onPrimary.withAlpha(180),
+            color: colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
         if (generatedAt != null) ...[
@@ -275,7 +243,7 @@ class _SummaryContent extends StatelessWidget {
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 10,
-              color: colorScheme.onPrimary.withAlpha(140),
+              color: colorScheme.onSurface.withValues(alpha: 0.55),
             ),
           ),
         ],
@@ -299,7 +267,7 @@ class _BodyText extends StatelessWidget {
         fontFamily: 'Inter',
         fontSize: 12,
         fontWeight: FontWeight.w400,
-        color: colorScheme.onPrimary,
+        color: colorScheme.onSurface,
       ),
     );
   }
