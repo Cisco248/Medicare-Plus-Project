@@ -7,7 +7,9 @@ import 'package:client/feature/auth/notifiers/authentication.notifier.dart';
 import 'package:client/feature/auth/services/token.service.dart';
 import 'package:client/feature/dashboard/models/activity.model.dart';
 import 'package:client/feature/dashboard/models/server_health.model.dart';
+import 'package:client/feature/dashboard/models/weekly_health.model.dart';
 import 'package:client/feature/dashboard/repository/har_repository.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final harRepositoryProvider = Provider<HarRepository>(
@@ -142,6 +144,26 @@ final serverPredictionProvider =
     NotifierProvider<ServerPredictionNotifier, ServerPredictionViewState>(
       ServerPredictionNotifier.new,
     );
+
+final weeklyHealthProvider = FutureProvider<WeeklyHealthOverview?>((ref) async {
+  final auth = ref.watch(authenticationProvider).value?.data;
+  if (auth == null || auth.token.isEmpty) return null;
+  try {
+    return await ref
+        .read(harRepositoryProvider)
+        .weeklyOverview(
+          token: auth.token,
+          timezone: DateTime.now().timeZoneName,
+          end: DateTime.now(),
+        );
+  } on AppException catch (error) {
+    debugPrint('weeklyHealthProvider failed code=${error.code}');
+    rethrow;
+  } catch (_) {
+    debugPrint('weeklyHealthProvider failed');
+    rethrow;
+  }
+});
 
 final stepsTrendProvider = FutureProvider<HealthTrend?>((ref) async {
   final auth = ref.watch(authenticationProvider).value?.data;

@@ -10,6 +10,21 @@ class RagService {
   final Dio _client;
 
   String generationQuestion(HealthSummaryRequest data, PatientProfile user) {
+    final activity = data.activities;
+    final gender = user.gender?.trim();
+    final genderText = (gender == null || gender.isEmpty)
+        ? 'N/A'
+        : '${gender[0].toUpperCase()}${gender.substring(1)}';
+    final heightCm =
+        user.heightCm ??
+        (activity.heightMeters == null ? null : activity.heightMeters! * 100);
+    final weightKg = activity.weightKilograms ?? user.weightKg;
+    final bp = activity.bloodPressure;
+    final bpText = bp == null
+        ? 'N/A'
+        : '${bp.systolicMmHg}/${bp.diastolicMmHg} mmHg';
+    final sleep = activity.sleep;
+
     return '''
 Generate a health summary for the following patient data in the following format:
 
@@ -21,18 +36,18 @@ You are to generate a health summary for the patient based on the activity data.
 The health summary should be in the following format:
 
 Use this parameters to generate the health summary:
-- Age:
-- Gender:
-- Height:
-- Weight:
-- Blood Pressure:
-- Blood Sugar:
-- Heart Rate:
-- Sleep:
-- Steps:
-- Calories:
-- Distance:
-- Today's Date:
+- Age: ${_na(user.age, ' years')}
+- Gender: $genderText
+- Height: ${_na(heightCm, ' cm')}
+- Weight: ${_na(weightKg, ' kg')}
+- Blood Pressure: $bpText
+- Blood Sugar: ${_na(activity.bloodGlucoseMmolPerLiter, ' mmol/L')}
+- Heart Rate: ${_na(activity.heartRate?.averageBpm, ' bpm')}
+- Sleep: ${_na(sleep?.totalMinutes, ' minutes')}
+- Steps: ${_na(activity.steps, ' steps')}
+- Calories: ${_na(activity.totalCalories ?? activity.activeCalories, ' kcal')}
+- Distance: ${_na(activity.distanceMeters, ' m')}
+- Today's Date: ${data.period.start.toUtc().toIso8601String()}
 
 Instructions:
 - Generate a health summary for the patient based on the activity data.

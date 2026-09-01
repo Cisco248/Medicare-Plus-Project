@@ -35,6 +35,7 @@ from .schemas import (
     PatientProfileUpdate,
     UserCreate,
     UserLogin,
+    WeeklyOverviewOut,
 )
 
 __all__ = [
@@ -71,5 +72,6 @@ __all__ = [
     "HealthActivityIngestResponse",
     "DailySummaryOut",
     "HealthTrendsOut",
+    "WeeklyOverviewOut",
     "PatientPredictionOut",
 ]

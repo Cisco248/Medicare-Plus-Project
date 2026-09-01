@@ -135,6 +135,15 @@ class HealthTrendsOut(BaseModel):
     points: list[TrendPointOut]
 
 
+class WeeklyOverviewOut(BaseModel):
+    patient_id: str
+    start: date
+    end: date
+    days: int
+    timezone: str
+    summaries: list[DailySummaryOut]
+
+
 class PredictionEvidenceOut(BaseModel):
     statement: str
     metric_type: Optional[str] = None

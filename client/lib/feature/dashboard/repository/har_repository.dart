@@ -3,6 +3,7 @@ import 'package:client/feature/dashboard/models/activity.model.dart';
 import 'package:client/feature/dashboard/models/motion_sample.model.dart';
 import 'package:client/feature/dashboard/models/patient_profile.model.dart';
 import 'package:client/feature/dashboard/models/server_health.model.dart';
+import 'package:client/feature/dashboard/models/weekly_health.model.dart';
 import 'package:dio/dio.dart';
 
 class HarRepository {
@@ -159,6 +160,32 @@ class HarRepository {
         options: Options(headers: {'X-Auth-Token': token}),
       );
       return HealthTrend.fromJson(
+        Map<String, dynamic>.from(response.data as Map),
+      );
+    } on DioException catch (error) {
+      throw AppException.fromDioException(error);
+    }
+  }
+
+  Future<WeeklyHealthOverview> weeklyOverview({
+    required String token,
+    int days = 7,
+    String timezone = 'UTC',
+    DateTime? end,
+  }) async {
+    try {
+      final day = end ?? DateTime.now();
+      final response = await _client.get(
+        '/api/har/trends',
+        queryParameters: {
+          'days': days,
+          'timezone': timezone,
+          'end':
+              '${day.year.toString().padLeft(4, '0')}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}',
+        },
+        options: Options(headers: {'X-Auth-Token': token}),
+      );
+      return WeeklyHealthOverview.fromJson(
         Map<String, dynamic>.from(response.data as Map),
       );
     } on DioException catch (error) {

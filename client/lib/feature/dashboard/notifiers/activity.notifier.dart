@@ -77,6 +77,7 @@ class ActivityNotifier extends _$ActivityNotifier {
             );
             ref.invalidate(serverDailySummaryProvider);
             ref.invalidate(serverPredictionProvider);
+            ref.invalidate(weeklyHealthProvider);
             ref.invalidate(stepsTrendProvider);
           }
       }

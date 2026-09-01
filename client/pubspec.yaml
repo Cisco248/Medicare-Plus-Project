@@ -32,6 +32,7 @@ dependencies:
   package_info_plus: ^8.3.1
   share_plus: ^11.1.0
   sensors_plus: ^6.1.2
+  fl_chart: ^0.70.2
 
   flutter_health_connect:
     path: ../package

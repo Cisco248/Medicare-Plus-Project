@@ -21,6 +21,7 @@ from .health_activity_schema import (
     HealthActivityIngestResponse,
     HealthTrendsOut,
     PatientPredictionOut,
+    WeeklyOverviewOut,
 )
 
 __all__ = [
@@ -45,5 +46,6 @@ __all__ = [
     "HealthActivityIngestResponse",
     "DailySummaryOut",
     "HealthTrendsOut",
+    "WeeklyOverviewOut",
     "PatientPredictionOut",
 ]

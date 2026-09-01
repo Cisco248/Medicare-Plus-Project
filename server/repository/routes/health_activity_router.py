@@ -12,6 +12,7 @@ from data.schemas.health_activity_schema import (
     HealthActivityIngestResponse,
     HealthTrendsOut,
     PatientPredictionOut,
+    WeeklyOverviewOut,
 )
 from repository.middlewares.auth_middleware import get_current_user
 from repository.middlewares.health_activity_middleware import HealthActivityMiddleware
@@ -76,6 +77,23 @@ def get_health_trends(
     user: UserModel = Depends(get_current_user),
 ) -> HealthTrendsOut:
     return HealthActivityMiddleware.trends(db, user, metric, days)
+
+
+@health_activity_router.get(
+    "/har/weekly",
+    status_code=200,
+    tags=["Health Activity Record"],
+    response_model=WeeklyOverviewOut,
+    summary="Return the latest daily summaries for a rolling week",
+)
+def get_weekly_overview(
+    days: int = Query(default=7, ge=2, le=30),
+    timezone: str = Query(default="UTC"),
+    end: Optional[date] = Query(default=None),
+    db: Session = Depends(get_db),
+    user: UserModel = Depends(get_current_user),
+) -> WeeklyOverviewOut:
+    return HealthActivityMiddleware.weekly_overview(db, user, days, timezone, end)
 
 
 @health_activity_router.get(
