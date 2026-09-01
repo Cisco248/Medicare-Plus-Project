@@ -49,6 +49,7 @@ class HarMotionService : Service(), SensorEventListener {
     private var flushHandler: Handler? = null
     private var token: String = ""
     private var baseUrl: String = ""
+    private var captureEnabled: Boolean = true
     private var lastAcc: FloatArray? = null
     private var lastGyro: FloatArray? = null
     private var lastEmitElapsedMs: Long = 0
@@ -84,17 +85,28 @@ class HarMotionService : Service(), SensorEventListener {
         val prefs = getSharedPreferences(PREFS, MODE_PRIVATE)
         token = intent?.getStringExtra(EXTRA_TOKEN) ?: prefs.getString(KEY_TOKEN, "") ?: ""
         baseUrl = intent?.getStringExtra(EXTRA_BASE_URL) ?: prefs.getString(KEY_BASE_URL, "") ?: ""
+        captureEnabled =
+            if (intent != null && intent.hasExtra(EXTRA_CAPTURE)) {
+                intent.getBooleanExtra(EXTRA_CAPTURE, true)
+            } else {
+                prefs.getBoolean(KEY_CAPTURE, true)
+            }
         if (token.isNotEmpty() && baseUrl.isNotEmpty()) {
             prefs
                 .edit()
                 .putString(KEY_TOKEN, token)
                 .putString(KEY_BASE_URL, baseUrl)
+                .putBoolean(KEY_CAPTURE, captureEnabled)
                 .apply()
         }
         isRunning = true
-        registerSensors()
         flushHandler?.removeCallbacks(flushRunnable)
-        flushHandler?.postDelayed(flushRunnable, FLUSH_EVERY_MS)
+        if (captureEnabled) {
+            registerSensors()
+            flushHandler?.postDelayed(flushRunnable, FLUSH_EVERY_MS)
+        } else {
+            unregisterSensors()
+        }
         return START_STICKY
     }
 
@@ -126,6 +138,7 @@ class HarMotionService : Service(), SensorEventListener {
     ) = Unit
 
     private fun emitIfReady() {
+        if (!captureEnabled) return
         val acc = lastAcc ?: return
         val gyro = lastGyro ?: return
         val now = SystemClock.elapsedRealtime()
@@ -150,6 +163,7 @@ class HarMotionService : Service(), SensorEventListener {
     }
 
     private fun registerSensors() {
+        unregisterSensors()
         val manager = getSystemService(SENSOR_SERVICE) as SensorManager
         sensorManager = manager
         val accelerometer = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -174,7 +188,7 @@ class HarMotionService : Service(), SensorEventListener {
     }
 
     private fun flush() {
-        if (uploading || buffer.isEmpty() || token.isEmpty() || baseUrl.isEmpty()) {
+        if (!captureEnabled || uploading || buffer.isEmpty() || token.isEmpty() || baseUrl.isEmpty()) {
             return
         }
         val batch = buffer.toList()
@@ -295,6 +309,8 @@ class HarMotionService : Service(), SensorEventListener {
         private const val KEY_BASE_URL = "base_url"
         const val EXTRA_TOKEN = "token"
         const val EXTRA_BASE_URL = "base_url"
+        const val EXTRA_CAPTURE = "capture"
+        private const val KEY_CAPTURE = "capture"
         private const val CHANNEL_ID = "har_motion"
         private const val NOTIFICATION_ID = 7102
         private const val BATCH_SIZE = 80
@@ -318,17 +334,20 @@ class HarMotionService : Service(), SensorEventListener {
             context: Context,
             token: String,
             baseUrl: String,
+            capture: Boolean = true,
         ) {
             context
                 .getSharedPreferences(PREFS, MODE_PRIVATE)
                 .edit()
                 .putString(KEY_TOKEN, token)
                 .putString(KEY_BASE_URL, baseUrl)
+                .putBoolean(KEY_CAPTURE, capture)
                 .apply()
             val intent =
                 Intent(context, HarMotionService::class.java).apply {
                     putExtra(EXTRA_TOKEN, token)
                     putExtra(EXTRA_BASE_URL, baseUrl)
+                    putExtra(EXTRA_CAPTURE, capture)
                 }
             ContextCompat.startForegroundService(context, intent)
         }
@@ -338,7 +357,7 @@ class HarMotionService : Service(), SensorEventListener {
             val token = prefs.getString(KEY_TOKEN, "") ?: ""
             val baseUrl = prefs.getString(KEY_BASE_URL, "") ?: ""
             if (token.isEmpty() || baseUrl.isEmpty()) return
-            start(context, token, baseUrl)
+            start(context, token, baseUrl, capture = true)
         }
 
         fun stop(context: Context) {
@@ -347,6 +366,7 @@ class HarMotionService : Service(), SensorEventListener {
                 .edit()
                 .remove(KEY_TOKEN)
                 .remove(KEY_BASE_URL)
+                .remove(KEY_CAPTURE)
                 .apply()
             context.stopService(Intent(context, HarMotionService::class.java))
         }

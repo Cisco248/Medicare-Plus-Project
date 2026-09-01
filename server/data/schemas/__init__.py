@@ -5,6 +5,7 @@ from .har_data_schema import (
     HARSensorBatchIn,
     HARSensorReading,
     HARSensorStoreResponse,
+    HARSixHourWindowOut,
     HARWindowScheme,
 )
 from .base_model_scehema import (
@@ -32,6 +33,7 @@ __all__ = [
     "HARSensorBatchIn",
     "HARSensorStoreResponse",
     "HARCurrentPredictionOut",
+    "HARSixHourWindowOut",
     "HARWindowScheme",
     "HeartScehema",
     "HeartDiseaseSchema",

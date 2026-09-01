@@ -176,7 +176,7 @@ class HarRepository {
     try {
       final day = end ?? DateTime.now();
       final response = await _client.get(
-        '/api/har/trends',
+        '/api/har/weekly',
         queryParameters: {
           'days': days,
           'timezone': timezone,

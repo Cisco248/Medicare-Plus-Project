@@ -215,8 +215,3 @@ async def _predict_heart_disease(schema: HeartDiseaseSchema) -> dict:
 @base_model_router.post("/heart-disease", status_code=200, tags=["Base Model"])
 async def heart_disease_add_data(schema: HeartDiseaseSchema):
     return await _predict_heart_disease(schema)
-
-
-@base_model_router.post("/hear-disease", status_code=200, tags=["Base Model"])
-async def heart_disease_add_data_alias(schema: HeartDiseaseSchema):
-    return await _predict_heart_disease(schema)

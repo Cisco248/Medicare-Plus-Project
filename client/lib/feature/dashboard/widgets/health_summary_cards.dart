@@ -1,7 +1,6 @@
 import 'package:client/core/themes/primitives/spacing.dart';
 import 'package:client/core/utils/body_metrics.dart';
 import 'package:client/core/widgets/glass.widget.dart';
-import 'package:client/feature/dashboard/models/server_health.model.dart';
 import 'package:client/feature/dashboard/notifiers/clinical_snapshot.notifier.dart';
 import 'package:client/feature/dashboard/notifiers/server_health.notifier.dart';
 import 'package:client/feature/dashboard/widgets/activity.widget.dart';
@@ -369,65 +368,5 @@ class ActivityTrackingCard extends ConsumerWidget {
     final minute = local.minute.toString().padLeft(2, '0');
     final second = local.second.toString().padLeft(2, '0');
     return '$day/$month/${local.year} $hour:$minute:$second';
-  }
-}
-
-class HealthTrendChart extends StatelessWidget {
-  const HealthTrendChart({required this.trend, super.key});
-
-  final HealthTrend trend;
-
-  @override
-  Widget build(BuildContext context) {
-    final values = trend.points.map((point) => point.value).toList();
-    if (values.every((value) => value == null)) {
-      return const SizedBox.shrink();
-    }
-    final maxValue = values.whereType<double>().fold<double>(
-      1,
-      (a, b) => a > b ? a : b,
-    );
-    final cs = Theme.of(context).colorScheme;
-    return GlassContainer(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '7-day ${trend.metric.replaceAll('_', ' ')}',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.w600,
-              color: cs.onSurface,
-            ),
-          ),
-          const SizedBox(height: ZintraSpacing.sm),
-          SizedBox(
-            height: 80,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                for (final point in trend.points)
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 3),
-                      child: Container(
-                        height: point.value == null
-                            ? 4
-                            : (point.value! / maxValue) * 72 + 4,
-                        decoration: BoxDecoration(
-                          color: cs.primary.withValues(alpha: 0.63),
-                          borderRadius: BorderRadius.circular(
-                            ZintraSpacing.radiusSm,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

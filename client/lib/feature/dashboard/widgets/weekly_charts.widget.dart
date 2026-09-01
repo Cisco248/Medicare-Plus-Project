@@ -107,6 +107,9 @@ class WeeklyHealthCharts extends ConsumerWidget {
               series: steps,
               subtitle: _subtitle(overview.statsFor(steps), 'steps'),
               barColor: colorScheme.primary,
+              emptyTitle: 'No step data available',
+              emptyMessage:
+                  'Weekly steps will appear here once Health Connect records them.',
             ),
             HealthChartCard(
               title: 'Calories Burned',
@@ -116,7 +119,7 @@ class WeeklyHealthCharts extends ConsumerWidget {
               barColor: colorScheme.secondary,
               emptyTitle: 'No calorie data available',
               emptyMessage:
-                  'Calories burned will appear here once new measurements are recorded.',
+                  'Calories burned will appear here once Health Connect records them.',
             ),
             HealthChartCard(
               title: 'Sleep Hours',
@@ -126,7 +129,7 @@ class WeeklyHealthCharts extends ConsumerWidget {
               barColor: colorScheme.tertiary,
               emptyTitle: 'No sleep data available',
               emptyMessage:
-                  'Sleep hours will appear here once new measurements are recorded.',
+                  'Sleep hours will appear here once Health Connect records them.',
             ),
             HealthChartCard(
               title: 'Patient Activity',
@@ -140,7 +143,7 @@ class WeeklyHealthCharts extends ConsumerWidget {
               barColor: colorScheme.primary,
               emptyTitle: 'No activity data available',
               emptyMessage:
-                  'Recorded activity will appear here once new measurements are stored.',
+                  'Workouts and active energy will appear here once Health Connect records them.',
             ),
           ],
         );

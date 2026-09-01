@@ -56,12 +56,20 @@ class MotionPrediction {
     required this.activity,
     required this.confidence,
     required this.windowSamples,
+    this.historySamples = 0,
+    this.lookbackHours = 6,
+    this.windowStart,
+    this.windowEnd,
     this.summary,
   });
 
   final String activity;
   final double confidence;
   final int windowSamples;
+  final int historySamples;
+  final int lookbackHours;
+  final DateTime? windowStart;
+  final DateTime? windowEnd;
   final String? summary;
 
   factory MotionPrediction.fromJson(Map<String, dynamic> json) {
@@ -73,6 +81,16 @@ class MotionPrediction {
           (json['window_samples'] as num?)?.toInt() ??
           (json['windowSamples'] as num?)?.toInt() ??
           0,
+      historySamples:
+          (json['history_samples'] as num?)?.toInt() ??
+          (json['historySamples'] as num?)?.toInt() ??
+          0,
+      lookbackHours:
+          (json['lookback_hours'] as num?)?.toInt() ??
+          (json['lookbackHours'] as num?)?.toInt() ??
+          6,
+      windowStart: DateTime.tryParse(json['window_start'] as String? ?? ''),
+      windowEnd: DateTime.tryParse(json['window_end'] as String? ?? ''),
       summary: rawSummary is String ? rawSummary : rawSummary?.toString(),
     );
   }

@@ -178,9 +178,151 @@ class ActivityRepository {
     );
   }
 
+  /// Last [days] local calendar days from Health Connect.
+  ///
+  /// Reads native daily aggregates (not a single 7-day sum) so each chart
+  /// bar is one patient day. Missing days stay null.
+  Future<WeeklyActivityResult> collectWeeklyActivity({int days = 7}) async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final start = today.subtract(Duration(days: days - 1));
+    final rangeEnd = today.add(const Duration(days: 1));
+
+    try {
+      final availability = await _service.availability();
+      if (availability == Availability.notInstalled ||
+          availability == Availability.notSupported) {
+        return WeeklyActivityResult(
+          status: HealthAccessStatus.unavailable,
+          days: _emptyWeek(start, days),
+        );
+      }
+
+      final permissionStatus = await _service.checkPermissions(readPermissions);
+      final granted = permissionStatus.granted.map((p) => p.recordType).toSet();
+      final deniedMetrics = permissionStatus.denied
+          .map((p) => p.recordType.name)
+          .toList(growable: false);
+
+      if (granted.isEmpty) {
+        return WeeklyActivityResult(
+          status: HealthAccessStatus.denied,
+          days: _emptyWeek(start, days),
+          deniedMetrics: deniedMetrics,
+        );
+      }
+
+      final daily = <ActivityModel>[];
+      for (var offset = 0; offset < days; offset++) {
+        daily.add(await _readDailySummary(start.add(Duration(days: offset))));
+      }
+
+      if (granted.contains(RecordType.exerciseSession)) {
+        final sessions = await _readIfGrantedSessions(start, rangeEnd);
+        for (var index = 0; index < daily.length; index++) {
+          final day = daily[index].date;
+          final workouts = HealthAggregator.summarizeWorkouts(
+            _sessionsOnLocalDay(sessions, day),
+          );
+          if (workouts.isNotEmpty) {
+            daily[index] = daily[index].copyWith(workouts: workouts);
+          }
+        }
+      }
+
+      return WeeklyActivityResult(
+        status: permissionStatus.allGranted
+            ? HealthAccessStatus.granted
+            : HealthAccessStatus.partial,
+        days: daily,
+        deniedMetrics: deniedMetrics,
+      );
+    } on HealthConnectException catch (e) {
+      throw _mapHealthConnectException(e);
+    }
+  }
+
+  Future<ActivityModel> _readDailySummary(DateTime day) async {
+    final date = DateTime(day.year, day.month, day.day);
+    try {
+      final summary = await _service.getDailyHealthSummary(date);
+      return _activityFromDailySummary(summary, date);
+    } on HealthConnectPermissionException {
+      return ActivityModel(date: date);
+    } on HealthConnectSecurityException {
+      return ActivityModel(date: date);
+    } on HealthConnectException {
+      return ActivityModel(date: date);
+    }
+  }
+
+  Future<List<ExerciseSessionRecord>> _readIfGrantedSessions(
+    DateTime start,
+    DateTime end,
+  ) async {
+    try {
+      return await _service.readExerciseSessions(start, end);
+    } on HealthConnectPermissionException {
+      return const [];
+    } on HealthConnectSecurityException {
+      return const [];
+    }
+  }
+
+  List<ExerciseSessionRecord> _sessionsOnLocalDay(
+    List<ExerciseSessionRecord> sessions,
+    DateTime day,
+  ) {
+    final start = DateTime(day.year, day.month, day.day);
+    final end = start.add(const Duration(days: 1));
+    return [
+      for (final session in sessions)
+        if (!session.startTime.toLocal().isBefore(start) &&
+            session.startTime.toLocal().isBefore(end))
+          session,
+    ];
+  }
+
+  ActivityModel _activityFromDailySummary(DailySummary summary, DateTime date) {
+    final sleep = summary.sleepDuration;
+    return ActivityModel(
+      date: date,
+      steps: summary.steps,
+      distanceMeters: summary.distanceMeters,
+      activeCalories: summary.activeCalories,
+      totalCalories: summary.totalCalories,
+      heartRate:
+          summary.averageHeartRate == null && summary.restingHeartRate == null
+          ? null
+          : HeartRateSummary(
+              averageBpm: summary.averageHeartRate,
+              restingBpm: summary.restingHeartRate,
+            ),
+      sleep: sleep == null
+          ? null
+          : SleepSummary(totalMinutes: sleep.inMinutes, sessionCount: 1),
+      weightKilograms: summary.weight,
+    );
+  }
+
+  List<ActivityModel> _emptyWeek(DateTime start, int days) {
+    return [
+      for (var offset = 0; offset < days; offset++)
+        ActivityModel(date: start.add(Duration(days: offset))),
+    ];
+  }
+
   Future<bool> requestPermissions() async {
     try {
       return await _service.requestPermissions(readPermissions);
+    } on HealthConnectException catch (e) {
+      throw _mapHealthConnectException(e);
+    }
+  }
+
+  Future<PermissionStatus> checkReadPermissions() async {
+    try {
+      return await _service.checkPermissions(readPermissions);
     } on HealthConnectException catch (e) {
       throw _mapHealthConnectException(e);
     }

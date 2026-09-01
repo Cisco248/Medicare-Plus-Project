@@ -1,13 +1,9 @@
-import 'package:client/feature/dashboard/repository/activity_repository.dart';
-import 'package:client/feature/dashboard/services/health_connect.service.dart';
+import 'package:client/feature/dashboard/notifiers/server_health.notifier.dart';
 import 'package:client/feature/settings/models/permission.model.dart';
 import 'package:flutter_health_connect/app.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'permissions.notifier.g.dart';
-
-final _healthService = HealthConnectService();
-final _activityRepository = ActivityRepository(service: HealthConnectService());
 
 @riverpod
 class PermissionsNotifier extends _$PermissionsNotifier {
@@ -17,14 +13,13 @@ class PermissionsNotifier extends _$PermissionsNotifier {
   Future<List<AppPermissionItem>> _load() async {
     var healthStatus = AppPermissionStatus.unavailable;
     try {
-      final availability = await _healthService.availability();
+      final repository = ref.read(activityRepositoryProvider);
+      final availability = await repository.getAvailability();
       if (availability == Availability.notInstalled ||
           availability == Availability.notSupported) {
         healthStatus = AppPermissionStatus.unavailable;
       } else {
-        final result = await _healthService.checkPermissions(
-          ActivityRepository.readPermissions,
-        );
+        final result = await repository.checkReadPermissions();
         healthStatus = result.granted.isEmpty
             ? AppPermissionStatus.notAllowed
             : AppPermissionStatus.allowed;
@@ -56,12 +51,12 @@ class PermissionsNotifier extends _$PermissionsNotifier {
   }
 
   Future<void> manageHealthConnect() async {
-    await _activityRepository.openPermissionSettings();
+    await ref.read(activityRepositoryProvider).openPermissionSettings();
     await refresh();
   }
 
   Future<void> requestHealthConnect() async {
-    await _activityRepository.requestPermissions();
+    await ref.read(activityRepositoryProvider).requestPermissions();
     await refresh();
   }
 }

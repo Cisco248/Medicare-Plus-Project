@@ -3,6 +3,7 @@ import statistics
 import uuid
 from datetime import datetime, timedelta, timezone
 
+import pandas as pd
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -12,7 +13,8 @@ from data.schemas.har_data_schema import HARSensorReading, HARSensorStoreRespons
 
 class HARMiddleware:
     MIN_WINDOW_SIZE = 10
-    RETENTION_HOURS = 12
+    LOOKBACK_HOURS = 6
+    RETENTION_HOURS = 6
     WINDOW_SECONDS = 3
     FALLBACK_WINDOW_SECONDS = 30
     MAX_WINDOW_SAMPLES = 300
@@ -61,6 +63,26 @@ class HARMiddleware:
             "gyro_z (STDEV)": self._stdev(gyro_z),
             "gyro_average": self._average_magnitude(gyro_x, gyro_y, gyro_z),
         }
+
+    def predict(self, readings: list, model) -> tuple[str, float, dict]:
+        features = self.extract_features(readings)
+        names = getattr(model, "feature_names_in_", None)
+        if names is not None:
+            ordered = pd.DataFrame(
+                [[features[name] for name in names]],
+                columns=list(names),
+            )
+        else:
+            ordered = [list(features.values())]
+        try:
+            pred_activity = str(model.predict(ordered)[0])
+            proba = model.predict_proba(ordered)[0]
+            confidence = float(max(proba))
+        except Exception as exc:
+            raise RuntimeError(
+                "The activity model could not score this window."
+            ) from exc
+        return pred_activity, confidence, features
 
     @staticmethod
     def _as_naive_utc(value: datetime) -> datetime:
@@ -140,8 +162,6 @@ class HARMiddleware:
         user_id: str,
         limit: int = 500,
     ) -> list[HARSensorSampleModel]:
-        cls.prune(db, user_id)
-        db.commit()
         return (
             db.query(HARSensorSampleModel)
             .filter(HARSensorSampleModel.user_id == user_id)
@@ -151,37 +171,75 @@ class HARMiddleware:
         )
 
     @classmethod
-    def current_window(
+    def get_sensor_data_for_last_six_hours(
         cls,
         db: Session,
         user_id: str,
+        prediction_time: datetime | None = None,
     ) -> list[HARSensorSampleModel]:
-        now = datetime.utcnow()
-        rows = (
+        at = cls._as_naive_utc(prediction_time or datetime.utcnow())
+        start = at - timedelta(hours=cls.LOOKBACK_HOURS)
+        return (
             db.query(HARSensorSampleModel)
             .filter(
                 HARSensorSampleModel.user_id == user_id,
-                HARSensorSampleModel.timestamp
-                >= now - timedelta(seconds=cls.WINDOW_SECONDS),
+                HARSensorSampleModel.timestamp >= start,
+                HARSensorSampleModel.timestamp <= at,
             )
             .order_by(HARSensorSampleModel.timestamp.asc())
             .all()
         )
-        if len(rows) >= cls.MIN_WINDOW_SIZE:
-            return rows
-        fallback = (
-            db.query(HARSensorSampleModel)
-            .filter(
-                HARSensorSampleModel.user_id == user_id,
-                HARSensorSampleModel.timestamp
-                >= now - timedelta(seconds=cls.FALLBACK_WINDOW_SECONDS),
-            )
-            .order_by(HARSensorSampleModel.timestamp.desc())
-            .limit(cls.MAX_WINDOW_SAMPLES)
-            .all()
+
+    @classmethod
+    def inference_window(cls, history: list) -> list:
+        """Pick the latest short burst from a 6-hour lookback.
+
+        The deployed Random Forest was trained on ~3s windows of acc/gyro
+        statistics, not on a mixed 6-hour stretch of different activities.
+        """
+        if not history:
+            return []
+        latest = cls._as_naive_utc(history[-1].timestamp)
+        primary_start = latest - timedelta(seconds=cls.WINDOW_SECONDS)
+        primary = [
+            row
+            for row in history
+            if cls._as_naive_utc(row.timestamp) >= primary_start
+        ]
+        if len(primary) >= cls.MIN_WINDOW_SIZE:
+            return primary[-cls.MAX_WINDOW_SAMPLES :]
+        fallback_start = latest - timedelta(seconds=cls.FALLBACK_WINDOW_SECONDS)
+        fallback = [
+            row
+            for row in history
+            if cls._as_naive_utc(row.timestamp) >= fallback_start
+        ]
+        return fallback[-cls.MAX_WINDOW_SAMPLES :]
+
+    @classmethod
+    def describe_window(cls, history: list, window: list) -> dict:
+        return {
+            "lookback_hours": cls.LOOKBACK_HOURS,
+            "history_samples": len(history),
+            "history_start": history[0].timestamp if history else None,
+            "history_end": history[-1].timestamp if history else None,
+            "inference_samples": len(window),
+            "inference_start": window[0].timestamp if window else None,
+            "inference_end": window[-1].timestamp if window else None,
+            "ready": len(window) >= cls.MIN_WINDOW_SIZE,
+        }
+
+    @classmethod
+    def current_window(
+        cls,
+        db: Session,
+        user_id: str,
+        prediction_time: datetime | None = None,
+    ) -> list[HARSensorSampleModel]:
+        history = cls.get_sensor_data_for_last_six_hours(
+            db, user_id, prediction_time
         )
-        fallback.reverse()
-        return fallback
+        return cls.inference_window(history)
 
     @classmethod
     def sample_stats(cls, db: Session, user_id: str) -> HARSensorStoreResponse:

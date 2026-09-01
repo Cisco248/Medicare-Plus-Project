@@ -1,8 +1,10 @@
 import 'package:client/core/themes/primitives/spacing.dart';
 import 'package:client/feature/dashboard/notifiers/clinical_snapshot.notifier.dart';
+import 'package:client/feature/dashboard/notifiers/motion_sensor.notifier.dart';
 import 'package:client/feature/dashboard/notifiers/server_health.notifier.dart';
 import 'package:client/feature/dashboard/widgets/health_summary_cards.dart';
 import 'package:client/feature/dashboard/widgets/knowledge.widget.dart';
+import 'package:client/feature/dashboard/widgets/motion_status.widget.dart';
 import 'package:client/feature/dashboard/widgets/patient.widget.dart';
 import 'package:client/feature/dashboard/widgets/remainder.widget.dart';
 import 'package:client/feature/dashboard/widgets/weekly_charts.widget.dart';
@@ -30,6 +32,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
     ref.invalidate(serverPredictionProvider);
     ref.invalidate(weeklyHealthProvider);
     await ref.read(clinicalSnapshotProvider.notifier).refreshDailyActivity();
+    await ref.read(motionSensorProvider.notifier).refreshStats();
   }
 
   @override
@@ -49,6 +52,8 @@ class _DashboardState extends ConsumerState<Dashboard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  const SizedBox(height: ZintraSpacing.md),
+                  const MotionStatusCard(),
                   const SizedBox(height: ZintraSpacing.md),
                   const WeeklyHealthCharts(),
                   const SizedBox(height: ZintraSpacing.md),

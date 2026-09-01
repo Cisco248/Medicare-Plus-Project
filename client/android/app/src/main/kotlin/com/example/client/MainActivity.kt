@@ -19,12 +19,13 @@ class MainActivity : FlutterActivity() {
                 "start" -> {
                     val token = call.argument<String>("token").orEmpty()
                     val baseUrl = call.argument<String>("baseUrl").orEmpty()
+                    val capture = call.argument<Boolean>("capture") ?: true
                     if (token.isEmpty() || baseUrl.isEmpty()) {
                         result.error("invalid_args", "token and baseUrl are required", null)
                         return@setMethodCallHandler
                     }
                     requestNotificationPermission()
-                    HarMotionService.start(this, token, baseUrl)
+                    HarMotionService.start(this, token, baseUrl, capture)
                     result.success(true)
                 }
                 "stop" -> {

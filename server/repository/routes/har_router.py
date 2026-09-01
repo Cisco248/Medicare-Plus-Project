@@ -1,21 +1,28 @@
+import threading
+from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from core import ServerSettings, get_db
+from core.configs.server_configuration import BASE_DIR
 from data import HARWindowScheme
 from data.models.user_data_model import UserModel
 from data.schemas.har_data_schema import (
     HARCurrentPredictionOut,
     HARSensorBatchIn,
     HARSensorStoreResponse,
+    HARSixHourWindowOut,
 )
 from repository.middlewares import ArtifactLoader, HARMiddleware, RagClientMiddleware
 from repository.middlewares.auth_middleware import get_current_user
 
 har_router = APIRouter()
 config = ServerSettings()
+
+_har_model = None
+_har_model_lock = threading.Lock()
 
 
 def _compose_har_questions(activity: str, confidence: Any) -> str:
@@ -30,31 +37,39 @@ def _compose_har_questions(activity: str, confidence: Any) -> str:
 
 
 def _load_har_model():
-    try:
-        return ArtifactLoader().model_loader(config.HAR_MODEL_PATH)
-    except Exception as exc:
-        raise HTTPException(
-            status_code=503,
-            detail="The human activity model is not available on the server.",
-        ) from exc
+    global _har_model
+    if _har_model is not None:
+        return _har_model
+    with _har_model_lock:
+        if _har_model is not None:
+            return _har_model
+        path = ArtifactLoader.resolve(
+            config.HAR_MODEL_PATH,
+            str(BASE_DIR / "artifacts" / "har" / "model.pkl"),
+            str(BASE_DIR / "artifact" / "har" / "model.pkl"),
+        )
+        if not path or not Path(path).exists():
+            raise HTTPException(
+                status_code=503,
+                detail="The human activity model is not available on the server.",
+            )
+        try:
+            _har_model = ArtifactLoader().model_loader(path)
+        except Exception as exc:
+            raise HTTPException(
+                status_code=503,
+                detail="The human activity model is not available on the server.",
+            ) from exc
+        return _har_model
 
 
 def _predict_from_readings(readings: list, model) -> tuple[str, float, dict]:
-    middleware = HARMiddleware()
     try:
-        features = middleware.extract_features(readings)
+        return HARMiddleware().predict(readings, model)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    names = getattr(model, "feature_names_in_", None)
-    ordered = (
-        [[features[name] for name in names]]
-        if names is not None
-        else [list(features.values())]
-    )
-    pred_activity = str(model.predict(ordered)[0])
-    proba = model.predict_proba(ordered)[0]
-    confidence = float(max(proba))
-    return pred_activity, confidence, features
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
 async def _optional_har_summary(activity: str, confidence: float) -> Any | None:
@@ -105,6 +120,21 @@ def list_sensor_samples(
     }
 
 
+@har_router.get(
+    "/window",
+    status_code=200,
+    tags=["Human Activity Recognition"],
+    response_model=HARSixHourWindowOut,
+)
+def get_six_hour_window(
+    db: Session = Depends(get_db),
+    user: UserModel = Depends(get_current_user),
+) -> HARSixHourWindowOut:
+    history = HARMiddleware.get_sensor_data_for_last_six_hours(db, str(user.id))
+    window = HARMiddleware.inference_window(history)
+    return HARSixHourWindowOut(**HARMiddleware.describe_window(history, window))
+
+
 @har_router.post(
     "/predict-current",
     status_code=200,
@@ -115,30 +145,45 @@ async def predict_current_window(
     db: Session = Depends(get_db),
     user: UserModel = Depends(get_current_user),
 ) -> HARCurrentPredictionOut:
-    window = HARMiddleware.current_window(db, str(user.id))
+    history = HARMiddleware.get_sensor_data_for_last_six_hours(db, str(user.id))
+    if not history:
+        raise HTTPException(
+            status_code=400,
+            detail="No motion samples were stored in the last 6 hours.",
+        )
+    window = HARMiddleware.inference_window(history)
     if len(window) < HARMiddleware.MIN_WINDOW_SIZE:
         raise HTTPException(
             status_code=400,
             detail=(
-                "Not enough recent motion samples for a window. "
-                f"Need at least {HARMiddleware.MIN_WINDOW_SIZE}."
+                "Not enough recent motion samples for a prediction. "
+                f"Need at least {HARMiddleware.MIN_WINDOW_SIZE} samples "
+                "in the latest activity burst."
             ),
         )
     model = _load_har_model()
     activity, confidence, _features = _predict_from_readings(window, model)
     summary = await _optional_har_summary(activity, confidence)
+    described = HARMiddleware.describe_window(history, window)
     return HARCurrentPredictionOut(
         activity=activity,
         confidence=round(confidence, 4),
-        window_samples=len(window),
-        window_start=window[0].timestamp,
-        window_end=window[-1].timestamp,
+        window_samples=described["inference_samples"],
+        window_start=described["inference_start"],
+        window_end=described["inference_end"],
+        lookback_hours=described["lookback_hours"],
+        history_samples=described["history_samples"],
+        history_start=described["history_start"],
+        history_end=described["history_end"],
         summary=summary,
     )
 
 
 @har_router.post("/predict", status_code=200, tags=["Human Activity Recognition"])
-async def predict_activity(window: HARWindowScheme):
+async def predict_activity(
+    window: HARWindowScheme,
+    _user: UserModel = Depends(get_current_user),
+):
     model = _load_har_model()
     activity, confidence, _features = _predict_from_readings(window.readings, model)
     summary = await _optional_har_summary(activity, confidence)

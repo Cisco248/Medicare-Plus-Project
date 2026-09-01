@@ -24,8 +24,12 @@ class HARSensorReading(BaseModel):
 
 
 class HARWindowScheme(BaseModel):
-    """A ~3s window of sensor samples (ideally ~100Hz -> ~300 samples)
-    sent from the mobile client for a single activity prediction."""
+    """Optional client-supplied window for POST /api-har/predict.
+
+    Production prediction uses stored samples from the previous 6 hours and
+    then scores the latest short burst. This schema is for authenticated
+    testing of a prepared window.
+    """
 
     readings: list[HARSensorReading]
 
@@ -48,4 +52,19 @@ class HARCurrentPredictionOut(BaseModel):
     window_samples: int
     window_start: datetime | None = None
     window_end: datetime | None = None
+    lookback_hours: int = 6
+    history_samples: int = 0
+    history_start: datetime | None = None
+    history_end: datetime | None = None
     summary: Any | None = None
+
+
+class HARSixHourWindowOut(BaseModel):
+    lookback_hours: int
+    history_samples: int
+    history_start: datetime | None = None
+    history_end: datetime | None = None
+    inference_samples: int
+    inference_start: datetime | None = None
+    inference_end: datetime | None = None
+    ready: bool

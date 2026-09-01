@@ -19,12 +19,6 @@ class MedicarePlus extends ConsumerStatefulWidget {
 
 class _MedicarePlusState extends ConsumerState<MedicarePlus> {
   @override
-  void initState() {
-    super.initState();
-    Future.microtask(() {});
-  }
-
-  @override
   Widget build(BuildContext context) {
     final appRoute = ref.watch(routerProvider);
     final themeMode = ref.watch(themeProvider);
